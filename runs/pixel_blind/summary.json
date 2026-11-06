@@ -1,0 +1,64 @@
+{
+ "seconds": 294.1,
+ "steps": 6000,
+ "real_baseline": {
+  "color": 1.0,
+  "shape": 0.9995,
+  "background": 1.0,
+  "joint": 0.9995,
+  "center_std": 0.14215301671249242,
+  "coherence": 1.0
+ },
+ "alpha=1.0": {
+  "seen": {
+   "color": 0.271875,
+   "shape": 0.29375,
+   "background": 0.4984375,
+   "joint": 0.034375,
+   "center_std": 0.1283088755494773,
+   "coherence": 0.9673515527833416
+  },
+  "unseen_wording": {
+   "color": 0.2890625,
+   "shape": 0.325,
+   "background": 0.4765625,
+   "joint": 0.053125,
+   "center_std": 0.131518455007304,
+   "coherence": 0.9576695822071667
+  },
+  "held_out_combo": {
+   "color": 0.21875,
+   "shape": 0.5234375,
+   "background": 0.4453125,
+   "joint": 0.0234375,
+   "center_std": 0.1292493535134617,
+   "coherence": 0.9682548099824482
+  }
+ },
+ "alpha=2.0": {
+  "seen": {
+   "color": 0.275,
+   "shape": 0.325,
+   "background": 0.45,
+   "joint": 0.046875,
+   "center_std": 0.12880409266876502,
+   "coherence": 0.9623591090950244
+  },
+  "unseen_wording": {
+   "color": 0.2640625,
+   "shape": 0.3125,
+   "background": 0.484375,
+   "joint": 0.0421875,
+   "center_std": 0.13148604015220652,
+   "coherence": 0.9655182358439379
+  },
+  "held_out_combo": {
+   "color": 0.25,
+   "shape": 0.5390625,
+   "background": 0.515625,
+   "joint": 0.09375,
+   "center_std": 0.12319669241508027,
+   "coherence": 0.9751000010861037
+  }
+ }
+}

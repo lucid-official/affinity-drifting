@@ -1,0 +1,7 @@
+lucid-dl[models]==3.16.3
+certifi
+matplotlib
+pillow
+scikit-learn
+scipy
+pytest

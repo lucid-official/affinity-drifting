@@ -1,0 +1,77 @@
+{'step': 1, 'loss': 8.805644989013672, 'grad_norm': 3.113440990447998, 'seconds': 0.1, 'raw/pixel': 0.039733998477458954}
+{'step': 500, 'loss': 6.657742977142334, 'grad_norm': 4.038289546966553, 'seconds': 28.6, 'raw/pixel': 0.043257031589746475}
+{'step': 1000, 'loss': 6.851022243499756, 'grad_norm': 3.4323222637176514, 'seconds': 57.0, 'raw/pixel': 0.04987890645861626}
+{'step': 1500, 'loss': 6.803843021392822, 'grad_norm': 4.663557052612305, 'seconds': 86.4, 'raw/pixel': 0.03713398799300194}
+{'step': 2000, 'loss': 6.736879825592041, 'grad_norm': 3.5561306476593018, 'seconds': 116.4, 'raw/pixel': 0.027644077315926552}
+{'step': 2500, 'loss': 6.021833896636963, 'grad_norm': 3.2610208988189697, 'seconds': 144.2, 'raw/pixel': 0.033905353397130966}
+{'step': 3000, 'loss': 6.146620273590088, 'grad_norm': 2.7555530071258545, 'seconds': 172.1, 'raw/pixel': 0.021904515102505684}
+{'step': 3500, 'loss': 6.319456577301025, 'grad_norm': 3.674123764038086, 'seconds': 199.4, 'raw/pixel': 0.028702229261398315}
+{'step': 4000, 'loss': 6.9271559715271, 'grad_norm': 2.235539197921753, 'seconds': 226.2, 'raw/pixel': 0.026526382192969322}
+{'step': 4500, 'loss': 6.661683559417725, 'grad_norm': 3.1734495162963867, 'seconds': 253.7, 'raw/pixel': 0.03110692650079727}
+{'step': 5000, 'loss': 6.469576358795166, 'grad_norm': 2.598640203475952, 'seconds': 282.6, 'raw/pixel': 0.03409035876393318}
+{'step': 5500, 'loss': 6.780693531036377, 'grad_norm': 3.7056374549865723, 'seconds': 311.9, 'raw/pixel': 0.034219395369291306}
+{'step': 6000, 'loss': 6.637584686279297, 'grad_norm': 2.959097146987915, 'seconds': 338.7, 'raw/pixel': 0.030379272997379303}
+{
+ "seconds": 338.8,
+ "steps": 6000,
+ "real_baseline": {
+  "color": 1.0,
+  "shape": 0.9995,
+  "background": 1.0,
+  "joint": 0.9995,
+  "center_std": 0.14215301671249242,
+  "coherence": 1.0
+ },
+ "alpha=1.0": {
+  "seen": {
+   "color": 0.9984375,
+   "shape": 0.4296875,
+   "background": 1.0,
+   "joint": 0.4296875,
+   "center_std": 0.1355266626737072,
+   "coherence": 0.993323470300212
+  },
+  "unseen_wording": {
+   "color": 1.0,
+   "shape": 0.4015625,
+   "background": 0.9984375,
+   "joint": 0.4015625,
+   "center_std": 0.1357076057896527,
+   "coherence": 0.9945211394779176
+  },
+  "held_out_combo": {
+   "color": 1.0,
+   "shape": 0.6171875,
+   "background": 1.0,
+   "joint": 0.6171875,
+   "center_std": 0.1264851885858476,
+   "coherence": 0.9945222702248141
+  }
+ },
+ "alpha=2.0": {
+  "seen": {
+   "color": 1.0,
+   "shape": 0.40625,
+   "background": 1.0,
+   "joint": 0.40625,
+   "center_std": 0.13389838935148263,
+   "coherence": 0.995267606069891
+  },
+  "unseen_wording": {
+   "color": 1.0,
+   "shape": 0.41875,
+   "background": 1.0,
+   "joint": 0.41875,
+   "center_std": 0.133448768678257,
+   "coherence": 0.995428569455742
+  },
+  "held_out_combo": {
+   "color": 1.0,
+   "shape": 0.671875,
+   "background": 1.0,
+   "joint": 0.671875,
+   "center_std": 0.12950857009829514,
+   "coherence": 0.994462365824206
+  }
+ }
+}

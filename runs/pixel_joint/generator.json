@@ -1,0 +1,1 @@
+{"image_size": 32, "channels": 3, "patch_size": 4, "hidden": 128, "depth": 3, "heads": 4, "mlp_ratio": 4.0, "text_pooled_dim": 512, "text_token_dim": 512, "num_text_tokens": 16, "num_registers": 8, "num_style_tokens": 32, "style_codebook": 64}
