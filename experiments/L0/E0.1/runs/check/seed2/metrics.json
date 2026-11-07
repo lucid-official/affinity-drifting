@@ -1,0 +1,16 @@
+{
+  "max_err_f64_cpu_loo_sigma0.1": 1.1102230246251565e-15,
+  "max_err_f32_metal_loo_sigma0.1": 1.6512202340890347e-05,
+  "max_err_f64_cpu_self_sigma0.1": 9.020562075079397e-16,
+  "max_err_f32_metal_self_sigma0.1": 7.866694735131005e-06,
+  "max_err_f64_cpu_loo_sigma0.5": 1.3322676295501878e-15,
+  "max_err_f32_metal_loo_sigma0.5": 1.1401422890244817e-06,
+  "max_err_f64_cpu_self_sigma0.5": 1.3322676295501878e-15,
+  "max_err_f32_metal_self_sigma0.5": 1.695716936644942e-06,
+  "max_err_f64_cpu_loo_sigma2": 8.881784197001252e-16,
+  "max_err_f32_metal_loo_sigma2": 3.435325819367563e-07,
+  "max_err_f64_cpu_self_sigma2": 1.3322676295501878e-15,
+  "max_err_f32_metal_self_sigma2": 2.87813614718857e-07,
+  "max_err_f64_cpu": 1.3322676295501878e-15,
+  "max_err_f32_metal": 1.6512202340890347e-05
+}

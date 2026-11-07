@@ -1,0 +1,88 @@
+{
+  "id": "E0.1",
+  "time_utc": "2026-11-07T20:07:02+00:00",
+  "commit": "bce86ecdc3af6537fa69a2678dfcb1c82b7ceebf",
+  "judgement": {
+    "verdict": "PASS",
+    "kind": "max_below",
+    "checks": [
+      {
+        "name": "max_err_f64_cpu",
+        "verdict": "PASS",
+        "detail": "max over 5 runs = 1.998e-15 (threshold 1e-06)",
+        "ci": null
+      }
+    ]
+  },
+  "summary": {
+    "check": {
+      "max_err_f64_cpu": {
+        "mean": 1.5987211554602255e-15,
+        "lo": 1.3766765505351941e-15,
+        "hi": 1.8207657603852566e-15,
+        "n": 5
+      },
+      "max_err_f32_metal": {
+        "mean": 1.1245273323772301e-05,
+        "lo": 5.8375498543518365e-06,
+        "hi": 1.6652996793192765e-05,
+        "n": 5
+      }
+    },
+    "drifting": {
+      "release_max_diff": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 5
+      }
+    }
+  },
+  "missing": [],
+  "runs": {
+    "check": {
+      "0": {
+        "config_hash": "e16f66be018e",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "e16f66be018e",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "e16f66be018e",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "e16f66be018e",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "e16f66be018e",
+        "state": "complete"
+      }
+    },
+    "drifting": {
+      "0": {
+        "config_hash": "5be81df9f7cd",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "5be81df9f7cd",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "5be81df9f7cd",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "5be81df9f7cd",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "5be81df9f7cd",
+        "state": "complete"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{"step": 0, "sigma": 0.1, "exclude_self": 1.0, "max_err_f64_cpu": 1.0824674490095276e-15}
+{"step": 1, "sigma": 0.1, "exclude_self": 1.0, "max_err_f32_metal": 1.063815857704764e-05}
+{"step": 2, "sigma": 0.1, "exclude_self": 0.0, "max_err_f64_cpu": 1.1310397063368782e-15}
+{"step": 3, "sigma": 0.1, "exclude_self": 0.0, "max_err_f32_metal": 4.0763192901693834e-06}
+{"step": 4, "sigma": 0.5, "exclude_self": 1.0, "max_err_f64_cpu": 1.1102230246251565e-15}
+{"step": 5, "sigma": 0.5, "exclude_self": 1.0, "max_err_f32_metal": 9.95889812616113e-07}
+{"step": 6, "sigma": 0.5, "exclude_self": 0.0, "max_err_f64_cpu": 1.5543122344752192e-15}
+{"step": 7, "sigma": 0.5, "exclude_self": 0.0, "max_err_f32_metal": 9.196135495048718e-07}
+{"step": 8, "sigma": 2.0, "exclude_self": 1.0, "max_err_f64_cpu": 1.3322676295501878e-15}
+{"step": 9, "sigma": 2.0, "exclude_self": 1.0, "max_err_f32_metal": 3.9155017250713797e-07}
+{"step": 10, "sigma": 2.0, "exclude_self": 0.0, "max_err_f64_cpu": 1.5543122344752192e-15}
+{"step": 11, "sigma": 2.0, "exclude_self": 0.0, "max_err_f32_metal": 3.87695450854153e-07}

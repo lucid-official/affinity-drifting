@@ -1,0 +1,7 @@
+{
+  "release_loss_diff_cpu": 0.0,
+  "release_grad_diff_cpu": 0.0,
+  "release_loss_diff_metal": 0.0,
+  "release_grad_diff_metal": 0.0,
+  "release_max_diff": 0.0
+}
