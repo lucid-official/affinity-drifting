@@ -8,11 +8,11 @@ Affinity Drifting(이하 AffD)은 조건 공간의 soft affinity로 이웃 조�
 
 출발점은 대수적 사실이다. 조건 c_i의 positive가 y_i 하나뿐이면 정규화된 weight가 1이 되어 attraction이 x와 무관해진다.
 
-```latex
+$$
 \mathbf V^+(\mathbf x\mid c_i)=\mathbf y_i-\mathbf x
 \quad\Longrightarrow\quad
 \mathcal L_{\text{attr}}=\big\|f_\theta(\boldsymbol\epsilon,c_i)-\mathbf y_i\big\|^2
-```
+$$
 
 | 주장 | 내용 | 이론 근거 | 처음 검증하는 단계 | 반증되면 |
 | --- | --- | --- | --- | --- |
@@ -102,11 +102,11 @@ L0은 신경망 없이 이론의 고정점만 확인한다. q를 조건마다 �
 
 E0.5는 p_c = N(μ₁, s²), p_c′ = N(μ₂, s²)로 두면 예측이 닫힌 형태로 나온다. σ 평활화를 포함해 s̃² = s² + σ²로 쓴다.
 
-```latex
+$$
 \log\hat q_c=\log\hat p_c-\lambda\log\hat q_{c'}
 \;\Rightarrow\;
 \hat q_c=\mathcal N\!\Big(\tfrac{\mu_1-\lambda\mu_2}{1-\lambda},\;(1+\lambda)\,\tilde s^{2}\Big),\qquad \lambda<1
-```
+$$
 
 L0의 결론은 두 가지 중 하나다. 예측이 맞으면 Prop A, C, E가 수치로 확인된 것이고, 틀리면 해당 Prop의 유도를 다시 한다. 어느 쪽이든 신경망을 돌리기 전에 결론이 난다.
 

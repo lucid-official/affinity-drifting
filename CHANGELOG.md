@@ -32,8 +32,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
   (`kde` default, so no pre-registered experiment changes).
 - `tracking/ledger.py`: file lock around `EXPERIMENTS.md` writes so concurrent sweeps cannot drop entries.
 
+- `tracking/logger.py`: wandb's own usage telemetry and error reporting are disabled outside `online` mode.
+
 ### Changed
 
 - `CLAUDE.md` §1: directory layout follows the experiment hierarchy (`experiments/<Level>/<ID>/runs/<arm>/seed<k>/`)
   instead of `runs/`, `results/<ID>.md`, `configs/exp/<ID>.yaml` (D12).
+- `docs/plan.md`: the two display equations (§1 Lemma 0, §4 Prop E) moved from ```` ```latex ```` code fences to `$$`
+  blocks so Markdown previews render them. Formatting only: the equation text is byte-identical.
 - `CLAUDE.md` §6: repository `affinity-drifting`, branch `affinity-drifting`, Lucid on Metal (D1, D12).
