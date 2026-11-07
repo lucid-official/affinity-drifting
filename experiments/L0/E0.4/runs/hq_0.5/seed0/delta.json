@@ -1,0 +1,19 @@
+{
+  "arm": "hq_0.5",
+  "reference_arm": "hq_0",
+  "knobs_vs_reference": [
+    "h_q.ratio"
+  ],
+  "vs_B0": {
+    "h_q.ratio": {
+      "B0": 0.0,
+      "arm": 0.5
+    }
+  },
+  "vs_reference": {
+    "h_q.ratio": {
+      "reference": 0.0,
+      "arm": 0.5
+    }
+  }
+}
