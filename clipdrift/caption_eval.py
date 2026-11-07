@@ -60,12 +60,16 @@ def layout(images: np.ndarray) -> np.ndarray:
     return pooled.reshape(m, -1)
 
 
-def layout_corr(predicted: np.ndarray, real: np.ndarray) -> float:
-    """프롬프트에 걸친 Pearson 상관을 차원마다 구해 평균한다."""
+def layout_corr_cells(predicted: np.ndarray, real: np.ndarray) -> np.ndarray:
+    """프롬프트에 걸친 Pearson 상관을 차원(채널 × 칸)마다 구한다. `[C * 16]`."""
     p = predicted - predicted.mean(0)
     r = real - real.mean(0)
-    corr = (p * r).sum(0) / np.sqrt((p * p).sum(0) * (r * r).sum(0) + 1e-12)
-    return float(corr.mean())
+    return (p * r).sum(0) / np.sqrt((p * p).sum(0) * (r * r).sum(0) + 1e-12)
+
+
+def layout_corr(predicted: np.ndarray, real: np.ndarray) -> float:
+    """차원별 상관의 평균."""
+    return float(layout_corr_cells(predicted, real).mean())
 
 
 def layout_r_precision(

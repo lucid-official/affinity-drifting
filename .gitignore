@@ -8,3 +8,4 @@ data/
 # Flickr30k 실행: 체크포인트는 다시 만들 수 있고, samples_test.png에는 실제 Flickr 사진이 들어 있다.
 runs/flickr_*/*.lucid
 runs/flickr_*/samples_test.png
+checkpoints/mae_flickr32.*

@@ -4,7 +4,7 @@
 #   python -I experiments/prepare_flickr30k.py data/raw/flickr30k data/flickr30k_32   # 먼저 한 번
 #   SEEDS="0 1 2" bash experiments/run_flickr.sh pixel   # blind, pair, pseudo(K=32, 256), joint (φ 없음)
 #   python -m clipdrift.mae --data data/flickr30k_32/train.jsonl --out checkpoints/mae_flickr32.lucid --steps 10000
-#   PIXEL_WEIGHT=300 bash experiments/run_flickr.sh mae   # pseudo(K=256), joint + 고정 MAE φ
+#   bash experiments/run_flickr.sh mae   # pseudo(K=256), joint + 고정 MAE φ (PIXEL_WEIGHT 기본 1000)
 #
 # 이미 끝난 실행(generator_ema.lucid가 있음)은 건너뛴다. 학습이 모두 끝나면 테스트 캡션 1000개로
 # 전부 다시 평가한다(caption_eval.json, samples_test.png).
@@ -48,7 +48,10 @@ case "${1:-}" in
     ;;
   mae)
     # Flickr30k로 학습해 고정한 MAE를 φ로 붙인다. 픽셀 가중치는 기울기 비율에 맞춘다.
-    W="${PIXEL_WEIGHT:-300}"
+    # Flickr의 pixel joint 생성기에서 MAE 기울기는 픽셀의 약 1,800배다(results/phi_diagnostics.txt). shapes에서는
+    # MAE를 붙여 학습하면 비율이 0.59배로 줄었으므로 1000을 골랐다. 실제로 이 값으로 학습한 joint 생성기에서 다시
+    # 재 보니 비율은 약 2,040배로 줄지 않았다. 즉 1000에서는 MAE 항의 기울기가 픽셀 항의 약 2배다.
+    W="${PIXEL_WEIGHT:-1000}"
     for seed in $SEEDS; do
       for mode in pseudo256 joint; do
         cluster=()

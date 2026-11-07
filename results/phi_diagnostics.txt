@@ -29,3 +29,22 @@ runs/s3000_mae_clip_joint_seed0
 real 1.000
 runs/s3000_mae_joint_w300_seed0 0.539
 runs/s3000_clip_joint_w300_seed0 0.464
+
+# Flickr30k 32x32, 패밀리별 기울기 (experiments/flickr_gradients.py, MAE는 checkpoints/mae_flickr32.lucid)
+runs/flickr_s10000_pixel_joint_seed0 trial 0
+  pixel  keys=  1 loss=    6.30 grad=  0.0020 ratio=    1.0
+  mae    keys= 63 loss=  414.72 grad=  3.6625 ratio= 1875.2
+  clip   keys= 29 loss=  190.33 grad=  0.7414 ratio=  379.6
+runs/flickr_s10000_pixel_joint_seed0 trial 1
+  pixel  keys=  1 loss=    6.61 grad=  0.0020 ratio=    1.0
+  mae    keys= 63 loss=  417.12 grad=  3.4726 ratio= 1760.3
+  clip   keys= 29 loss=  191.54 grad=  0.8303 ratio=  420.9
+# 같은 측정을 고정 MAE φ(픽셀 가중치 1000)로 학습한 joint 생성기에서 (2026-11-08)
+runs/flickr_s10000_mae_w1000_joint_seed0 trial 0
+  pixel  keys=  1 loss=    6.37 grad=  0.0017 ratio=    1.0
+  mae    keys= 63 loss=  413.11 grad=  3.7381 ratio= 2151.0
+  clip   keys= 29 loss=  189.88 grad=  0.7600 ratio=  437.3
+runs/flickr_s10000_mae_w1000_joint_seed0 trial 1
+  pixel  keys=  1 loss=    6.40 grad=  0.0017 ratio=    1.0
+  mae    keys= 63 loss=  416.90 grad=  3.2785 ratio= 1934.0
+  clip   keys= 29 loss=  191.21 grad=  0.8716 ratio=  514.2
