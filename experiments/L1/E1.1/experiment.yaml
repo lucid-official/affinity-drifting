@@ -1,0 +1,36 @@
+id: E1.1
+level: L1
+claim: C0
+title: single positive with repulsion off is L2 regression (G2)
+runner: lemma0
+seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+reference_arm: check
+allowed_delta:
+- h_p.rule
+- field
+arms:
+  check:
+    set:
+      h_p.rule: zero
+  drifting:
+    set:
+      h_p.rule: zero
+      field: release
+judge:
+  kind: composite
+  checks:
+  - type: band
+    arm: check
+    metric: max_grad_err
+    pass_le: 1.0e-05
+    fail_gt: 1.0e-05
+report_metrics:
+- max_grad_err
+- max_grad_abs
+- max_grad_rel_err
+figures: {}
