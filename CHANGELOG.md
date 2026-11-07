@@ -40,4 +40,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
   instead of `runs/`, `results/<ID>.md`, `configs/exp/<ID>.yaml` (D12).
 - `docs/plan.md`: the two display equations (§1 Lemma 0, §4 Prop E) moved from ```` ```latex ```` code fences to `$$`
   blocks so Markdown previews render them. Formatting only: the equation text is byte-identical.
+- `docs/plan.md`: inline math wrapped in `$...$` (KaTeX) — Greek letters, subscripted symbols, norms, sets and
+  inequalities; IDs (E0.1, K1, C2, …), metric names and `↔` comparisons left as text. Meaning unchanged; `1e-6` is now
+  written $10^{-6}$. Pre-registration files keep their verbatim copies of the old text.
 - `CLAUDE.md` §6: repository `affinity-drifting`, branch `affinity-drifting`, Lucid on Metal (D1, D12).
