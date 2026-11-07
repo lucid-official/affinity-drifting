@@ -1,0 +1,31 @@
+id: E0.5b
+level: L0
+claim: Prop E (diagnostic)
+title: Prop E under a Gaussian closure — algebra without finite-sample tails
+runner: particles
+seeds: [0, 1, 2, 3, 4]
+reference_arm: lam_0
+allowed_delta: ["negative.*", level0.problem, level0.density, gen.M, field]
+common:                                      # shared by every arm, incl. the reference
+  level0.problem: gaussian_pair
+  level0.density: gaussian_closure          # D13: p̂, q̂_c, q̂_c′ all Gaussian
+  gen.M: 2048                                # D10: M = 256 would put the 5 % threshold inside sampling noise
+  negative.type: counterfactual
+arms:
+  lam_0: {}
+  lam_0.25: {set: {negative.lambda: 0.25}}
+  lam_0.5: {set: {negative.lambda: 0.5}}
+  lam_0.75: {set: {negative.lambda: 0.75}}
+  lam_0.9: {set: {negative.lambda: 0.9}}
+  lam_1.1: {set: {negative.lambda: 1.1}}
+  drifting: {set: {field: release}}          # baseline (D11): own positives, no counterfactual negative
+judge:
+  kind: closed_form
+  converge_arms: [lam_0, lam_0.25, lam_0.5, lam_0.75, lam_0.9]
+  diverge_arms: [lam_1.1]
+  metrics: [rel_err_mean, rel_err_var]
+  max_rel_err: 0.05
+report_metrics: [rel_err_mean, rel_err_var, var_c0, steps, final_rms_v, wall_time_s]
+figures:
+  FC.1: {arms: [drifting, lam_0, lam_0.25, lam_0.5, lam_0.75, lam_0.9, lam_1.1]}
+  F0.4: {arms: [drifting, lam_0, lam_0.25, lam_0.5, lam_0.75, lam_0.9, lam_1.1]}
