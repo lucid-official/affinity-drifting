@@ -53,6 +53,7 @@ class TrainConfig:
     dataset_size: int = 12000
     mode: str = "joint"  # blind | pseudo | joint
     features: str = "pixel,mae"  # pixel, mae, clip의 조합
+    pixel_weight: float = 1.0  # 픽셀 loss 배율. φ의 이미지 공간 기울기가 픽셀 항의 수백 배라 균형을 맞출 때 쓴다.
     mae_checkpoint: str = "checkpoints/mae_shapes.lucid"
     out: str = "runs/default"
 
@@ -211,8 +212,10 @@ def training_step(
         loss, stats = feature_drift_loss(
             phi_x, sets[1][name], phi_unc, kernel, DEFAULT_TEMPERATURES
         )
-        total = loss if total is None else total + loss
         family = name.split("/")[0]
+        if family == "pixel":
+            loss = loss * config.pixel_weight
+        total = loss if total is None else total + loss
         raw[family] = stats.raw_drift if family not in raw else raw[family] + stats.raw_drift
     assert total is not None
     return total, raw

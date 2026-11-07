@@ -24,3 +24,8 @@ runs/s3000_mae_clip_joint_seed0
   pixel  keys=  1 loss=    6.06 grad=  0.0026 ratio=    1.0
   mae    keys= 63 loss=  405.89 grad=  1.1119 ratio=  428.7
   clip   keys= 29 loss=  174.42 grad=  1.0354 ratio=  399.2
+
+# 픽셀 항 가중치 300 (experiments/run_shapes.sh balanced)
+real 1.000
+runs/s3000_mae_joint_w300_seed0 0.539
+runs/s3000_clip_joint_w300_seed0 0.464

@@ -3,6 +3,7 @@
 #
 #   bash experiments/run_shapes.sh pixel     # blind, pseudo, joint (φ 없음), 시드 3개
 #   bash experiments/run_shapes.sh features  # joint에 MAE, CLIP 특징 추가, 시드 1개 (오래 걸림)
+#   bash experiments/run_shapes.sh balanced  # 위와 같되 픽셀 항 기울기를 φ와 맞춤, 시드 1개 (오래 걸림)
 #
 # 실행 하나가 실패해도(예: 메모리 부족) 나머지는 계속 돌리고, 실패한 이름을 출력한다.
 set -uo pipefail
@@ -34,8 +35,12 @@ case "${1:-}" in
     run clip_joint 0 --mode joint --features pixel,clip
     run mae_clip_joint 0 --mode joint --features pixel,mae,clip
     ;;
+  balanced)
+    run mae_joint_w300 0 --mode joint --features pixel,mae --pixel-weight 300
+    run clip_joint_w300 0 --mode joint --features pixel,clip --pixel-weight 300
+    ;;
   *)
-    echo "usage: $0 {pixel|features}" >&2
+    echo "usage: $0 {pixel|features|balanced}" >&2
     exit 2
     ;;
 esac
