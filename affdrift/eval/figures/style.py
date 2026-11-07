@@ -43,8 +43,19 @@ ARM_COLORS = MappingProxyType({
     "lam_0.75": "#6baed6",
     "lam_0.9": "#9ecae1",
     "lam_1.1": "#e6550d",
-    # E0.1
+    # E0.1 / E1.1
     "check": "#333333",
+    # L1 — G4 learning-rate grid (unconditional K5)
+    "k5_lr3e-4": "#c5b0d5",
+    "k5_lr1e-3": "#9467bd",
+    "k5_lr3e-3": "#5b3a8a",
+    # L1 — h_p as a multiple of the N_eff bandwidth h* (E1.6); h0 = single colour, h1 = AffD colour
+    "hx0.25": "#c6dbef", "hx0.5": "#6baed6", "hx1": "#1f77b4", "hx2": "#08519c", "hx4": "#08306b", "hx8": "#041a3a",
+    "fixed": "#2ca02c",
+    # L1 — factorials E1.4 (d<δ>) and E1.4b (L<L>): colour = h multiple, identical across capacities
+    **{f"{cap}_{h}": colour
+       for cap in ("d0", "d64", "d16", "d4", "L64", "L16", "L4", "L1")
+       for h, colour in (("h0", "#7f7f7f"), ("h0.5", "#6baed6"), ("h1", "#1f77b4"), ("h2", "#08519c"), ("h4", "#08306b"))},
 })
 ARM_ORDER = tuple(ARM_COLORS)
 BLIND_COLOR = "#555555"

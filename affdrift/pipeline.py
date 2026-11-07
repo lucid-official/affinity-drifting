@@ -20,6 +20,7 @@ from typing import Any
 
 from affdrift.config import Experiment
 from affdrift.eval.figures.level0 import BUILDERS as L0_FIGURES
+from affdrift.eval.figures.level1 import BUILDERS as L1_FIGURES
 from affdrift.eval.figures.writer import FigureWriter, rel
 from affdrift.eval.judge import Judgement, judge, seed_summary
 from affdrift.levels.level0 import RUNNERS as L0_RUNNERS
@@ -30,7 +31,7 @@ from affdrift.tracking.run import Run
 from affdrift.tracking.store import complete, records
 
 RUNNERS = {"L0": L0_RUNNERS, "L1": L1_RUNNERS}
-FIGURES = {"L0": L0_FIGURES, "L1": {}}
+FIGURES = {"L0": L0_FIGURES, "L1": L1_FIGURES}
 
 
 class NotPreregistered(RuntimeError):
