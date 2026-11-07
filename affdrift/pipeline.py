@@ -23,13 +23,14 @@ from affdrift.eval.figures.level0 import BUILDERS as L0_FIGURES
 from affdrift.eval.figures.writer import FigureWriter, rel
 from affdrift.eval.judge import Judgement, judge, seed_summary
 from affdrift.levels.level0 import RUNNERS as L0_RUNNERS
+from affdrift.levels.level1 import RUNNERS as L1_RUNNERS
 from affdrift.runtime import ROOT, git_commit
 from affdrift.tracking import ledger
 from affdrift.tracking.run import Run
 from affdrift.tracking.store import complete, records
 
-RUNNERS = {"L0": L0_RUNNERS}
-FIGURES = {"L0": L0_FIGURES}
+RUNNERS = {"L0": L0_RUNNERS, "L1": L1_RUNNERS}
+FIGURES = {"L0": L0_FIGURES, "L1": {}}
 
 
 class NotPreregistered(RuntimeError):

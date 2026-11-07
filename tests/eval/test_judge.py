@@ -57,3 +57,19 @@ def test_closed_form_requires_divergence() -> None:
             "metrics": ["e"], "max_rel_err": 0.05}
     t = _table(l0=[{"e": 0.01}], l11=[{"diverged": False}])
     assert judge(rule, t).verdict == Verdict.FAIL
+
+
+def test_standard_metrics_sanity() -> None:
+    from affdrift.eval.metrics import density_coverage, mmd_rbf, precision_recall
+
+    rng = np.random.default_rng(0)
+    real = rng.normal(size=(400, 2))
+    same = rng.normal(size=(400, 2))
+    collapsed = rng.normal(scale=0.05, size=(400, 2))
+    p, r = precision_recall(real, same)
+    assert p > 0.9 and r > 0.9
+    p, r = precision_recall(real, collapsed)
+    assert p > 0.9 and r < 0.3          # mode collapse: precise but no recall
+    _, cov = density_coverage(real, collapsed)
+    assert cov < 0.3
+    assert mmd_rbf(real, same) < mmd_rbf(real, collapsed)

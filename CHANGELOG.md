@@ -34,6 +34,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 - `tracking/logger.py`: wandb's own usage telemetry and error reporting are disabled outside `online` mode.
 
+- Level 1: `levels/level1.py` (runners `train`, `lemma0`; every arm of plan §2.3 as an option of the same field,
+  baseline `drifting`), `data/toy2d.Bank`, standard metrics (precision/recall, density/coverage, MMD), marginal and
+  data–data W2, σ-smoothed NW TV for E1.5, `composite` judge. B0 `levels.L1` (model, train, D15 σ rule).
+- `tests/test_lucid_crosscheck.py`: Lucid field, Adam, EMA, spectral norm, quantisation and generator gradients
+  checked against independent NumPy/float64 references before any L1 run.
+
 ### Changed
 
 - Figures moved out of `experiments/`: every figure now lives under the root `figures/<Level>/<ID>/` (run-level under

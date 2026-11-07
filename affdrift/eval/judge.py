@@ -85,6 +85,8 @@ def judge(rule: Mapping[str, Any], table: Table) -> Judgement:
             return _closed_form(rule, table)
         case "equivalence":
             return _equivalence(rule, table)
+        case "composite":
+            return _composite(rule, table)
         case _:
             raise ValueError(f"unknown judge kind {kind!r}")
 
@@ -184,6 +186,90 @@ def _equivalence(rule: Mapping[str, Any], table: Table) -> Judgement:
                 v = Verdict.INCONCLUSIVE
             checks.append(Check(f"{metric}: {a} − {b}", v, f"paired diff {ci}, margin ±{m}", ci))
     return _done("equivalence", checks)
+
+
+def _mean(table: Table, arm: str, metric: str) -> CI:
+    return bootstrap_ci(_values(table, arm, metric))
+
+
+def _gaps(table: Table, a: str, b: str, metric: str) -> dict[int, float]:
+    """Per-seed gap metric(a) − metric(b) over the seeds both arms share."""
+    return {s: float(table[a][s][metric]) - float(table[b][s][metric]) for s in sorted(table[a].keys() & table[b].keys())}
+
+
+def _check(spec: Mapping[str, Any], table: Table) -> Check:
+    """One pre-registered check of a ``composite`` judge."""
+    metric = spec["metric"]
+    match spec["type"]:
+        case "band":
+            ci = _mean(table, spec["arm"], metric)
+            if "pass_ge" in spec:
+                ok, bad = ci.mean >= spec["pass_ge"], ci.mean < spec.get("fail_lt", -np.inf)
+                rule = f"pass ≥ {spec['pass_ge']}" + (f", fail < {spec['fail_lt']}" if "fail_lt" in spec else "")
+            else:
+                ok, bad = ci.mean <= spec["pass_le"], ci.mean > spec.get("fail_gt", np.inf)
+                rule = f"pass ≤ {spec['pass_le']}" + (f", fail > {spec['fail_gt']}" if "fail_gt" in spec else "")
+            v = Verdict.PASS if ok else Verdict.FAIL if bad else Verdict(spec.get("otherwise", "INCONCLUSIVE"))
+            return Check(f"{spec['arm']}:{metric}", v, f"seed mean {ci} ({rule})", ci)
+        case "band_vs":
+            # metric(arm) ≤ factor × metric(ref_metric) of the same arm, seed means
+            ci = _mean(table, spec["arm"], metric)
+            ref = _mean(table, spec["arm"], spec["ref_metric"])
+            ok = ci.mean <= spec["factor"] * ref.mean
+            v = Verdict.PASS if ok else Verdict(spec.get("otherwise", "FAIL"))
+            return Check(f"{spec['arm']}:{metric} ≤ {spec['factor']}×{spec['ref_metric']}", v,
+                         f"{ci.mean:.4g} vs {spec['factor']}×{ref.mean:.4g}", ci)
+        case "ratio":
+            num, den = _mean(table, spec["num"], metric), _mean(table, spec["den"], metric)
+            r = num.mean / den.mean
+            v = Verdict.PASS if r <= spec["pass_le"] else Verdict(spec.get("otherwise", "FAIL"))
+            return Check(f"{metric}: {spec['num']} / {spec['den']}", v, f"ratio {r:.4g} (pass ≤ {spec['pass_le']})")
+        case "paired":
+            # a − b > 0 expected: CI above 0 → PASS, below 0 → FAIL, straddling → INCONCLUSIVE
+            ci = _paired(table, spec["a"], spec["b"], metric)
+            v = Verdict.PASS if ci.lo > 0 else Verdict.FAIL if ci.hi < 0 else Verdict.INCONCLUSIVE
+            return Check(f"{metric}: {spec['a']} − {spec['b']} > 0", v, f"paired diff {ci}", ci)
+        case "gap_monotone":
+            # gaps g_k = metric(single_k) − metric(affd_k) must increase along the list
+            gaps = [_gaps(table, a, b, metric) for a, b in spec["pairs"]]
+            worst = Verdict.PASS
+            details = []
+            for k, (g0, g1) in enumerate(zip(gaps, gaps[1:])):
+                seeds = sorted(g0.keys() & g1.keys())
+                ci = bootstrap_ci([g1[s] - g0[s] for s in seeds])
+                v = Verdict.FAIL if ci.hi < 0 else Verdict.INCONCLUSIVE if ci.mean < 0 else Verdict.PASS
+                worst = Verdict.worst([worst, v])
+                details.append(f"step {k}: {ci}")
+            means = [float(np.mean(list(g.values()))) for g in gaps]
+            return Check(f"{metric} gap increasing", worst, f"gaps {[round(m, 4) for m in means]}; " + "; ".join(details))
+        case "gap_ratio":
+            g, ref = _gaps(table, *spec["pair"], metric), _gaps(table, *spec["ref_pair"], metric)
+            r = abs(float(np.mean(list(g.values())))) / max(float(np.mean(list(ref.values()))), 1e-12)
+            v = Verdict.PASS if r <= spec["pass_le"] else Verdict.FAIL if r >= spec["fail_ge"] else Verdict.INCONCLUSIVE
+            return Check(f"{metric} |gap {spec['pair']}| / gap {spec['ref_pair']}", v,
+                         f"ratio {r:.4g} (pass ≤ {spec['pass_le']}, fail ≥ {spec['fail_ge']})")
+        case "argmin_in":
+            means = {a: _mean(table, a, metric).mean for a in spec["arms"]}
+            best = min(means, key=means.get)
+            v = Verdict.PASS if best in spec["allowed"] else Verdict(spec.get("otherwise", "FAIL"))
+            return Check(f"argmin {metric}", v, f"argmin = {best}; allowed {spec['allowed']}; "
+                                                f"means {{{', '.join(f'{a}: {m:.4g}' for a, m in means.items())}}}")
+        case "select_min_within":
+            # Gate G4: pick the arm with the smallest seed-mean metric, pass if it is within factor × ref_metric
+            means = {a: _mean(table, a, metric) for a in spec["arms"]}
+            best = min(means, key=lambda a: means[a].mean)
+            ref = _mean(table, best, spec["ref_metric"])
+            ok = means[best].mean <= spec["factor"] * ref.mean
+            return Check(f"selected {best}", Verdict.PASS if ok else Verdict.FAIL,
+                         f"{metric} {means[best]} vs {spec['factor']} × {spec['ref_metric']} {ref.mean:.4g}; "
+                         f"all: {{{', '.join(f'{a}: {m.mean:.4g}' for a, m in means.items())}}}", means[best])
+        case other:
+            raise ValueError(f"unknown check type {other!r}")
+
+
+def _composite(rule: Mapping[str, Any], table: Table) -> Judgement:
+    """Worst of a list of pre-registered checks (``checks:`` in experiment.yaml)."""
+    return _done("composite", [_check(c, table) for c in rule["checks"]])
 
 
 def seed_summary(table: Table, metrics: Sequence[str]) -> dict[str, dict[str, dict[str, float | int]]]:

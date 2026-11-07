@@ -72,3 +72,46 @@ def mode_coverage(mode_index: IntArray, n_modes: int, min_share: float = 0.05) -
 def memorization(samples: FloatArray, train: FloatArray, eps: float) -> float:
     """Share of samples within ``eps`` of their nearest training point."""
     return float((cdist(samples, train).min(axis=1) <= eps).mean())
+
+
+# ── standard generative-model metrics (reported, not judged) ────────────────
+
+
+def _kth_nn_radius(x: FloatArray, k: int) -> FloatArray:
+    """Distance from each point to its k-th nearest neighbour within ``x`` (self excluded)."""
+    d = cdist(x, x)
+    return np.sort(d, axis=1)[:, k]
+
+
+def precision_recall(real: FloatArray, fake: FloatArray, k: int = 3) -> tuple[float, float]:
+    """Improved precision/recall (Kynkäänniemi et al., 2019) with k-NN manifold estimates."""
+    r_real, r_fake = _kth_nn_radius(real, k), _kth_nn_radius(fake, k)
+    d = cdist(fake, real)
+    precision = float((d <= r_real[None, :]).any(axis=1).mean())
+    recall = float((d.T <= r_fake[None, :]).any(axis=1).mean())
+    return precision, recall
+
+
+def density_coverage(real: FloatArray, fake: FloatArray, k: int = 5) -> tuple[float, float]:
+    """Density and coverage (Naeem et al., 2020)."""
+    r_real = _kth_nn_radius(real, k)
+    inside = cdist(fake, real) <= r_real[None, :]
+    density = float(inside.sum() / (k * len(fake)))
+    coverage = float(inside.any(axis=0).mean())
+    return density, coverage
+
+
+def mmd_rbf(x: FloatArray, y: FloatArray) -> float:
+    """Unbiased squared MMD with an RBF kernel, bandwidth by the median heuristic (Gretton et al., 2012)."""
+    xy = np.concatenate([x, y])
+    d2 = cdist(xy, xy, "sqeuclidean")
+    h2 = np.median(d2[np.triu_indices_from(d2, 1)])
+    k = np.exp(-d2 / h2)
+    n, m = len(x), len(y)
+    kxx, kyy, kxy = k[:n, :n], k[n:, n:], k[:n, n:]
+    return float((kxx.sum() - n) / (n * (n - 1)) + (kyy.sum() - m) / (m * (m - 1)) - 2 * kxy.mean())
+
+
+def nearest_mode(samples: FloatArray, centres: FloatArray) -> IntArray:
+    """Index of the nearest true mode centre for each sample (mode coverage, plan §5.1)."""
+    return cdist(samples, centres).argmin(axis=1)
