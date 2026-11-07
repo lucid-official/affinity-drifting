@@ -1,0 +1,26 @@
+{
+  "level": "L0",
+  "rule": "16 of the 32 conditions, evenly spaced on ψ including both ends; quiver_condition = the probe condition nearest ψ = 0.5 (lower index on a tie)",
+  "conditions": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    17,
+    19,
+    21,
+    23,
+    25,
+    27,
+    29,
+    31
+  ],
+  "quiver_condition": 17,
+  "generator": "scripts/make_probe.py",
+  "seed": 20261107,
+  "created_utc": "2026-11-07T14:20:15+00:00"
+}
