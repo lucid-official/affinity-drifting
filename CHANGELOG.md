@@ -1,0 +1,35 @@
+# Changelog
+
+Code, config, directory-convention and rule changes on branch `affinity-drifting` (CLAUDE.md §8.5).
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment results live in `EXPERIMENTS.md`, not here.
+
+## [Unreleased]
+
+### Added
+
+- `affdrift` package (Python 3.14, `lucid-dl==3.16.4`), installed editable by `scripts/setup_env.sh`.
+- `core/drift.py`: `DriftLoss`, the Lucid release drifting loss split into overridable steps and bit-identical
+  to `lucid.models.generative.drifting._model._drift_loss` (loss and gradient); `RawDriftLoss` (release field
+  without per-τ normalisation, the L0 baseline, D4); `AffinityDrift(DriftLoss)` overriding `distances`, `scale`
+  and `goal` for AffD's caption-weighted Gaussian mean-shift field. Single positive and K1–K5 are options of it.
+- `core/kernels.py`, `core/bandwidth.py`: k_x (Gaussian / Laplace / none), caption weights with exact h → 0 and
+  h → ∞ limits, K2 neighbour shuffling, N_eff bisection for h_p.
+- `core/identities.py`: Lemma 1 autograd reference, Prop E closed form.
+- `data/particles.py` (L0 single bank, Gaussian pair, particle integrator with `lucid.compile` and eager
+  fallback), `data/toy2d.py` and `models/generator.py` (L1, not run yet), `data/shapes_unique.py` (TODO).
+- `config.py`: B0 ⊕ Level ⊕ common ⊕ arm resolution; Δ check against B0 and against the reference arm;
+  mandatory baseline arm `drifting` (D11).
+- `tracking/`: run directories, JSONL + wandb (offline by default) logging, `EXPERIMENTS.md` ledger.
+- `eval/`: metrics, paired bootstrap CIs, pre-registered judges, figure catalog with the plan's reading criteria,
+  blind figures with keys, observation sheets that survive regeneration.
+- `levels/level0.py`: runners `lemma1` (E0.1) and `particles` (E0.2–E0.6).
+- `scripts/`: `run.py`, `sweep.py`, `aggregate.py`, `make_figures.py`, `make_probe.py`, `setup_env.sh`.
+- `configs/base_B0.yaml`, `probe/probe_L0.json`, `probe/probe_L1.json`.
+- `CLAUDE.md` §7 (code rules) and §8 (records, logging and figure rules), rule §2.11 (baseline arm).
+- `docs/deviations.md` D1–D12.
+
+### Changed
+
+- `CLAUDE.md` §1: directory layout follows the experiment hierarchy (`experiments/<Level>/<ID>/runs/<arm>/seed<k>/`)
+  instead of `runs/`, `results/<ID>.md`, `configs/exp/<ID>.yaml` (D12).
+- `CLAUDE.md` §6: repository `affinity-drifting`, branch `affinity-drifting`, Lucid on Metal (D1, D12).

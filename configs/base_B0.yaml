@@ -1,0 +1,93 @@
+# Base config B0 — docs/plan.md §2.1.
+# Every experiment states only its Δ against this file (experiments/<Level>/<ID>/experiment.yaml).
+# Changing a value here changes every experiment: record it in CHANGELOG.md and docs/deviations.md.
+
+field: affd                   # affd | release — the baseline arm `drifting` is the original Drifting (Lucid release)
+release:
+  temperatures: [0.02, 0.05, 0.2]   # the release's Laplace temperatures (baseline arm only)
+
+phi: identity                 # L1: identity. L2+: an encoder that passed Gate G0
+psi: oracle                   # L1: ψ(c) = c. L2+: siglip2_text_pooled
+
+x_kernel:
+  kind: gaussian              # gaussian | laplace | none (K1)
+  sigma_rule: half_median_pairwise   # σ = 0.5 × median pairwise distance of the positive bank (D5), frozen in sigma.json
+
+h_p:
+  rule: n_eff                 # n_eff | zero (single positive) | inf (K5)
+  n_star: 16
+  scale: 1.0                  # multiplier on the rule's h_p
+  neighbors: semantic         # semantic | random (K2)
+
+h_q:
+  ratio: 0.0                  # h_q = ratio × h_p. 0 → repulsion from the condition's own samples only
+  exclude_self: true          # leave-one-out repulsion (CLAUDE.md §4; the release masks self too)
+
+gen:
+  M: 8                        # generated samples (or particles) per condition
+
+positives:
+  source: bank                # bank | oracle (K4)
+  noise: none                 # none | matched (K3)
+
+normalization:
+  feature: frozen             # scale computed once and frozen in sigma.json (D3)
+  drift: true                 # each V term scaled to E‖V‖²/C = 1 per batch
+
+softmax: separate             # separate (B0) | joint (E0.6)
+
+negative:
+  type: self                  # self | counterfactual
+  lambda: 0.0
+
+levels:
+  # ── Level 0: non-parametric particles (plan §4) ─────────────────────────
+  L0:
+    normalization:
+      drift: false            # D4: L0 integrates the raw field x ← x + ηV
+    h_q:
+      exclude_self: false     # D6: fixed particles need the full empirical KDE (approved 2026-11-07)
+    gen:
+      M: 256
+    level0:
+      problem: single_bank    # single_bank | gaussian_pair (E0.5)
+      K: 32                   # conditions, ψ_k evenly spaced on [0, 1]
+      data_seed: 0            # y_k are fixed across seeds; seeds vary particle init
+      y_box: 1.0              # y_k ~ U([-y_box, y_box]²) with rejection
+      y_min_sep: 0.15
+      init_box: 1.5           # particles start U([-init_box, init_box]²)
+      eta: 0.5
+      max_steps: 50000
+      tol: 1.0e-6             # stop when RMS‖V‖ (raw) < tol ...
+      stable_window: 1000     # ... and stays below it for this many steps
+      check_every: 50
+      diverge_bound: 1.0e+4
+      compile: true           # lucid.compile the step if it matches eager
+      gaussian_pair:          # E0.5 only
+        mu1: [1.0, 0.0]
+        mu2: [-1.0, 0.0]
+        s: 0.5
+        n_pos: 2048
+      lemma1:                 # E0.1 only
+        groups: 4
+        queries: 64
+        positives: 48
+        dim: 2
+        sigmas: [0.1, 0.5, 2.0]
+
+  # ── Level 1: low-dimensional toy (plan §5). Training values are set at G4 ─
+  L1:
+    level1:
+      n_train: 10000
+      n_heldout: 256
+      eval_samples: 512
+      delta: 0.0625           # c quantisation (1/16)
+      lipschitz: null         # spectral-norm Lipschitz L of the c path (E1.4b)
+      mode_std: 0.1
+      mix_beta: 2.0           # mixture logits β (c₂ − ½)(j − 1), j = 0, 1, 2
+    train:
+      optimizer: adam
+      lr: null                # fixed once at Gate G4 (CLAUDE.md §2.8)
+      steps: null
+      batch_conditions: null
+      ema: null

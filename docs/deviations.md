@@ -1,0 +1,19 @@
+# Deviations from docs/plan.md and CLAUDE.md
+
+Every way this repository departs from the plan, or fills a gap the plan leaves open, gets a D-number here
+(CLAUDE.md §8.6). Code and config comments point here by D-number. No experiment runs on an unapproved entry.
+
+| D | 날짜 | 무엇을 | 왜 | 결과에 미칠 영향 | 승인 |
+| --- | --- | --- | --- | --- | --- |
+| D1 | 2026-11-07 | PyTorch 대신 `lucid-dl==3.16.4`. device는 cuda > mps > cpu 대신 `metal` > `cpu` | 사용자 지시. Lucid 3.16.4에 Drifting(arXiv 2602.04770) release 구현이 있고, Lucid는 `metal`/`cpu`만 받는다 | 없음(수치 경로는 테스트로 release와 비트 단위 일치 확인). L3+ CUDA 서버는 Lucid로 못 돌린다: L3 전에 따로 결정 | 사용자 2026-11-07 |
+| D2 | 2026-11-07 | E0.1의 판정 수치는 CPU float64에서 잰다. Metal float32 오차는 참고로 보고 | Metal은 float64 미지원. float32로는 1e-6 기준이 반올림 오차와 같은 크기 | E0.1 판정이 대수적 동일성만 보게 된다 | 사용자 2026-11-07 (항목 3) |
+| D3 | 2026-11-07 | feature normalization의 스케일을 실험 시작 때 한 번 계산해 `sigma.json`에 고정 | release는 거리 스케일을 배치마다 다시 계산한다. 이는 arm마다·스텝마다 σ가 바뀌는 것과 같아 CLAUDE.md §2.3과 충돌 | AffD arm의 kernel 폭이 학습 중 고정된다. baseline arm `drifting`은 release 그대로(배치별 스케일) | 사용자 2026-11-07 (항목 5) |
+| D4 | 2026-11-07 | Level 0에서는 drift normalization을 끄고 정규화 전 V로 x ← x + ηV를 적분한다. baseline arm도 같다 | 정규화하면 ‖V‖ < 1e-6 정지 기준이 의미를 잃고, 고정점 검증(Lemma 1, Prop A/C/E)은 정규화 전 V의 영점에 대한 것이다. 정규화는 V의 영점을 바꾸지 않는다 | L0 수렴 속도가 arm마다 다르다(η는 공유). L1+는 B0대로 켠다 | 사용자 2026-11-07 (항목 6) |
+| D5 | 2026-11-07 | σ 규칙: positive bank의 쌍거리 median × 0.5 | plan은 "σ는 초기화 때 한 번 정하고 고정"만 말하고 값을 정하지 않는다. 작은 σ는 어떤 배정이든 ‖V‖≈0으로 멈추게 만들고, 큰 σ는 수렴을 늦춘다. 결과를 보기 전에 규칙을 정해 둔다 | 모든 L0 판정이 이 σ에 조건부다 | 사용자 2026-11-07 (항목 9) |
+| D6 | 2026-11-07 | Level 0 particle 계에서는 repulsion KDE에 자기 자신을 포함한다(`h_q.exclude_self: false`). L1+는 B0대로 제외(leave-one-out) | 개발 중 장난감 문제(실험 설정 아님)에서, 고정 particle 계에 자기 제외 repulsion을 쓰면 평형이 이론의 q̂ = p̂에서 벗어났다. Gaussian positive 분산 0.09, σ = 0.4일 때 평형 분산이 M=64에서 0.184, M=256에서 0.121, M=1024에서 0.0996이었고, 자기 포함이면 0.0887, 0.0899였다. 점 질량 positive에서도 같은 경향(M=64 TV 0.019 vs 0.003). i.i.d. 생성기 샘플에서는 leave-one-out이 맞는 추정이지만, 서로 밀어내는 고정 particle은 각자 주변에 빈 구멍을 만들어 자기 제외 KDE가 밀도를 과소추정한다 | L0의 AffD 평형이 plan의 이론값(경험 KDE 기준)과 같은 대상이 된다. baseline arm `drifting`은 release 그대로 자기 제외 | 사용자 2026-11-07 |
+| D7 | 2026-11-07 | Gate G2의 [0.5, 2] 항별 비 검사로 L0 run을 invalid 처리하지 않는다(로깅만) | L0에는 학습률이 없고, 평형에서 V⁺ ≈ V⁻이며 E0.5는 λ가 negative 항의 크기를 정한다 | L0 run은 G2 비 때문에 빠지지 않는다. L1부터 적용 | 사용자 2026-11-07 (항목 6) |
+| D8 | 2026-11-07 | B0 kernel은 plan대로 Gaussian, σ 하나, 행 방향 softmax. release의 Laplace·다중 τ·행×열 이중 softmax는 baseline `DriftLoss`에만 쓴다. E0.6의 "합친 softmax"는 [생성, positive]를 한 번에 행 softmax하고 Alg. 2 교차 가중을 쓴 것으로 정의(열 softmax 제외) | Lemma 1과 Prop A/C/E는 Gaussian과 행 정규화에서만 성립한다 | E0.6 고정점이 같다는 예측은 대수적으로 V_joint = Z⁺Z⁻(V⁺ − V⁻)라서 기대되는 결과다. 수렴 경로는 Z⁺Z⁻ ≤ 1/4배로 느려진다 | 사용자 2026-11-07 (항목 4, 7) |
+| D9 | 2026-11-07 | Level 1 혼합 비율을 softmax_j β(c₂ − ½)(j − 1), β = 2로 둔다 | plan은 "mixture 비율은 c2에 따라 softmax로 변화"까지만 말한다. probe set의 hard 조건(희귀 mode)을 정하려면 형태가 필요했다 | L1 지표(특히 mode coverage)가 β에 의존한다 | **L1 전에 확인 필요** |
+| D10 | 2026-11-07 | L0 운영 정의: y_k ~ U([−1,1]²)(최소 간격 0.15, 고정 시드), particle 초기값 U([−1.5,1.5]²), η = 0.5, 스텝 상한 50k, 정지 RMS‖V‖ < 1e-6이 1000스텝 유지. 판정 세부(E0.2 memorization ≥ 0.95, E0.3 seed 평균 TV, E0.4 paired CI 단조성, E0.5 M = 2048, E0.6 동등 범위 ±0.02)와 E0.2의 h_p × {0.5, 2} 보조 arm | plan이 값을 정하지 않은 부분이다. 결과를 보기 전에 정한다 | 각 실험 `prereg.md`에 그대로 적고 판정은 이 값으로만 한다 | 사용자 2026-11-07 (항목 8–15) |
+| D11 | 2026-11-07 | 모든 실험에 원 논문 Drifting baseline arm `drifting`(Lucid release, class-conditional positive)을 넣는다. 판정 대상은 아니다 | 사용자 지시: 아무리 작은 toy라도 원 Drifting을 대조군으로 | plan에 없는 arm이 하나씩 늘어난다. 판정 규칙은 AffD arm만 본다 | 사용자 2026-11-07 |
+| D12 | 2026-11-07 | 저장소 `affinity-drifting`(plan의 `affine-drifting`은 오타로 판단), 브랜치 `affinity-drifting`(Part B의 `chan/affd-exp` 대신), 디렉터리를 실험 계층으로 재설계(`results/<ID>.md` → `experiments/<Level>/<ID>/report.md` 등) | 사용자 지시 | 없음 | 사용자 2026-11-07 |
