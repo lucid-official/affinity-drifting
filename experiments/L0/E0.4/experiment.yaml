@@ -1,0 +1,24 @@
+id: E0.4
+level: L0
+claim: Prop A–C
+title: h_q interpolates monotonically from NW mixture to memorisation
+runner: particles
+seeds: [0, 1, 2, 3, 4]
+reference_arm: hq_0
+allowed_delta: [h_q.ratio, field]
+arms:
+  hq_0: {}
+  hq_0.25: {set: {h_q.ratio: 0.25}}
+  hq_0.5: {set: {h_q.ratio: 0.5}}
+  hq_1: {set: {h_q.ratio: 1.0}}
+  drifting: {set: {field: release}}          # baseline (D11)
+judge:
+  kind: monotone
+  order: [hq_0, hq_0.25, hq_0.5, hq_1]
+  metrics:
+    self_mean: increasing                    # toward memorisation
+    tv_mean: increasing                      # away from the NW mixture w̃
+report_metrics: [tv_mean, self_mean, own_dist_mean, steps, final_rms_v, wall_time_s]
+figures:
+  FC.1: {arms: [drifting, hq_0, hq_0.25, hq_0.5, hq_1]}
+  F0.3: {arms: [drifting, hq_0, hq_0.25, hq_0.5, hq_1]}
