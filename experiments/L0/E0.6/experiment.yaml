@@ -1,0 +1,23 @@
+id: E0.6
+level: L0
+claim: 단서 1
+title: joint vs separate softmax share the fixed point
+runner: particles
+seeds: [0, 1, 2, 3, 4]
+reference_arm: sep_hq0
+allowed_delta: [softmax, h_q.ratio, field]
+arms:
+  sep_hq0: {}                                          # = E0.3 setting (B0)
+  joint_hq0: {set: {softmax: joint}}
+  sep_sym: {set: {h_q.ratio: 1.0}}                     # = E0.2 setting
+  joint_sym: {set: {softmax: joint, h_q.ratio: 1.0}, ref: sep_sym}
+  drifting: {set: {field: release}}                    # baseline (D11)
+judge:
+  kind: equivalence
+  pairs: [[joint_hq0, sep_hq0], [joint_sym, sep_sym]]
+  metrics: [tv_mean, self_mean]
+  margin: 0.02
+report_metrics: [tv_mean, self_mean, own_dist_mean, steps, final_rms_v, wall_time_s]
+figures:
+  FC.1: {arms: [drifting, sep_hq0, joint_hq0, sep_sym, joint_sym]}
+  F0.3: {arms: [drifting, sep_hq0, joint_hq0, sep_sym, joint_sym]}
