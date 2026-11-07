@@ -15,12 +15,13 @@ How to read this file
 <!-- index:start -->
 | Level | ID | Claim | Title | Status | Verdict | Report |
 | --- | --- | --- | --- | --- | --- | --- |
-| L0 | [E0.1](experiments/L0/E0.1/) | Lemma 1 | V = σ²∇log(p̂/q̂) for a Gaussian kernel | pre-registered | — | — |
-| L0 | [E0.2](experiments/L0/E0.2/) | Prop A | symmetric h_q = h_p memorises | pre-registered | — | — |
-| L0 | [E0.3](experiments/L0/E0.3/) | Prop C | h_q = 0 gives the NW mixture w̃ | pre-registered | — | — |
-| L0 | [E0.4](experiments/L0/E0.4/) | Prop A–C | h_q interpolates monotonically from NW mixture to memorisation | pre-registered | — | — |
-| L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | pre-registered | — | — |
-| L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | pre-registered | — | — |
+| L0 | [E0.1](experiments/L0/E0.1/) | Lemma 1 | V = σ²∇log(p̂/q̂) for a Gaussian kernel | aggregated | PASS | [report](experiments/L0/E0.1/report.md) |
+| L0 | [E0.2](experiments/L0/E0.2/) | Prop A | symmetric h_q = h_p memorises | running | — | — |
+| L0 | [E0.3](experiments/L0/E0.3/) | Prop C | h_q = 0 gives the NW mixture w̃ | running | — | — |
+| L0 | [E0.4](experiments/L0/E0.4/) | Prop A–C | h_q interpolates monotonically from NW mixture to memorisation | running | — | — |
+| L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | running | — | — |
+| L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | pre-registered | — | — |
+| L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | running | — | — |
 <!-- index:end -->
 
 ## Log
@@ -122,3 +123,42 @@ How to read this file
   experiments) the baseline is stable.
 - Decisions (user): E0.5 is judged exactly as pre-registered; add diagnostic E0.5b with a Gaussian-closure field (D13);
   keep the raw baseline and report its divergence (D14).
+
+### 2026-11-07 14:49 UTC · E0.5b · prereg
+
+- commit `352b53bed9`
+- diagnostic (D13); `prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:49 UTC · E0.5b · smoke
+
+- commit `352b53bed9`
+- arms ['lam_0', 'lam_0.25', 'lam_0.5', 'lam_0.75', 'lam_0.9', 'lam_1.1', 'drifting'] × seeds [0]
+- 7 complete, 0 skipped, 0 failed
+- wall time 20 s
+
+### 2026-11-07 14:50 UTC · E0.1 · sweep
+
+- commit `352b53bed9`
+- arms ['check', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 10 complete, 0 skipped, 0 failed
+- wall time 14 s
+
+### 2026-11-07 · L0 · probe note (hand entry)
+
+- `probe/probe_L0.json` records `quiver_condition = 17`. Its rule says "the probe condition nearest ψ = 0.5, lower index
+  on a tie"; conditions 14 (ψ = 14/31) and 17 (ψ = 17/31) are exactly tied and float rounding picked 17. The committed
+  file is authoritative (probe sets are immutable), so F0.5 uses condition 17.
+
+### 2026-11-07 15:04 UTC · E0.1 · aggregate
+
+- commit `352b53bed9`
+- verdict **PASS** (max_below)
+- report: `experiments/L0/E0.1/report.md`
+
+### 2026-11-08 00:11 KST · L0 · wandb telemetry (hand entry)
+
+- During the L0 sweeps a log line showed wandb's OpenTelemetry usage telemetry trying to export to api.wandb.ai
+  (HTTP 503, retried) although runs were in `offline` mode. Experiment metrics do not go through that path; they stay
+  in `log.jsonl` and the local `wandb/` directory.
+- Fix: `WandbSink` now disables wandb's telemetry proxy and error reporting outside `online` mode (test added).
+  All sweeps were stopped and relaunched at 00:11 KST; complete runs were kept, each in-flight run restarts from scratch.

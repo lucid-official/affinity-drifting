@@ -2,6 +2,8 @@
 
 wandb runs ``offline`` by default (``AFFD_WANDB`` = ``offline`` | ``online`` |
 ``disabled``): nothing leaves the machine until ``wandb sync`` is run by hand.
+wandb's own usage telemetry and error reporting are switched off outside
+``online`` mode (it tried to reach api.wandb.ai even when offline).
 A wandb failure never fails a run — the JSONL file is the source of truth.
 """
 
@@ -60,7 +62,14 @@ class WandbSink:
 
     def __init__(self, *, name: str, group: str, job_type: str, tags: list[str], config: Mapping[str, Any],
                  mode: WandbMode) -> None:
+        # wandb's own usage telemetry (OpenTelemetry → api.wandb.ai) is not ours to send: keep it off unless
+        # the user chose online mode, and turn off its error reporting too.
+        os.environ.setdefault("WANDB_ERROR_REPORTING", "false")
         import wandb
+        from wandb.analytics.opentelemetry import opentelemetry_proxy
+
+        if mode != "online":
+            opentelemetry_proxy.disable()
 
         self._run = wandb.init(
             project=WANDB_PROJECT, name=name, group=group, job_type=job_type, tags=tags,

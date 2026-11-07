@@ -40,3 +40,14 @@ def test_complete_run_is_not_overwritten(tmp_path: Path) -> None:
         run.finish({})
     with pytest.raises(FileExistsError), Run(exp, "ref", 0, use_wandb=False):
         pass
+
+
+def test_offline_wandb_disables_its_telemetry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from wandb.analytics.opentelemetry import opentelemetry_proxy
+
+    from affdrift.tracking.logger import WandbSink
+
+    monkeypatch.chdir(tmp_path)
+    sink = WandbSink(name="t", group="g", job_type="j", tags=[], config={}, mode="offline")
+    sink.close()
+    assert opentelemetry_proxy._disabled.is_set()
