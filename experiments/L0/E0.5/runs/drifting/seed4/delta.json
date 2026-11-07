@@ -1,0 +1,31 @@
+{
+  "arm": "drifting",
+  "reference_arm": "lam_0",
+  "knobs_vs_reference": [
+    "field"
+  ],
+  "vs_B0": {
+    "field": {
+      "B0": "affd",
+      "arm": "release"
+    },
+    "gen.M": {
+      "B0": 256,
+      "arm": 2048
+    },
+    "level0.problem": {
+      "B0": "single_bank",
+      "arm": "gaussian_pair"
+    },
+    "negative.type": {
+      "B0": "self",
+      "arm": "counterfactual"
+    }
+  },
+  "vs_reference": {
+    "field": {
+      "reference": "affd",
+      "arm": "release"
+    }
+  }
+}

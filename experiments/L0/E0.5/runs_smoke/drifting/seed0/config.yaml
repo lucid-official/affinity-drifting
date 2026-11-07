@@ -1,0 +1,63 @@
+field: release
+release:
+  temperatures:
+  - 0.02
+  - 0.05
+  - 0.2
+phi: identity
+psi: oracle
+x_kernel:
+  kind: gaussian
+  sigma_rule: half_median_pairwise
+h_p:
+  rule: n_eff
+  n_star: 16
+  scale: 1.0
+  neighbors: semantic
+h_q:
+  ratio: 0.0
+  exclude_self: false
+gen:
+  M: 2048
+positives:
+  source: bank
+  noise: none
+normalization:
+  feature: frozen
+  drift: false
+softmax: separate
+negative:
+  type: counterfactual
+  lambda: 0.0
+level0:
+  problem: gaussian_pair
+  K: 32
+  data_seed: 0
+  y_box: 1.0
+  y_min_sep: 0.15
+  init_box: 1.5
+  eta: 0.5
+  max_steps: 50000
+  tol: 1.0e-06
+  stable_window: 1000
+  check_every: 50
+  diverge_bound: 10000.0
+  compile: true
+  gaussian_pair:
+    mu1:
+    - 1.0
+    - 0.0
+    mu2:
+    - -1.0
+    - 0.0
+    s: 0.5
+    n_pos: 2048
+  lemma1:
+    groups: 4
+    queries: 64
+    positives: 48
+    dim: 2
+    sigmas:
+    - 0.1
+    - 0.5
+    - 2.0

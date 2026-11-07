@@ -1,0 +1,40 @@
+{
+  "sigma": 0.6983749393062032,
+  "steps": 2000,
+  "stable": false,
+  "diverged": false,
+  "field": "affd",
+  "converged_at": null,
+  "final_rms_v": 1.6057403087615967,
+  "final_rms_v_plus": 1513.1707763671875,
+  "final_rms_v_minus": 0.49740248918533325,
+  "final_rms_v_neg": 3029.53076171875,
+  "compiled": true,
+  "wall_time_s": 3.0688157499826048,
+  "notes": [
+    "compiled step matches eager (max diff 1.7e-06)"
+  ],
+  "lambda": 0.5,
+  "mean_c0": [
+    1506.6637290716171,
+    386.87190045416355
+  ],
+  "var_c0": 0.49419724105742535,
+  "pred_mean_c0": [
+    3.0,
+    0.0
+  ],
+  "pred_particle_var_c0": 0.6188637779254715,
+  "mean_c1": [
+    -1506.6642301678658,
+    -387.0969988554716
+  ],
+  "var_c1": 0.4953997714624972,
+  "pred_mean_c1": [
+    -3.0,
+    0.0
+  ],
+  "pred_particle_var_c1": 0.6188637779254715,
+  "rel_err_mean": 517.5637592079553,
+  "rel_err_var": 0.11265815397505625
+}
