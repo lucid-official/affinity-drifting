@@ -565,3 +565,12 @@ How to read this file
 - verdict **FAIL** (composite)
 - FAIL: selected k5_lr3e-4 — w2_marginal_heldout 0.5781 [0.5349, 0.6218] vs 2.0 × w2_marginal_datadata_heldout 0.08763; all: {k5_lr3e-4: 0.5781, k5_lr1e-3: 0.6387, k5_lr3e-3: 0.6764}
 - report: `experiments/L1/G4/report.md`
+
+### 2026-11-08 07:45 KST · G4 · FAIL, L1 stopped (hand entry)
+
+- G4 aggregated with the pre-registered rule: FAIL (selected lr 3e-4, marginal W2 0.578 [0.535, 0.622] vs ≤ 0.175).
+  Per plan §3 and the overnight instruction, no E1.x run was started.
+- Exploratory diagnosis (`experiments/L1/G4/diagnosis.md`, seed 0, unconditional only): the operational definition
+  repelled within each condition's 8 samples instead of across the batch; full-batch repulsion gives 0.228, plus a
+  multi-scale kernel 0.175 (at the threshold). Proposed D20 (multi-scale kernel), D21 (G4 redefined as full-batch
+  unconditional drifting, re-registered), D22 (keep M = 8 or move to 64 samples × 8 conditions) for the user.
