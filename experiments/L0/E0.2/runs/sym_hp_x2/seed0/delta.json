@@ -1,0 +1,23 @@
+{
+  "arm": "sym_hp_x2",
+  "reference_arm": "sym",
+  "knobs_vs_reference": [
+    "h_p.scale"
+  ],
+  "vs_B0": {
+    "h_p.scale": {
+      "B0": 1.0,
+      "arm": 2.0
+    },
+    "h_q.ratio": {
+      "B0": 0.0,
+      "arm": 1.0
+    }
+  },
+  "vs_reference": {
+    "h_p.scale": {
+      "reference": 1.0,
+      "arm": 2.0
+    }
+  }
+}
