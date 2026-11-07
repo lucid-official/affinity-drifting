@@ -1,0 +1,31 @@
+{
+ "real": {
+  "clip_score": 0.26254498958587646,
+  "clip_score_shuffled": 0.16973689198493958,
+  "r_precision": 0.654,
+  "fd": 0.02581419155405937
+ },
+ "retrieval": {
+  "clip_score": 0.24234695732593536,
+  "r_precision": 0.425,
+  "fd": 0.025568960037919836,
+  "layout_corr": 0.22002768516540527,
+  "layout_r_precision": 0.025
+ },
+ "alpha=1.0": {
+  "clip_score": 0.16882476210594177,
+  "r_precision": 0.013,
+  "fd": 0.4616384789016333,
+  "diversity": 0.07009690999984741,
+  "layout_corr": 0.1717974990606308,
+  "layout_r_precision": 0.016
+ },
+ "alpha=2.0": {
+  "clip_score": 0.16842952370643616,
+  "r_precision": 0.013,
+  "fd": 0.46250234211731756,
+  "diversity": 0.07017678022384644,
+  "layout_corr": 0.17854821681976318,
+  "layout_r_precision": 0.017
+ }
+}

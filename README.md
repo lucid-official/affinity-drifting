@@ -8,7 +8,7 @@ CLIP 텍스트 조건을 [Generative Modeling via Drifting](https://arxiv.org/ab
 k((x,t),(y,s)) = exp(-‖φ(x)-φ(y)‖/τ_x - ‖e(t)-e(s)‖/τ_t)
 ```
 
-**이 구현의 검증 범위는 합성 데이터까지입니다.** 실제 이미지(예: COCO)로는 아직 돌려 보지 않았고, FID도 재지 않았습니다.
+**검증 범위는 합성 데이터 `shapes`와 Flickr30k 32×32입니다.** Flickr 결과는 [results/report.md](results/report.md)에 있습니다. FID는 재지 않았고, CLIP 임베딩 공간의 FD만 쟀습니다.
 
 ## 설치
 

@@ -38,6 +38,7 @@ from clipdrift.sampling import (
     BlindSource,
     Groups,
     KnnSource,
+    PairSource,
     PseudoClassSource,
     TextKernel,
     merge_cfg,
@@ -51,7 +52,7 @@ from clipdrift.text_bank import TextBank, build_text_bank
 class TrainConfig:
     data: str = "shapes"
     dataset_size: int = 12000
-    mode: str = "joint"  # blind | pseudo | joint
+    mode: str = "joint"  # blind | pair | pseudo | joint
     features: str = "pixel,mae"  # pixel, mae, clip의 조합
     pixel_weight: float = 1.0  # 픽셀 loss 배율. φ의 이미지 공간 기울기가 픽셀 항의 수백 배라 균형을 맞출 때 쓴다.
     mae_checkpoint: str = "checkpoints/mae_shapes.lucid"
@@ -127,6 +128,8 @@ def extract_all(extractors, images: Tensor) -> dict[str, Tensor]:
 def make_source(config: TrainConfig, keys: np.ndarray, rng: np.random.Generator):
     if config.mode == "blind":
         return BlindSource(len(keys))
+    if config.mode == "pair":
+        return PairSource(len(keys))
     if config.mode == "pseudo":
         return PseudoClassSource(keys, config.num_clusters, config.seed)
     if config.mode == "joint":
