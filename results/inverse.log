@@ -1,0 +1,199 @@
+{
+ "num_candidates": 24,
+ "inversion": [
+  {
+   "target": "red circle / black",
+   "before": {
+    "color": 0.25,
+    "shape": 0.453125,
+    "background": 0.1875,
+    "joint": 0.03125,
+    "center_std": 0.14037803034549112,
+    "coherence": 0.9503100038158747,
+    "iou": 0.8020962124824118,
+    "area": 0.2498931884765625
+   },
+   "after": {
+    "color": 1.0,
+    "shape": 0.390625,
+    "background": 1.0,
+    "joint": 0.390625,
+    "center_std": 0.13535117544878295,
+    "coherence": 0.9973931824982214,
+    "iou": 0.8143562349394351,
+    "area": 0.160400390625
+   }
+  },
+  {
+   "target": "red triangle / black",
+   "before": {
+    "color": 0.15625,
+    "shape": 0.09375,
+    "background": 0.140625,
+    "joint": 0.0,
+    "center_std": 0.1412741251632577,
+    "coherence": 0.960771764033183,
+    "iou": 0.7823369456121172,
+    "area": 0.237518310546875
+   },
+   "after": {
+    "color": 1.0,
+    "shape": 0.234375,
+    "background": 1.0,
+    "joint": 0.234375,
+    "center_std": 0.13273973246512816,
+    "coherence": 0.9909077668011369,
+    "iou": 0.7530514558030525,
+    "area": 0.105133056640625
+   }
+  },
+  {
+   "target": "green square / black",
+   "before": {
+    "color": 0.15625,
+    "shape": 0.578125,
+    "background": 0.25,
+    "joint": 0.0625,
+    "center_std": 0.13921438845012285,
+    "coherence": 0.9524831229197154,
+    "iou": 0.7915236151856013,
+    "area": 0.2375335693359375
+   },
+   "after": {
+    "color": 1.0,
+    "shape": 0.53125,
+    "background": 1.0,
+    "joint": 0.53125,
+    "center_std": 0.13286330437042954,
+    "coherence": 0.9926236305637595,
+    "iou": 0.8152699520264965,
+    "area": 0.1843719482421875
+   }
+  },
+  {
+   "target": "blue square / black",
+   "before": {
+    "color": 0.03125,
+    "shape": 0.515625,
+    "background": 0.203125,
+    "joint": 0.0,
+    "center_std": 0.13621008653349687,
+    "coherence": 0.9500907523480142,
+    "iou": 0.7884773975003723,
+    "area": 0.2603607177734375
+   },
+   "after": {
+    "color": 1.0,
+    "shape": 0.65625,
+    "background": 1.0,
+    "joint": 0.65625,
+    "center_std": 0.13184826184992748,
+    "coherence": 0.9854360014542008,
+    "iou": 0.7954833150435059,
+    "area": 0.2016143798828125
+   }
+  },
+  {
+   "target": "yellow circle / black",
+   "before": {
+    "color": 0.46875,
+    "shape": 0.421875,
+    "background": 0.140625,
+    "joint": 0.03125,
+    "center_std": 0.14478367428776334,
+    "coherence": 0.9483908675616907,
+    "iou": 0.7760618137018269,
+    "area": 0.2263641357421875
+   },
+   "after": {
+    "color": 1.0,
+    "shape": 0.421875,
+    "background": 1.0,
+    "joint": 0.421875,
+    "center_std": 0.14415718185036916,
+    "coherence": 0.9947863539830336,
+    "iou": 0.8005193457913051,
+    "area": 0.1753692626953125
+   }
+  },
+  {
+   "target": "blue circle / black",
+   "before": {
+    "color": 0.03125,
+    "shape": 0.46875,
+    "background": 0.140625,
+    "joint": 0.0,
+    "center_std": 0.13640506734521798,
+    "coherence": 0.9487209262067814,
+    "iou": 0.7876253452263494,
+    "area": 0.2338714599609375
+   },
+   "after": {
+    "color": 1.0,
+    "shape": 0.453125,
+    "background": 1.0,
+    "joint": 0.453125,
+    "center_std": 0.14859522484568988,
+    "coherence": 0.9946694039515376,
+    "iou": 0.7906800774339919,
+    "area": 0.1537933349609375
+   }
+  }
+ ],
+ "ranking": {
+  "seen": {
+   "alignment": {
+    "top1": 1.0,
+    "top3": 1.0,
+    "mean_rank": 0.0
+   },
+   "alignment_no_pmi": {
+    "top1": 0.65,
+    "top3": 1.0,
+    "mean_rank": 0.5
+   },
+   "classification": {
+    "top1": 0.65,
+    "top3": 1.0,
+    "mean_rank": 0.5
+   },
+   "drift": {
+    "top1": 0.6,
+    "top3": 0.9,
+    "mean_rank": 1.1
+   },
+   "energy": {
+    "top1": 0.95,
+    "top3": 1.0,
+    "mean_rank": 0.05
+   }
+  },
+  "held_out": {
+   "alignment": {
+    "top1": 1.0,
+    "top3": 1.0,
+    "mean_rank": 0.0
+   },
+   "alignment_no_pmi": {
+    "top1": 1.0,
+    "top3": 1.0,
+    "mean_rank": 0.0
+   },
+   "classification": {
+    "top1": 1.0,
+    "top3": 1.0,
+    "mean_rank": 0.0
+   },
+   "drift": {
+    "top1": 1.0,
+    "top3": 1.0,
+    "mean_rank": 0.0
+   },
+   "energy": {
+    "top1": 1.0,
+    "top3": 1.0,
+    "mean_rank": 0.0
+   }
+  }
+ }
+}

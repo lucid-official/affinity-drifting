@@ -4,7 +4,17 @@ import lucid
 import numpy as np
 import pytest
 
-from clipdrift.data import TEMPLATES, classify_shapes, make_shapes, render_shape
+from scipy import ndimage
+
+from clipdrift.data import (
+    COLORS,
+    SHAPES,
+    TEMPLATES,
+    classify_shapes,
+    make_shapes,
+    render_shape,
+    shape_mask,
+)
 from clipdrift.drift import DriftKernel, cfg_log_weights, feature_drift_loss, normalized_drift
 from clipdrift.features import map_vectors, pixel_features, subsample_locations
 from clipdrift.generator import GeneratorConfig, TextConditionedGenerator
@@ -227,6 +237,45 @@ def test_shapes_dataset_and_rule_classifier():
     pairs = {(a["color"], a["shape"]) for a in dataset.attributes}
     assert ("yellow", "triangle") not in pairs and ("blue", "circle") not in pairs
     assert len(dataset.captions) > len(TEMPLATES)
+
+
+def test_classifier_tolerates_rough_edges():
+    """모서리가 깎이고 경계가 지저분해도 도형을 맞혀야 한다. 생성 이미지가 이런 모습이다."""
+    size = 32
+    grid = (np.arange(size) + 0.5) / size
+    xx, yy = np.meshgrid(grid, grid)
+    rng = np.random.default_rng(0)
+    rough = []
+    labels = []
+    for index in range(60):
+        shape = SHAPES[index % 3]
+        radius = rng.uniform(0.2, 0.28)
+        cx, cy = rng.uniform(0.35, 0.65, size=2)
+        mask = shape_mask(shape, cx, cy, radius, xx, yy)
+        # 경계 픽셀 일부를 뒤집어 거칠게 만든다.
+        edge = ndimage.binary_dilation(mask) & ~ndimage.binary_erosion(mask)
+        mask = np.where(edge & (rng.random(mask.shape) < 0.25), ~mask, mask)
+        image = np.where(mask[None], np.array(COLORS["red"])[:, None, None], 0.05)
+        rough.append(image * 2.0 - 1.0)
+        labels.append(shape)
+    judged = classify_shapes(np.stack(rough).astype(np.float32))
+    assert np.mean([a == b for a, b in zip(judged["shape"], labels)]) > 0.9
+
+
+def test_classifier_judges_outline_not_area():
+    """면적이 같은 도형끼리도 윤곽으로 구분해야 한다."""
+    size = 32
+    grid = (np.arange(size) + 0.5) / size
+    xx, yy = np.meshgrid(grid, grid)
+    target_area = 0.16
+    images, labels = [], []
+    for shape, factor in (("circle", np.pi), ("square", 4.0), ("triangle", 2.0)):
+        mask = shape_mask(shape, 0.5, 0.5, float(np.sqrt(target_area / factor)), xx, yy)
+        images.append(np.where(mask[None], np.array(COLORS["red"])[:, None, None], 0.05) * 2.0 - 1.0)
+        labels.append(shape)
+    judged = classify_shapes(np.stack(images).astype(np.float32))
+    assert judged["shape"] == labels
+    assert np.ptp(judged["area"]) < 0.02
 
 
 def test_classifier_rejects_blank_image():

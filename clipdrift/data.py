@@ -42,6 +42,20 @@ class CaptionDataset:
     attributes: list[dict[str, str]] | None = None  # shapes 전용
 
 
+def shape_mask(
+    shape: str, cx: float, cy: float, radius: float, xx: np.ndarray, yy: np.ndarray
+) -> np.ndarray:
+    """단위 정사각형 좌표에서 도형 마스크를 만든다. 삼각형은 위를 향한다."""
+    if shape == "circle":
+        return (xx - cx) ** 2 + (yy - cy) ** 2 <= radius**2
+    if shape == "square":
+        return (np.abs(xx - cx) <= radius) & (np.abs(yy - cy) <= radius)
+    if shape == "triangle":
+        height = (yy - (cy - radius)) / (2 * radius)
+        return (height >= 0) & (height <= 1) & (np.abs(xx - cx) <= radius * height)
+    raise ValueError(shape)
+
+
 def render_shape(
     color: str,
     shape: str,
@@ -58,16 +72,7 @@ def render_shape(
     radius = rng.uniform(0.16, 0.28)
     cx = rng.uniform(radius + 0.04, 1 - radius - 0.04)
     cy = rng.uniform(radius + 0.04, 1 - radius - 0.04)
-    if shape == "circle":
-        mask = (xx - cx) ** 2 + (yy - cy) ** 2 <= radius**2
-    elif shape == "square":
-        mask = (np.abs(xx - cx) <= radius) & (np.abs(yy - cy) <= radius)
-    elif shape == "triangle":
-        # 위로 향한 삼각형. 경계 상자를 채우는 비율이 0.5로 원·사각형과 구분된다.
-        height = (yy - (cy - radius)) / (2 * radius)
-        mask = (height >= 0) & (height <= 1) & (np.abs(xx - cx) <= radius * height)
-    else:
-        raise ValueError(shape)
+    mask = shape_mask(shape, cx, cy, radius, xx, yy)
     tone = rng.uniform(-0.04, 0.04)
     fg = np.clip(np.array(COLORS[color]) + tone, 0, 1)
     bg = np.array(BACKGROUNDS[background])
@@ -132,12 +137,43 @@ def load_dataset(name: str, *, count: int = 12000, seed: int = 0, size: int = 32
     return read_manifest(Path(name), size=size)
 
 
+_AREA_FACTOR = {"circle": np.pi, "square": 4.0, "triangle": 2.0}  # 면적 = 계수 × 반지름²
+
+
+def _best_template(blob: np.ndarray, xx: np.ndarray, yy: np.ndarray) -> tuple[str, float]:
+    """덩어리와 가장 잘 겹치는 도형과 그 IoU를 찾는다.
+
+    템플릿마다 면적과 무게중심을 덩어리에 맞춘 뒤 비교하므로 크기와 위치가 아니라 윤곽만으로 판정한다.
+    경계 상자 채움 비율과 달리 거친 모서리에 강하다. 그 방식에서는 생성된 사각형의 90% 이상이 원으로 판정됐다.
+    """
+    pixels = blob.sum()
+    area = pixels / blob.size
+    center_x, center_y = (xx * blob).sum() / pixels, (yy * blob).sum() / pixels
+    step = 1.0 / blob.shape[0]
+    offsets = np.arange(-2, 3) * step
+    best_shape, best_iou = SHAPES[0], -1.0
+    for shape in SHAPES:
+        for scale in (0.9, 1.0, 1.1):
+            radius = float(np.sqrt(area / _AREA_FACTOR[shape])) * scale
+            # 삼각형의 무게중심은 cy보다 r/3 아래에 있다.
+            base_y = center_y - (radius / 3 if shape == "triangle" else 0.0)
+            for dy in offsets:
+                for dx in offsets:
+                    template = shape_mask(shape, center_x + dx, base_y + dy, radius, xx, yy)
+                    iou = (template & blob).sum() / (template | blob).sum()
+                    if iou > best_iou:
+                        best_shape, best_iou = shape, float(iou)
+    return best_shape, best_iou
+
+
 def classify_shapes(images: np.ndarray) -> dict[str, list[str] | np.ndarray]:
     """생성/실제 이미지를 규칙으로 속성 판정한다. 입력은 `[M, 3, H, W]`, `[-1, 1]`.
 
-    배경은 네 모서리, 전경은 배경과 충분히 다른 픽셀이다. 도형은 가장 큰 연결 덩어리의 경계 상자 채움 비율로
-    나눈다(사각형 ≈1, 원 ≈0.79, 삼각형 ≈0.5). 전경이 거의 없으면 "none"으로 판정해 오답으로 처리한다.
-    `coherence`는 전경 중 가장 큰 덩어리의 비율이다. 조각난 이미지는 여기서 드러나므로 도형 정확도와 함께 본다.
+    배경은 네 모서리, 전경은 배경과 충분히 다른 픽셀이다. 도형은 가장 큰 연결 덩어리와 템플릿의 IoU로 고른다.
+    전경이 거의 없으면 "none"으로 판정해 오답으로 처리한다.
+
+    `coherence`는 전경 중 가장 큰 덩어리의 비율, `iou`는 고른 템플릿과의 겹침, `area`는 전경 면적 비율이다.
+    조각나거나 형태가 뭉개진 이미지는 여기서 드러나므로 도형 정확도와 함께 본다.
     """
     rgb = np.clip((images + 1.0) * 0.5, 0, 1)
     names, palette = list(COLORS), np.array(list(COLORS.values()))
@@ -145,7 +181,11 @@ def classify_shapes(images: np.ndarray) -> dict[str, list[str] | np.ndarray]:
     result: dict[str, list[str] | np.ndarray] = {"color": [], "shape": [], "background": []}
     centers = np.full((len(images), 2), np.nan)
     coherence = np.zeros(len(images))
+    ious = np.zeros(len(images))
+    areas = np.zeros(len(images))
     size = images.shape[-1]
+    grid = (np.arange(size) + 0.5) / size
+    xx, yy = np.meshgrid(grid, grid)
     for index, image in enumerate(rgb):
         corners = np.stack(
             [image[:, 0, 0], image[:, 0, -1], image[:, -1, 0], image[:, -1, -1]]
@@ -162,12 +202,13 @@ def classify_shapes(images: np.ndarray) -> dict[str, list[str] | np.ndarray]:
         coherence[index] = main.sum() / mask.sum()
         foreground = np.median(image[:, main], axis=1)
         result["color"].append(names[int(np.argmin(((palette - foreground) ** 2).sum(-1)))])
-        rows, cols = np.flatnonzero(main.any(1)), np.flatnonzero(main.any(0))
-        area = (rows[-1] - rows[0] + 1) * (cols[-1] - cols[0] + 1)
-        fill = main.sum() / area
-        result["shape"].append("square" if fill > 0.89 else "circle" if fill > 0.64 else "triangle")
+        shape, ious[index] = _best_template(main, xx, yy)
+        result["shape"].append(shape)
+        areas[index] = mask.mean()
         grid_y, grid_x = np.nonzero(main)
         centers[index] = grid_x.mean() / size, grid_y.mean() / size
     result["centers"] = centers
     result["coherence"] = coherence
+    result["iou"] = ious
+    result["area"] = areas
     return result

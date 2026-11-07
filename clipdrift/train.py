@@ -30,7 +30,7 @@ from clipdrift.drift import (
     feature_drift_loss,
     sample_alpha,
 )
-from clipdrift.evaluate import evaluate_shapes, eval_prompts, generate, real_baseline, save_grid
+from clipdrift.evaluate import eval_prompts, generate, save_grid, shape_summary
 from clipdrift.features import pixel_features, subsample_locations
 from clipdrift.generator import GeneratorConfig, TextConditionedGenerator
 from clipdrift.mae import MAEFeatures, load_mae
@@ -334,16 +334,11 @@ def train(config: TrainConfig) -> dict[str, object]:
 
     summary: dict[str, object] = {"seconds": round(time.time() - started, 1), "steps": config.steps}
     if shapes:
-
-        def lookup(text: str) -> tuple[np.ndarray, np.ndarray]:
-            index = caption_lookup[text]
-            return bank.pooled[index], bank.tokens[index]
-
-        summary["real_baseline"] = real_baseline(dataset)
-        for alpha in (1.0, 2.0):
-            summary[f"alpha={alpha}"] = evaluate_shapes(
-                ema.module, lookup, alpha=alpha, samples=config.eval_samples, device=config.device
+        summary.update(
+            shape_summary(
+                ema.module, bank, dataset, samples=config.eval_samples, device=config.device
             )
+        )
     (out / "summary.json").write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1), flush=True)
     return summary

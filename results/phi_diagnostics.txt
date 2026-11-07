@@ -1,0 +1,26 @@
+real 1.000
+runs/s3000_pixel_blind_seed0 0.354
+runs/s3000_pixel_joint_seed0 0.520
+runs/s3000_mae_joint_seed0 0.668
+runs/s3000_clip_joint_seed0 0.965
+runs/s3000_mae_clip_joint_seed0 0.404
+runs/s3000_pixel_blind_seed0
+  pixel  keys=  1 loss=    7.13 grad=  0.0008 ratio=    1.0
+  mae    keys= 63 loss=  390.19 grad=  0.6500 ratio=  771.7
+  clip   keys= 29 loss=  186.77 grad=  0.8713 ratio= 1034.5
+runs/s3000_pixel_joint_seed0
+  pixel  keys=  1 loss=    6.59 grad=  0.0029 ratio=    1.0
+  mae    keys= 63 loss=  424.73 grad=  1.6283 ratio=  560.5
+  clip   keys= 29 loss=  189.60 grad=  1.2163 ratio=  418.7
+runs/s3000_mae_joint_seed0
+  pixel  keys=  1 loss=    6.32 grad=  0.0028 ratio=    1.0
+  mae    keys= 63 loss=  421.38 grad=  0.9314 ratio=  330.1
+  clip   keys= 29 loss=  182.93 grad=  0.9154 ratio=  324.4
+runs/s3000_clip_joint_seed0
+  pixel  keys=  1 loss=    5.78 grad=  0.0015 ratio=    1.0
+  mae    keys= 63 loss=  367.96 grad=  2.2004 ratio= 1444.8
+  clip   keys= 29 loss=  173.74 grad=  1.3328 ratio=  875.1
+runs/s3000_mae_clip_joint_seed0
+  pixel  keys=  1 loss=    6.06 grad=  0.0026 ratio=    1.0
+  mae    keys= 63 loss=  405.89 grad=  1.1119 ratio=  428.7
+  clip   keys= 29 loss=  174.42 grad=  1.0354 ratio=  399.2

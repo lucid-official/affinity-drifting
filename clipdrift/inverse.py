@@ -21,7 +21,15 @@ import numpy as np
 from lucid import Tensor
 
 from clipdrift.clip_encoder import FrozenCLIP
-from clipdrift.data import BACKGROUNDS, COLORS, HELD_OUT, SHAPES, caption_for, make_shapes
+from clipdrift.data import (
+    BACKGROUNDS,
+    COLORS,
+    HELD_OUT,
+    SHAPES,
+    caption_for,
+    make_shapes,
+    render_shape,
+)
 from clipdrift.drift import DEFAULT_TEMPERATURES, DriftKernel, feature_drift_loss, normalized_drift
 from clipdrift.evaluate import attribute_accuracy, generate
 from clipdrift.features import pixel_features
@@ -233,8 +241,6 @@ def main() -> None:
     text, tokens = clip.encode_captions(captions, num_tokens=16)
     background = clip.encode_images(lucid.tensor(dataset.images[:512], device=device))
 
-    from clipdrift.data import render_shape
-
     results: dict[str, dict[str, list[int]]] = {
         split: {"alignment": [], "alignment_no_pmi": [], "classification": []}
         for split in ("seen", "held_out")
@@ -315,8 +321,8 @@ def main() -> None:
             inversion.append(
                 {
                     "target": f"{target.color} {target.shape} / {target.background}",
-                    "before": accuracy(null_pooled, null_tokens)["joint"],
-                    "after": accuracy(pooled_opt, tokens_opt)["joint"],
+                    "before": accuracy(null_pooled, null_tokens),
+                    "after": accuracy(pooled_opt, tokens_opt),
                 }
             )
         report["inversion"] = inversion
