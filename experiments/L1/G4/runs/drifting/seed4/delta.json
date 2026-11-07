@@ -1,0 +1,27 @@
+{
+  "arm": "drifting",
+  "reference_arm": "k5_lr1e-3",
+  "knobs_vs_reference": [
+    "field"
+  ],
+  "vs_B0": {
+    "field": {
+      "B0": "affd",
+      "arm": "release"
+    },
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "inf"
+    },
+    "train.lr": {
+      "B0": null,
+      "arm": 0.001
+    }
+  },
+  "vs_reference": {
+    "field": {
+      "reference": "affd",
+      "arm": "release"
+    }
+  }
+}

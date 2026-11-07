@@ -1,0 +1,16 @@
+{
+  "arm": "k5_lr1e-3",
+  "reference_arm": "k5_lr1e-3",
+  "knobs_vs_reference": [],
+  "vs_B0": {
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "inf"
+    },
+    "train.lr": {
+      "B0": null,
+      "arm": 0.001
+    }
+  },
+  "vs_reference": {}
+}

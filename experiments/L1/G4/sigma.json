@@ -1,0 +1,6 @@
+{
+  "sigma": 0.07110099055452695,
+  "rule": "knn_median",
+  "computed_from_arm": "k5_lr1e-3",
+  "time_utc": "2026-11-07T21:17:51+00:00"
+}

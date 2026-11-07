@@ -22,14 +22,14 @@ How to read this file
 | L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | aggregated | FAIL | [report](experiments/L0/E0.5/report.md) |
 | L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | aggregated | PASS | [report](experiments/L0/E0.5b/report.md) |
 | L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | aggregated | FAIL | [report](experiments/L0/E0.6/report.md) |
-| L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | planned | — | — |
-| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | planned | — | — |
-| L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | planned | — | — |
-| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | planned | — | — |
-| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | planned | — | — |
-| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | planned | — | — |
-| L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | planned | — | — |
-| L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | pre-registered | — | — |
+| L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | pre-registered | — | — |
+| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | pre-registered | — | — |
+| L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | pre-registered | — | — |
+| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | pre-registered | — | — |
+| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | pre-registered | — | — |
+| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | pre-registered | — | — |
+| L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | pre-registered | — | — |
+| L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
 <!-- index:end -->
 
 ## Log
@@ -531,3 +531,37 @@ How to read this file
   slower, so L1 trains eagerly.
 - Four concurrent training processes slowed each to ~25 ms/step (aggregate below a single process). Main L1 sweeps
   run in two processes, critical path first: E1.1, E1.2, E1.3, E1.4, E1.6, E1.5, E1.4b.
+
+### 2026-11-08 07:00 KST · G4 · diagnosis in progress (hand entry)
+
+- G4 seed 0 (all arms) and seeds 1–3 of two arms are in: K5 marginal W2 ≈ 0.59–0.72 against a data–data floor of
+  0.088 (gate needs ≤ 0.175). The verdict will follow the pre-registered rule once all seeds finish.
+- Seed-0 geometry: K5 samples sit on the data (median distance to the nearest training positive 0.009–0.014) but the
+  radius distribution is too narrow (5–95 %: 1.2–1.55 vs 1.03–1.94): under-dispersed, partial coverage.
+- Exploratory, not registered: a multi-scale kernel (σ = 0.071, 0.384, 2.07) gives marginal W2 0.558 — the bandwidth
+  is not the main cause.
+- Suspected design error in the G4 operational definition: "unconditional drifting" was run as K5 with h_q = 0, so
+  each condition repels only its own 8 samples and the batch is 64 separate 8-sample fits of the marginal. The release's
+  unconditional drifting repels across the whole generated batch (here h_p = h_q = ∞). Exploratory runs testing (a)
+  full-batch repulsion and (b) 64 samples per condition are running.
+
+### 2026-11-07 22:03 UTC · G4 · sweep
+
+- commit `0e4e886044`
+- arms ['k5_lr3e-3', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 8 complete, 2 skipped, 0 failed
+- wall time 1201 s
+
+### 2026-11-07 22:03 UTC · G4 · sweep
+
+- commit `0e4e886044`
+- arms ['k5_lr3e-4', 'k5_lr1e-3'] × seeds [0, 1, 2, 3, 4]
+- 8 complete, 2 skipped, 0 failed
+- wall time 1225 s
+
+### 2026-11-07 22:03 UTC · G4 · aggregate
+
+- commit `0e4e886044`
+- verdict **FAIL** (composite)
+- FAIL: selected k5_lr3e-4 — w2_marginal_heldout 0.5781 [0.5349, 0.6218] vs 2.0 × w2_marginal_datadata_heldout 0.08763; all: {k5_lr3e-4: 0.5781, k5_lr1e-3: 0.6387, k5_lr3e-3: 0.6764}
+- report: `experiments/L1/G4/report.md`
