@@ -1,0 +1,99 @@
+id: E1.3
+level: L1
+claim: C2
+title: AffD restores the mixture and beats single, K1, K2, K3
+runner: train
+seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+reference_arm: AffD
+allowed_delta:
+- h_p.rule
+- x_kernel.kind
+- h_p.neighbors
+- positives.noise
+- field
+arms:
+  AffD: {}
+  single:
+    set:
+      h_p.rule: zero
+  K1:
+    set:
+      x_kernel.kind: none
+  K2:
+    set:
+      h_p.neighbors: random
+  K3:
+    set:
+      h_p.rule: zero
+      positives.noise: matched
+    ref: single
+  drifting:
+    set:
+      h_p.rule: zero
+      field: release
+    ref: single
+judge:
+  kind: composite
+  checks:
+  - type: ratio
+    num: AffD
+    den: single
+    metric: w2_heldout
+    pass_le: 0.5
+  - type: paired
+    a: single
+    b: AffD
+    metric: w2_heldout
+  - type: paired
+    a: K1
+    b: AffD
+    metric: w2_heldout
+  - type: paired
+    a: K2
+    b: AffD
+    metric: w2_heldout
+  - type: paired
+    a: K3
+    b: AffD
+    metric: w2_heldout
+report_metrics:
+- w2_heldout
+- w2_train
+- mci_heldout
+- off_manifold_heldout
+- mode_coverage_heldout
+- memorization_train
+- precision_heldout
+- recall_heldout
+- coverage_heldout
+- mmd_heldout
+figures:
+  FC.1: {}
+  FC.2:
+    arm: AffD
+  FC.3: {}
+  FC.4: {}
+  F1.1:
+    arms:
+    - drifting
+    - single
+    - K1
+    - K2
+    - K3
+    - AffD
+  F1.2:
+    arms:
+    - drifting
+    - single
+    - K1
+    - AffD
+  F1.3:
+    arms:
+    - drifting
+    - single
+    - AffD
