@@ -1,0 +1,133 @@
+id: E1.4
+level: L1
+claim: C3
+title: the single–AffD gap grows as the generator's c-resolution δ coarsens
+runner: train
+seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+reference_arm: d16_h1
+max_knobs: 2
+allowed_delta:
+- level1.delta
+- h_p.rule
+- h_p.scale
+- field
+arms:
+  d0_h0:
+    set:
+      level1.delta: 0.0
+      h_p.rule: zero
+  d0_h0.5:
+    set:
+      level1.delta: 0.0
+      h_p.scale: 0.5
+  d0_h1:
+    set:
+      level1.delta: 0.0
+  d0_h2:
+    set:
+      level1.delta: 0.0
+      h_p.scale: 2.0
+  d0_h4:
+    set:
+      level1.delta: 0.0
+      h_p.scale: 4.0
+  d64_h0:
+    set:
+      level1.delta: 0.015625
+      h_p.rule: zero
+  d64_h0.5:
+    set:
+      level1.delta: 0.015625
+      h_p.scale: 0.5
+  d64_h1:
+    set:
+      level1.delta: 0.015625
+  d64_h2:
+    set:
+      level1.delta: 0.015625
+      h_p.scale: 2.0
+  d64_h4:
+    set:
+      level1.delta: 0.015625
+      h_p.scale: 4.0
+  d16_h0:
+    set:
+      h_p.rule: zero
+  d16_h0.5:
+    set:
+      h_p.scale: 0.5
+  d16_h1: {}
+  d16_h2:
+    set:
+      h_p.scale: 2.0
+  d16_h4:
+    set:
+      h_p.scale: 4.0
+  d4_h0:
+    set:
+      level1.delta: 0.25
+      h_p.rule: zero
+  d4_h0.5:
+    set:
+      level1.delta: 0.25
+      h_p.scale: 0.5
+  d4_h1:
+    set:
+      level1.delta: 0.25
+  d4_h2:
+    set:
+      level1.delta: 0.25
+      h_p.scale: 2.0
+  d4_h4:
+    set:
+      level1.delta: 0.25
+      h_p.scale: 4.0
+  drifting:
+    set:
+      h_p.rule: zero
+      field: release
+    ref: d16_h0
+judge:
+  kind: composite
+  checks:
+  - type: gap_monotone
+    metric: w2_train
+    pairs:
+    - - d0_h0
+      - d0_h1
+    - - d64_h0
+      - d64_h1
+    - - d16_h0
+      - d16_h1
+    - - d4_h0
+      - d4_h1
+  - type: gap_ratio
+    metric: w2_train
+    pair:
+    - d0_h0
+    - d0_h1
+    ref_pair:
+    - d16_h0
+    - d16_h1
+    pass_le: 0.2
+    fail_ge: 0.5
+report_metrics:
+- w2_train
+- w2_heldout
+- mci_train
+- mci_heldout
+figures:
+  FC.1:
+    arms:
+    - drifting
+    - d16_h0
+    - d16_h1
+  F1.4:
+    axis: delta
+  F1.5:
+    axis: delta
