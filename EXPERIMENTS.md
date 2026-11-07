@@ -68,3 +68,57 @@ How to read this file
 
 - commit `521f3ccc4a`
 - `experiments/L0/E0.6/prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:39 UTC · E0.1 · smoke
+
+- commit `051f06c3d3`
+- arms ['check', 'drifting'] × seeds [0]
+- 2 complete, 0 skipped, 0 failed
+- wall time 2 s
+
+### 2026-11-07 14:39 UTC · E0.3 · smoke
+
+- commit `051f06c3d3`
+- arms ['b0', 'drifting'] × seeds [0]
+- 2 complete, 0 skipped, 0 failed
+- wall time 8 s
+
+### 2026-11-07 14:40 UTC · E0.4 · smoke
+
+- commit `051f06c3d3`
+- arms ['hq_0', 'hq_0.25', 'hq_0.5', 'hq_1', 'drifting'] × seeds [0]
+- 5 complete, 0 skipped, 0 failed
+- wall time 42 s
+
+### 2026-11-07 14:40 UTC · E0.5 · smoke
+
+- commit `051f06c3d3`
+- arms ['lam_0', 'lam_0.25', 'lam_0.5', 'lam_0.75', 'lam_0.9', 'lam_1.1', 'drifting'] × seeds [0]
+- 7 complete, 0 skipped, 0 failed
+- wall time 13 s
+
+### 2026-11-07 14:41 UTC · E0.6 · smoke
+
+- commit `051f06c3d3`
+- arms ['sep_hq0', 'joint_hq0', 'sep_sym', 'joint_sym', 'drifting'] × seeds [0]
+- 5 complete, 0 skipped, 0 failed
+- wall time 32 s
+
+### 2026-11-07 14:42 UTC · E0.2 · smoke
+
+- commit `051f06c3d3`
+- arms ['sym', 'sym_hp_x0.5', 'sym_hp_x2', 'hq0', 'drifting'] × seeds [0]
+- 5 complete, 0 skipped, 0 failed
+- wall time 41 s
+
+### 2026-11-07 · E0.5 · smoke finding (hand entry)
+
+- Smoke run (seed 0, 2,000 steps), not a result: AffD `lam_0.75`, `lam_0.9`, `lam_1.1` diverged within 50 steps;
+  `lam_0.5` ran away (rel. mean error 517 at the cap). Trace: far from their positives, V⁺ has slope 1 and V_neg slope 2
+  against the receding partner, so the mean mode grows when 2λ > 1. The closed form assumes Gaussian p̂, q̂ in the tails;
+  a finite-sample KDE's tail is set by its most extreme sample (slope 1/σ² instead of 1/(v + σ²)).
+- Smoke run: baseline `drifting` diverged to NaN by step 25. Cause: the release's affinity floor sqrt(clamp(·, 1e-6))
+  makes the raw field's coefficient mass grow with M (≈ 4 at M = 2048), unstable at η = 0.5. At M = 256 (other L0
+  experiments) the baseline is stable.
+- Decisions (user): E0.5 is judged exactly as pre-registered; add diagnostic E0.5b with a Gaussian-closure field (D13);
+  keep the raw baseline and report its divergence (D14).

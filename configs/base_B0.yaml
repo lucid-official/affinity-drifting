@@ -51,6 +51,7 @@ levels:
       M: 256
     level0:
       problem: single_bank    # single_bank | gaussian_pair (E0.5)
+      density: kde            # kde | gaussian_closure (E0.5b diagnostic, D13)
       K: 32                   # conditions, ψ_k evenly spaced on [0, 1]
       data_seed: 0            # y_k are fixed across seeds; seeds vary particle init
       y_box: 1.0              # y_k ~ U([-y_box, y_box]²) with rejection

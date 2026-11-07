@@ -153,6 +153,36 @@ def release_field(positives: Tensor, drift: DriftLoss) -> Field:
     return lambda x: DriftTerms(v=drift.drift(x, positives))
 
 
+def gaussian_closure_field(
+    mu: Tensor, s: float, sigma: float, lam: float, partner: tuple[int, ...] | None
+) -> Field:
+    r"""E0.5b diagnostic: Lemma 1's field with every KDE replaced by its Gaussian (docs/deviations.md D13).
+
+    .. math::
+
+        V = \sigma^2\big[-\tfrac{x-\mu_c}{\tilde s^2} + \tfrac{x-m_c}{v_c+\sigma^2}
+            + \lambda\,\tfrac{x-m_{c'}}{v_{c'}+\sigma^2}\big]
+
+    with :math:`m, v` the current particle mean and per-dimension variance.  It
+    keeps Prop E's algebra and removes the finite-sample tails of p̂ and q̂.
+    """
+    s2_tilde = s**2 + sigma**2
+
+    def field(x: Tensor) -> DriftTerms:
+        m = x.mean(dim=1, keepdim=True)
+        v = ((x - m) ** 2).mean(dim=(1, 2), keepdim=True)
+        v_plus = (mu.unsqueeze(1) - x) * (sigma**2 / s2_tilde)
+        v_minus = (m - x) * sigma**2 / (v + sigma**2)
+        if partner is None or lam == 0:
+            return DriftTerms(v=v_plus - v_minus, v_plus=v_plus, v_minus=v_minus)
+        mp = lucid.stack([m[j] for j in partner])
+        vp = lucid.stack([v[j] for j in partner])
+        v_neg = (mp - x) * sigma**2 / (vp + sigma**2)
+        return DriftTerms(v=v_plus - v_minus - lam * v_neg, v_plus=v_plus, v_minus=v_minus, v_neg=v_neg)
+
+    return field
+
+
 class ParticleSystem:
     """Integrates :math:`x \\leftarrow x + \\eta V` for every condition at once.
 

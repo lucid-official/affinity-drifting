@@ -28,6 +28,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 - `CLAUDE.md` §7 (code rules) and §8 (records, logging and figure rules), rule §2.11 (baseline arm).
 - `docs/deviations.md` D1–D12.
 
+- `data/particles.py`: `gaussian_closure_field` for the E0.5b diagnostic (D13); B0 key `level0.density`
+  (`kde` default, so no pre-registered experiment changes).
+- `tracking/ledger.py`: file lock around `EXPERIMENTS.md` writes so concurrent sweeps cannot drop entries.
+
 ### Changed
 
 - `CLAUDE.md` §1: directory layout follows the experiment hierarchy (`experiments/<Level>/<ID>/runs/<arm>/seed<k>/`)

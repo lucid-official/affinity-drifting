@@ -44,3 +44,18 @@ def test_leave_one_out_biases_fixed_particles(device: str) -> None:
     traj = system.run(x0, max_steps=4000, tol=1e-7, stable_window=100, check_every=50, diverge_bound=1e3,
                       compile=False)
     assert traj.final[0].var(0).mean() > 0.09 * 1.3
+
+
+def test_gaussian_closure_reaches_prop_e(device: str) -> None:
+    """E0.5b's field: the closed form is its fixed point (λ = 0.5)."""
+    from affdrift.core.identities import prop_e_equilibrium
+    from affdrift.data.particles import gaussian_closure_field
+
+    mu = to_tensor(np.array([[1.0, 0.0], [-1.0, 0.0]]), device)
+    field = gaussian_closure_field(mu, 0.5, 0.7, 0.5, (1, 0))
+    x0 = to_tensor(np.random.default_rng(0).uniform(-1.5, 1.5, size=(2, 512, 2)), device)
+    traj = ParticleSystem(field, eta=0.5).run(x0, max_steps=20000, tol=1e-6, stable_window=100, check_every=50,
+                                              diverge_bound=1e4, compile=False)
+    pred = prop_e_equilibrium((1.0, 0.0), (-1.0, 0.0), 0.5, 0.7, 0.5)
+    np.testing.assert_allclose(traj.final[0].mean(0), pred.mean, rtol=1e-3, atol=1e-3)
+    assert abs(traj.final[0].var(0).mean() - pred.particle_var) / pred.particle_var < 1e-3

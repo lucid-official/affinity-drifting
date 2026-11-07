@@ -33,6 +33,7 @@ from affdrift.data.particles import (
     ParticleSystem,
     Trajectory,
     affd_field,
+    gaussian_closure_field,
     half_median_pairwise,
     init_particles,
     make_gaussian_pair,
@@ -273,13 +274,17 @@ def run_particles(run: Run) -> Metrics:
     l0 = cfg["level0"]
     sigma = frozen_sigma(run.exp)
     built = (build_single_bank if l0["problem"] == "single_bank" else build_gaussian_pair)(cfg, device)
-    match cfg["field"]:
-        case "affd":
+    match cfg["field"], l0["density"]:
+        case "affd", "kde":
             field = affd_field(built.problem, AffinityDrift(drift_spec(cfg, sigma)))
-        case "release":
+        case "affd", "gaussian_closure":
+            g = l0["gaussian_pair"]
+            mu = to_tensor(np.array([g["mu1"], g["mu2"]]), device)
+            field = gaussian_closure_field(mu, g["s"], sigma, drift_spec(cfg, sigma).neg_lambda, built.problem.partner)
+        case "release", _:
             field = release_field(built.class_positives, release_drift(cfg))
         case other:
-            raise ValueError(f"unknown field {other!r}")
+            raise ValueError(f"unknown field/density {other!r}")
     system = ParticleSystem(field, eta=float(l0["eta"]))
     x0 = to_tensor(init_particles(built.k, built.m, seed=run.seed, box=l0["init_box"]), device)
 
@@ -292,7 +297,7 @@ def run_particles(run: Run) -> Metrics:
     last = traj.checks[-1]
     metrics: Metrics = {
         "sigma": sigma, "steps": traj.steps, "stable": traj.stable, "diverged": traj.diverged,
-        "field": cfg["field"], "converged_at": traj.converged_at, "final_rms_v": last["rms_v"],
+        "field": cfg["field"], "density": l0["density"], "converged_at": traj.converged_at, "final_rms_v": last["rms_v"],
         "final_rms_v_plus": last["rms_v_plus"], "final_rms_v_minus": last["rms_v_minus"],
         "final_rms_v_neg": last["rms_v_neg"], "compiled": traj.compiled,
         "wall_time_s": traj.wall_time, "notes": traj.notes,

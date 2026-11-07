@@ -10,8 +10,10 @@ Two parts (CLAUDE.md §8):
   Existing entries are never edited; a correction is a new entry.
 """
 
+import contextlib
+import fcntl
 import json
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -22,12 +24,23 @@ LEDGER = ROOT / "EXPERIMENTS.md"
 START, END = "<!-- index:start -->", "<!-- index:end -->"
 
 
+@contextlib.contextmanager
+def _locked(path: Path) -> Iterator[None]:
+    """Exclusive lock so concurrent sweeps never lose each other's entries."""
+    with (path.parent / f".{path.name}.lock").open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
 def append(kind: str, exp_id: str, lines: Iterable[str], *, path: Path = LEDGER) -> None:
     """Append one log entry: a dated heading and bullet lines."""
     stamp = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
     body = "\n".join(f"- {line}" for line in lines)
     entry = f"\n### {stamp} · {exp_id} · {kind}\n\n- commit `{git_commit()[:10]}`\n{body}\n"
-    with path.open("a") as fh:
+    with _locked(path), path.open("a") as fh:
         fh.write(entry)
 
 
@@ -54,7 +67,8 @@ def rebuild_index(*, path: Path = LEDGER) -> None:
             f"| {exp.level} | [{exp.id}]({exp.dir.relative_to(ROOT)}/) | {exp.spec.get('claim', '')} | "
             f"{exp.title} | {status} | {verdict} | {link} |"
         )
-    text = path.read_text()
-    head, rest = text.split(START, 1)
-    _, tail = rest.split(END, 1)
-    path.write_text(f"{head}{START}\n" + "\n".join(rows) + f"\n{END}{tail}")
+    with _locked(path):
+        text = path.read_text()
+        head, rest = text.split(START, 1)
+        _, tail = rest.split(END, 1)
+        path.write_text(f"{head}{START}\n" + "\n".join(rows) + f"\n{END}{tail}")
