@@ -13,6 +13,14 @@ How to read this file
 ## Index
 
 <!-- index:start -->
+| Level | ID | Claim | Title | Status | Verdict | Report |
+| --- | --- | --- | --- | --- | --- | --- |
+| L0 | [E0.1](experiments/L0/E0.1/) | Lemma 1 | V = σ²∇log(p̂/q̂) for a Gaussian kernel | pre-registered | — | — |
+| L0 | [E0.2](experiments/L0/E0.2/) | Prop A | symmetric h_q = h_p memorises | pre-registered | — | — |
+| L0 | [E0.3](experiments/L0/E0.3/) | Prop C | h_q = 0 gives the NW mixture w̃ | pre-registered | — | — |
+| L0 | [E0.4](experiments/L0/E0.4/) | Prop A–C | h_q interpolates monotonically from NW mixture to memorisation | pre-registered | — | — |
+| L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | pre-registered | — | — |
+| L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | pre-registered | — | — |
 <!-- index:end -->
 
 ## Log
@@ -30,3 +38,33 @@ How to read this file
   0.09). Expected: its τ ∈ {0.02, 0.05, 0.2} Laplace kernels resolve individual samples. The baseline therefore
   runs to the step cap and is reported at its final state.
 - Decision (user): every experiment carries the original Drifting as baseline arm `drifting` (D11).
+
+### 2026-11-07 14:39 UTC · E0.1 · prereg
+
+- commit `521f3ccc4a`
+- `experiments/L0/E0.1/prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:39 UTC · E0.2 · prereg
+
+- commit `521f3ccc4a`
+- `experiments/L0/E0.2/prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:39 UTC · E0.3 · prereg
+
+- commit `521f3ccc4a`
+- `experiments/L0/E0.3/prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:39 UTC · E0.4 · prereg
+
+- commit `521f3ccc4a`
+- `experiments/L0/E0.4/prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:39 UTC · E0.5 · prereg
+
+- commit `521f3ccc4a`
+- `experiments/L0/E0.5/prereg.md` and `experiment.yaml` committed before any run
+
+### 2026-11-07 14:39 UTC · E0.6 · prereg
+
+- commit `521f3ccc4a`
+- `experiments/L0/E0.6/prereg.md` and `experiment.yaml` committed before any run
