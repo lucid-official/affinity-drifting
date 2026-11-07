@@ -1,0 +1,21 @@
+id: G4
+level: L1
+claim: Gate G4
+title: unconditional drifting fits the marginal; the learning rate is fixed once here
+runner: train
+seeds: [0, 1, 2, 3, 4]
+reference_arm: k5_lr1e-3
+allowed_delta: [train.lr, h_p.rule, field]
+arms:
+  k5_lr3e-4: {set: {h_p.rule: inf, train.lr: 3.0e-4}}
+  k5_lr1e-3: {set: {h_p.rule: inf, train.lr: 1.0e-3}}
+  k5_lr3e-3: {set: {h_p.rule: inf, train.lr: 3.0e-3}}
+  drifting: {set: {field: release, h_p.rule: inf, train.lr: 1.0e-3}}   # baseline (D11)
+judge:
+  kind: composite
+  checks:
+    - {type: select_min_within, arms: [k5_lr3e-4, k5_lr1e-3, k5_lr3e-3], metric: w2_marginal_heldout,
+       ref_metric: w2_marginal_datadata_heldout, factor: 2.0}
+report_metrics: [w2_marginal_heldout, w2_marginal_datadata_heldout, w2_marginal_train, precision_heldout,
+                 recall_heldout, mmd_heldout, train_seconds]
+figures: {}
