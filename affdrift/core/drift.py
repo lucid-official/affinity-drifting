@@ -48,7 +48,8 @@ from lucid.models.generative.drifting import _model as release
 
 from affdrift.core.kernels import XKernel, log_x_kernel, sqdist
 
-__all__ = ["AffinityDrift", "DriftLoss", "DriftSpec", "DriftTerms", "RawDriftLoss", "Softmax", "TargetSet"]
+__all__ = ["AffinityDrift", "DriftLoss", "DriftSpec", "DriftTerms", "MultiScaleAffinityDrift", "RawDriftLoss", "Softmax",
+           "TargetSet"]
 
 type Info = dict[str, Tensor]
 
@@ -431,3 +432,43 @@ class AffinityDrift(DriftLoss):
                 v_minus = z_pos * (lucid.matmul(a_gen, gen.points) - z_gen * x)
                 v = v_plus - v_minus
                 return DriftTerms(v=_unit_energy(v) if spec.drift_norm else v, v_plus=v_plus, v_minus=v_minus)
+
+
+def _add(a: Tensor | None, b: Tensor | None) -> Tensor | None:
+    match a, b:
+        case None, _:
+            return b
+        case _, None:
+            return a
+        case _:
+            return a + b
+
+
+class MultiScaleAffinityDrift(AffinityDrift):
+    r"""AffD with a mixture of kernel widths: :math:`V = \sum_k V_{\sigma_k}`, each term normalised per scale.
+
+    The standard remedy for a single kernel width being either too local (no transport between distant samples)
+    or too smooth: MMD-GANs use a mixture of RBF bandwidths (Li et al., 2017) and the release sums one normalised
+    drift per temperature. Each scale satisfies Lemma 1, :math:`V_{\sigma_k} = \sigma_k^2\nabla\log(\hat p_k/\hat q_k)`,
+    so the field vanishes everywhere only when every smoothed pair matches, i.e. :math:`q = p`.
+    """
+
+    def __init__(self, spec: DriftSpec, sigmas: Sequence[float], *, generator: lucid.Generator | None = None) -> None:
+        if not sigmas:
+            raise ValueError("at least one scale")
+        super().__init__(replace(spec, sigma=float(sigmas[0])), generator=generator)
+        self.sigmas = tuple(float(s) for s in sigmas)
+        # children never add noise themselves: K3's noise is drawn once per call and shared by every scale
+        self.scales = [AffinityDrift(replace(spec, sigma=s, pos_noise_std=0.0)) for s in self.sigmas]
+
+    @override
+    def field(self, x: Tensor, pos: TargetSet, gen: TargetSet | None = None, neg: TargetSet | None = None) -> DriftTerms:
+        pos = self.perturb(pos)
+        total: DriftTerms | None = None
+        for scale in self.scales:
+            t = scale.field(x, pos, gen, neg)
+            total = t if total is None else DriftTerms(
+                v=total.v + t.v, v_plus=_add(total.v_plus, t.v_plus),
+                v_minus=_add(total.v_minus, t.v_minus), v_neg=_add(total.v_neg, t.v_neg))
+        assert total is not None
+        return total

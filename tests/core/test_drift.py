@@ -161,3 +161,29 @@ def test_affd_drift_is_its_field(rng: np.random.Generator) -> None:
     pos = TargetSet.uniform(_t(rng.normal(size=(2, 5, 2))))
     drift = AffinityDrift(DriftSpec(sigma=0.5, drift_norm=False))
     np.testing.assert_allclose(to_numpy(drift.drift(x, pos)), to_numpy(drift.field(x, pos).v), atol=1e-6)
+
+
+# ── multi-scale field ───────────────────────────────────────────────────────
+
+
+def test_multiscale_with_one_scale_is_affd(rng: np.random.Generator) -> None:
+    from affdrift.core.drift import MultiScaleAffinityDrift
+
+    x = _t(rng.normal(size=(2, 10, 2)))
+    pos = TargetSet.uniform(_t(rng.normal(size=(2, 6, 2))))
+    spec = DriftSpec(sigma=0.4)
+    np.testing.assert_allclose(to_numpy(MultiScaleAffinityDrift(spec, [0.4]).field(x, pos).v),
+                               to_numpy(AffinityDrift(spec).field(x, pos).v), atol=1e-6)
+
+
+def test_multiscale_raw_field_is_sum_of_scaled_score_ratios(rng: np.random.Generator) -> None:
+    """Lemma 1 per scale: V = Σ_k σ_k² ∇log(p̂_k / q̂_k) when nothing is normalised."""
+    from affdrift.core.drift import MultiScaleAffinityDrift
+
+    x = _t(rng.normal(size=(2, 12, 2)), F64)
+    pos = TargetSet.uniform(_t(rng.normal(size=(2, 20, 2)), F64))
+    gen = TargetSet.own_samples(x)
+    sigmas = (0.1, 0.4, 1.6)
+    v = MultiScaleAffinityDrift(DriftSpec(sigma=1.0, drift_norm=False), sigmas).field(x, pos, gen).v
+    ref = sum(to_numpy(score_ratio_field(x, pos, gen, s)) for s in sigmas)
+    assert np.abs(to_numpy(v) - ref).max() < 1e-9

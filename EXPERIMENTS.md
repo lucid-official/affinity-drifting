@@ -523,3 +523,11 @@ How to read this file
   Cause: only the loss was evaluated each step; parameters, EMA and Adam moments stayed lazy. Fix: evaluate all of
   them every 10 steps (`train.eval_every`). A 25k-step dev run with per-step evaluation finished; the failed runs keep
   their `status.json` (failed, with traceback) until the sweep reruns them.
+
+### 2026-11-08 · L1 · compile and throughput (hand entry)
+
+- `lucid.compile.fused_step` (forward + loss + backward + Adam in one executable) reproduced the eager step exactly
+  (parameter difference 0 after 5 steps) but ran at 4.7 ms/step against 2.7 ms/step eager. CLAUDE.md §7.5: tried,
+  slower, so L1 trains eagerly.
+- Four concurrent training processes slowed each to ~25 ms/step (aggregate below a single process). Main L1 sweeps
+  run in two processes, critical path first: E1.1, E1.2, E1.3, E1.4, E1.6, E1.5, E1.4b.

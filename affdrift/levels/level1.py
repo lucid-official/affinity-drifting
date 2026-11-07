@@ -39,7 +39,7 @@ from scipy.spatial.distance import cdist
 from affdrift._typing import Config, FloatArray, Metrics
 from affdrift.config import Experiment
 from affdrift.core.bandwidth import solve_hp
-from affdrift.core.drift import AffinityDrift, DriftLoss, DriftSpec, RawDriftLoss, Softmax, TargetSet
+from affdrift.core.drift import AffinityDrift, DriftLoss, DriftSpec, MultiScaleAffinityDrift, RawDriftLoss, Softmax, TargetSet
 from affdrift.core.kernels import XKernel, caption_log_weights, log_normalize
 from affdrift.data.toy2d import Bank, make_bank
 from affdrift.eval import metrics as M
@@ -94,7 +94,16 @@ def knn_median_sigma(points: FloatArray, k: int) -> float:
     return float(np.median(d[:, k]))
 
 
-def frozen_sigma(exp: Experiment) -> float:
+def multiscale_sigmas(points: FloatArray, k: int, n_scales: int = 3) -> list[float]:
+    """D20 candidate: geometric ladder from the kNN width (D15) to the median heuristic (Gretton et al., 2012)."""
+    sub = numpy_rng(0, 90).choice(len(points), size=min(3000, len(points)), replace=False)
+    from scipy.spatial.distance import pdist
+
+    lo, hi = knn_median_sigma(points, k), float(np.median(pdist(points[sub])))
+    return [float(v) for v in np.geomspace(lo, hi, n_scales)]
+
+
+def frozen_sigma(exp: Experiment) -> float | list[float]:
     """σ frozen once per experiment in ``sigma.json`` from the reference arm's bank (CLAUDE.md §2.3)."""
     path = exp.dir / "sigma.json"
     ref = exp.resolve(exp.reference_arm)
@@ -107,8 +116,10 @@ def frozen_sigma(exp: Experiment) -> float:
     match rule:
         case "knn_median":
             sigma = knn_median_sigma(bank_of(ref).y, int(ref["h_p"]["n_star"]))
+        case "multiscale":
+            sigma = multiscale_sigmas(bank_of(ref).y, int(ref["h_p"]["n_star"]))
         case _:
-            raise ValueError(f"L1 sigma_rule must be knn_median (D15), got {rule!r}")
+            raise ValueError(f"L1 sigma_rule must be knn_median (D15) or multiscale, got {rule!r}")
     path.write_text(json.dumps({"sigma": sigma, "rule": rule, "computed_from_arm": exp.reference_arm,
                                 "time_utc": datetime.now(UTC).isoformat(timespec="seconds")}, indent=2) + "\n")
     return sigma
@@ -198,7 +209,7 @@ def generator_spec(cfg: Config) -> GeneratorSpec:
 type LossFn = Callable[[Tensor, np.ndarray, FloatArray], tuple[Tensor, dict[str, Tensor]]]
 
 
-def make_loss(cfg: Config, bank: Bank, sigma: float, device: str, seed: int) -> tuple[LossFn, dict[str, Any]]:
+def make_loss(cfg: Config, bank: Bank, sigma: float | list[float], device: str, seed: int) -> tuple[LossFn, dict[str, Any]]:
     """The arm's loss ``(x (B, M, 2), idx, c) -> (scalar loss, info)`` and what it resolved to."""
     rng = numpy_rng(seed, 30)
     match cfg["field"]:
@@ -215,12 +226,14 @@ def make_loss(cfg: Config, bank: Bank, sigma: float, device: str, seed: int) -> 
         case "affd":
             pos = Positives(cfg, bank, device, bandwidths(cfg, bank), rng)
             noise = 0.0 if cfg["positives"]["noise"] == "none" else pos.matched_noise_std
-            spec = DriftSpec(sigma=sigma, kernel=XKernel(cfg["x_kernel"]["kind"]), softmax=Softmax(cfg["softmax"]),
+            sigmas = sigma if isinstance(sigma, list) else [sigma]
+            spec = DriftSpec(sigma=sigmas[0], kernel=XKernel(cfg["x_kernel"]["kind"]), softmax=Softmax(cfg["softmax"]),
                              repulsion=True, drift_norm=bool(cfg["normalization"]["drift"]), pos_noise_std=noise)
             gen = lucid.Generator(device=device) if noise > 0 else None
             if gen is not None:
                 gen.manual_seed(seed)
-            affd = AffinityDrift(spec, generator=gen)
+            affd = (MultiScaleAffinityDrift(spec, sigmas, generator=gen) if len(sigmas) > 1
+                    else AffinityDrift(spec, generator=gen))
             exclude_self = bool(cfg["h_q"]["exclude_self"])
             ratio = float(cfg["h_q"]["ratio"])
 
@@ -283,7 +296,7 @@ class Trained:
     seconds: float
 
 
-def train(run: Run, cfg: Config, bank: Bank, sigma: float, *, steps: int, on_log: Callable[[int, Mapping[str, float]], None]
+def train(run: Run, cfg: Config, bank: Bank, sigma: float | list[float], *, steps: int, on_log: Callable[[int, Mapping[str, float]], None]
           ) -> tuple[Trained, dict[str, Any]]:
     device = default_device()
     seed = run.seed
@@ -445,7 +458,7 @@ def _nw_tv(model: MLPGenerator, cfg: Config, bank: Bank, *, device: str, n_cond:
     return {"nw_tv_train": float(np.mean(tvs)), "own_positive_share_train": float(np.mean(own))}
 
 
-def raw_drift_energy(model: MLPGenerator, cfg: Config, bank: Bank, sigma: float, *, device: str) -> float:
+def raw_drift_energy(model: MLPGenerator, cfg: Config, bank: Bank, sigma: float | list[float], *, device: str) -> float:
     """E1.6: mean ‖V‖² of the arm's field without drift normalisation on a fixed evaluation batch (diagnostic)."""
     if cfg["field"] != "affd":
         return float("nan")
@@ -455,8 +468,9 @@ def raw_drift_energy(model: MLPGenerator, cfg: Config, bank: Bank, sigma: float,
     with lucid.no_grad():
         x = model(eps, to_tensor(bank.c[idx], device).unsqueeze(1))
         pos = Positives(cfg, bank, device, bandwidths(cfg, bank), numpy_rng(0, 0))
-        spec = DriftSpec(sigma=sigma, kernel=XKernel(cfg["x_kernel"]["kind"]), drift_norm=False)
-        v = AffinityDrift(spec).field(x, pos(idx, bank.c[idx]),
+        sigmas = sigma if isinstance(sigma, list) else [sigma]
+        spec = DriftSpec(sigma=sigmas[0], kernel=XKernel(cfg["x_kernel"]["kind"]), drift_norm=False)
+        v = MultiScaleAffinityDrift(spec, sigmas).field(x, pos(idx, bank.c[idx]),
                                       TargetSet.own_samples(x, exclude_self=bool(cfg["h_q"]["exclude_self"]))).v
         e = (v * v).sum(dim=-1).mean()
         e.eval()
@@ -477,6 +491,17 @@ def interpolation_strip(model: MLPGenerator, cfg: Config, device: str) -> FloatA
     return sample(model, to_tensor(eps, device), to_tensor(c[:, None, :], device))
 
 
+def epsilon_map(model: MLPGenerator, cfg: Config, device: str, n: int = 64) -> tuple[FloatArray, FloatArray]:
+    """F1.3: outputs over a 2-D slice of ε (dims 0 and 1 on [−2.5, 2.5]², the rest 0) for probe conditions 0 and 6."""
+    probe = json.loads((ROOT / "probe" / "probe_L1.json").read_text())
+    c = np.array([probe["conditions"][i]["c"] for i in (0, 6)])
+    g = np.linspace(-2.5, 2.5, n)
+    eps = np.zeros((n * n, int(cfg["model"]["eps_dim"])))
+    eps[:, 0], eps[:, 1] = (a.ravel() for a in np.meshgrid(g, g))
+    out = sample(model, to_tensor(np.broadcast_to(eps, (2, *eps.shape)).copy(), device), to_tensor(c[:, None, :], device))
+    return out, c
+
+
 # ── runners ─────────────────────────────────────────────────────────────────
 
 
@@ -489,7 +514,8 @@ def run_train(run: Run) -> Metrics:
         steps = min(steps, SMOKE_STEPS)
     trained, resolved = train(run, cfg, bank, sigma, steps=steps, on_log=lambda t, row: run.log(t, **row))
     model = trained.ema.module
-    metrics, arrays = evaluate(model, cfg, bank, device=device, sigma=sigma)
+    finest = sigma[0] if isinstance(sigma, list) else sigma
+    metrics, arrays = evaluate(model, cfg, bank, device=device, sigma=finest)
     metrics |= {"sigma": sigma, "steps": steps, "train_seconds": trained.seconds,
                 "raw_drift_energy": raw_drift_energy(model, cfg, bank, sigma, device=device), **resolved}
     run.save_arrays(
@@ -497,6 +523,8 @@ def run_train(run: Run) -> Metrics:
         probe_steps=np.array(sorted(trained.probe_snapshots)),
         probe_samples=np.stack([trained.probe_snapshots[t] for t in sorted(trained.probe_snapshots)]),
         fc4=interpolation_strip(model, cfg, device),
+        eps_map=(em := epsilon_map(model, cfg, device))[0],
+        eps_map_c=em[1],
     )
     return metrics
 

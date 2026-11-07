@@ -40,6 +40,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 - `tests/test_lucid_crosscheck.py`: Lucid field, Adam, EMA, spectral norm, quantisation and generator gradients
   checked against independent NumPy/float64 references before any L1 run.
 
+- `core/drift.MultiScaleAffinityDrift(AffinityDrift)`: sum of per-scale normalised AffD fields (MMD-GAN style
+  bandwidth mixture; the release does the same per temperature); L1 `x_kernel.sigma_rule: multiscale` (kNN width →
+  median heuristic, 3 geometric scales). Not used by any registered experiment (candidate D20, awaiting approval).
+- L1 runs also save F1.3's ε-slice outputs.
+
 ### Changed
 
 - L1 training materialises loss, parameters, EMA copy and Adam state every `train.eval_every` = 10 steps. Evaluating
