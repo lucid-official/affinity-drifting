@@ -10,6 +10,7 @@ Order and gates (CLAUDE.md §6, §8):
 """
 
 import json
+import os
 import subprocess
 import time
 from collections.abc import Iterable
@@ -154,8 +155,8 @@ def write_report(exp: Experiment, judgement: Judgement, summary: dict[str, Any],
         (f"{c['mean']:.4g} [{c['lo']:.4g}, {c['hi']:.4g}]" if (c := summary.get(arm, {}).get(m)) else "—")
         for m in metrics) + " |" for arm in exp.arms if arm in summary]
     checks = "\n".join(f"| {c.verdict} | {c.name} | {c.detail} |" for c in judgement.checks)
-    figs = sorted((exp.dir / "figures").glob("*/*.png"))
-    fig_lines = "\n".join(f"- [{p.stem}]({p.relative_to(exp.dir)})" for p in figs if not p.stem.endswith("_blind"))
+    figs = sorted(exp.figure_dir.glob("*/*.png"))
+    fig_lines = "\n".join(f"- [{p.stem}]({os.path.relpath(p, exp.dir)})" for p in figs if not p.stem.endswith("_blind"))
     anomalies = "\n".join(f"- {a}" for a in _anomalies(runs)) or "- (자동 감지 없음)"
     report = f"""# {exp.id} — {exp.title}: 결과 보고서
 
@@ -199,7 +200,7 @@ def write_report(exp: Experiment, judgement: Judgement, summary: dict[str, Any],
 
 def make_figures(exp: Experiment, *, only: Iterable[str] | None = None) -> list[str]:
     runs = complete(exp)
-    writer = FigureWriter(exp.dir / "figures")
+    writer = FigureWriter(exp.figure_dir)
     wanted = dict(exp.spec.get("figures", {}))
     made = []
     for fig_id, opts in wanted.items():
@@ -215,7 +216,7 @@ def make_figures(exp: Experiment, *, only: Iterable[str] | None = None) -> list[
             for seed, r in rs.items():
                 single = {arm: {seed: r}}
                 built = FIGURES[exp.level]["FC.1"](exp, single, {"arms": [arm]})
-                FigureWriter(r.path / "figs").save("FC.1", built.render, built.panels, blind=False,
+                FigureWriter(exp.run_figure_dir(arm, seed)).save("FC.1", built.render, built.panels, blind=False,
                                                    sources=built.sources)
     ledger.append("figures", exp.id, [f"`{m}`" for m in made] or ["(none)"])
     return made

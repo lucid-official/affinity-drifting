@@ -10,7 +10,8 @@
     log.jsonl        every logged step
     metrics.json     final metrics
     arrays.npz       raw arrays the figures are drawn from (git-ignored)
-    figs/            per-run figures
+
+Figures never live here: they go to ``figures/<Level>/<ID>/runs/<arm>/seed<k>/``.
 
 A run directory is created only after the Δ check passes, so a refused
 config leaves no trace but the error.
@@ -102,7 +103,7 @@ class Run:
             if self.is_complete() and not self.force:
                 raise FileExistsError(f"{self.name} is complete; pass force=True to redo it")
             shutil.rmtree(self.path)
-        (self.path / "figs").mkdir(parents=True)
+        self.path.mkdir(parents=True)
         (self.path / "config.yaml").write_text(yaml.safe_dump(self.config, sort_keys=False))
         (self.path / "config_hash.txt").write_text(config_hash(self.config) + "\n")
         _write_json(self.path / "delta.json", self.delta.to_json())

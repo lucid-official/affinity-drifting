@@ -21,7 +21,8 @@ def test_run_writes_the_layout(tmp_path: Path) -> None:
         run.finish({"x": 1})
     files = {p.name for p in run.path.iterdir()}
     assert {"config.yaml", "config_hash.txt", "delta.json", "env.json", "status.json", "log.jsonl",
-            "metrics.json", "figs"} <= files
+            "metrics.json"} <= files
+    assert "figs" not in files  # figures live under figures/, never in a run directory
     assert json.loads((run.path / "status.json").read_text())["state"] == "complete"
     assert run.path == tmp_path / "runs" / "ref" / "seed0"
 

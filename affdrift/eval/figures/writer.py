@@ -1,6 +1,6 @@
 """Saving figures with their reading sheet and blind twin (CLAUDE.md §3, §8).
 
-``experiments/<Level>/<ID>/figures/<FIG>/``::
+``figures/<Level>/<ID>/<FIG>/`` (run-level: ``figures/<Level>/<ID>/runs/<arm>/seed<k>/<FIG>/``)::
 
     <FIG>.png         labelled figure
     <FIG>_blind.png   same panels, arm labels replaced and order shuffled

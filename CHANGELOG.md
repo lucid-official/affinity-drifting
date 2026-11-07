@@ -36,6 +36,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- Figures moved out of `experiments/`: every figure now lives under the root `figures/<Level>/<ID>/` (run-level under
+  `runs/<arm>/seed<k>/`). `Experiment.figure_dir` / `run_figure_dir` are the only source of these paths; run
+  directories no longer get a `figs/` folder. Existing L0 figures were moved, not regenerated (user request,
+  2026-11-08).
+
 - `CLAUDE.md` §1: directory layout follows the experiment hierarchy (`experiments/<Level>/<ID>/runs/<arm>/seed<k>/`)
   instead of `runs/`, `results/<ID>.md`, `configs/exp/<ID>.yaml` (D12).
 - `docs/plan.md`: the two display equations (§1 Lemma 0, §4 Prop E) moved from ```` ```latex ```` code fences to `$$`

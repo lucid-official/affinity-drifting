@@ -30,7 +30,7 @@ Apple Silicon (Metal) via [Lucid](https://github.com/lucid-official/lucid). wand
 .venv/bin/python scripts/sweep.py E0.3 --smoke     # seed 0, capped steps, runs_smoke/
 .venv/bin/python scripts/sweep.py E0.3             # every arm × seed (resumable)
 .venv/bin/python scripts/aggregate.py E0.3         # pre-registered verdict → aggregate.json, report.md
-.venv/bin/python scripts/make_figures.py E0.3      # figures/<FIG>/ with blind twins and reading sheets
+.venv/bin/python scripts/make_figures.py E0.3      # figures/L0/E0.3/<FIG>/ with blind twins and reading sheets
 ```
 
 `sweep.py` refuses to start if the pre-registration is uncommitted or modified, if an arm changes more than its
@@ -43,7 +43,9 @@ affdrift/            library: core (kernels, bandwidth, drift), data, models, ev
 configs/base_B0.yaml B0 and its per-Level sections
 experiments/<Level>/<ID>/
     experiment.yaml  prereg.md  sigma.json  aggregate.json  report.md
-    runs/<arm>/seed<k>/   config.yaml config_hash.txt delta.json env.json status.json log.jsonl metrics.json figs/
-    figures/<FIG>/        <FIG>.png <FIG>_blind.png <FIG>_key.json <FIG>.md
+    runs/<arm>/seed<k>/   config.yaml config_hash.txt delta.json env.json status.json log.jsonl metrics.json
+figures/<Level>/<ID>/      every figure, and only here
+    <FIG>/                <FIG>.png <FIG>_blind.png <FIG>_key.json <FIG>.md
+    runs/<arm>/seed<k>/<FIG>/
 probe/  scripts/  tests/  docs/
 ```

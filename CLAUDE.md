@@ -35,11 +35,13 @@ experiments/
   <Level>/<ID>/prereg.md          # 사전 등록 (plan의 예측·반증 기준 원문 + 운영 정의). 커밋 후 수정 금지
   <Level>/<ID>/sigma.json         # 실험당 한 번 고정한 σ
   <Level>/<ID>/runs/<arm>/seed<k>/        # config.yaml, config_hash.txt, delta.json, env.json, status.json,
-                                          # log.jsonl, metrics.json, arrays.npz(git 제외), figs/
+                                          # log.jsonl, metrics.json, arrays.npz(git 제외)
   <Level>/<ID>/runs_smoke/<arm>/seed0/    # smoke run (집계에 쓰지 않음)
-  <Level>/<ID>/figures/<FIG>/     # <FIG>.png, <FIG>_blind.png, <FIG>_key.json, <FIG>.md
   <Level>/<ID>/aggregate.json     # 판정과 seed 집계 (자동)
   <Level>/<ID>/report.md          # 결과 보고서 (자동 생성 + 사람이 적는 칸)
+figures/                          # 모든 figure는 여기에만. 실험 계층을 그대로 따른다
+  <Level>/<ID>/<FIG>/             # 실험 단위: <FIG>.png, <FIG>_blind.png, <FIG>_key.json, <FIG>.md
+  <Level>/<ID>/runs/<arm>/seed<k>/<FIG>/  # run 단위 figure
 probe/                            # 학습 전에 고정한 probe set. 생성 후 커밋, 이후 수정 금지
 scripts/                          # run.py, sweep.py, aggregate.py, make_figures.py, make_probe.py, setup_env.sh
 docs/plan.md, docs/deviations.md
@@ -76,6 +78,7 @@ tests/                            # affdrift/ 구조를 그대로 미러링
 
 ## 3. Figure 규칙
 - 평가가 끝날 때마다 make_figures.py가 plan 10장의 해당 figure를 자동 생성한다. 손으로 고른 샘플 금지.
+- figure는 루트의 `figures/<Level>/<ID>/` 아래에만 둔다. `experiments/`나 run 디렉터리 안에 figure를 만들지 않는다.
 - 공통 figure FC.1–FC.4는 모든 run에서 낸다. FC.4(eps 보간 strip)는 반드시 포함한다.
 - arm 순서와 색은 전역 고정: drifting(baseline), single, K1, K2, K3, AffD, K4, K5 (+K6). `eval/figures/style.py`의 상수 하나로 관리한다.
 - 모든 비교 figure에 baseline `drifting`을 항상 같이 그린다(검은색). baseline이 정의되지 않는 figure는 `<figure>.md`에 이유를 적는다.
@@ -147,7 +150,8 @@ tests/                            # affdrift/ 구조를 그대로 미러링
    결과에 영향을 줄 수 있는 변경은 영향받는 실험 ID와 `docs/deviations.md` 항목을 링크한다.
 6. **deviations.md.** plan과 다르게 하는 모든 것은 D번호로 (날짜, 무엇을, 왜, 결과에 미칠 영향, 승인 여부)를 적는다.
    승인 전에는 그 변경으로 실험을 돌리지 않는다. 코드와 config 주석은 D번호로 이 문서를 가리킨다.
-7. **figure.** figure는 `make_figures.py`만 만든다. 실험 단위 figure는 `figures/<FIG>/`, run 단위는 `runs/.../figs/`.
+7. **figure.** figure는 `make_figures.py`만 만들고, 루트 `figures/`에만 둔다. 실험 단위는 `figures/<Level>/<ID>/<FIG>/`,
+   run 단위는 `figures/<Level>/<ID>/runs/<arm>/seed<k>/<FIG>/`. 경로는 `Experiment.figure_dir`·`run_figure_dir` 하나로만 정한다.
    모든 figure 옆의 `<FIG>.md`에 원천 run과 config hash, plan의 판독 기준 원문, 관찰 칸을 둔다. 다시 만들 때
    `## 관찰` 아래는 보존된다. arm 비교 figure는 blind 버전과 key를 같이 낸다. 색·순서는 `eval/figures/style.py`에서만 정한다.
 8. **보고서.** `report.md`는 `aggregate.py`가 판정·수치·figure 목록·자동 이상 징후를 쓰고, 사람이 적는 이상 징후와 해석 칸을 남긴다.

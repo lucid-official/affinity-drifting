@@ -5,6 +5,7 @@ The automatic part is regenerated; everything under "## 사람이 적는 부분"
 
 import argparse
 import json
+import os
 from datetime import UTC, datetime
 
 from affdrift.config import EXPERIMENTS_ROOT, Experiment
@@ -42,8 +43,8 @@ def main(level: str) -> None:
                              for m in metrics]
                     checks.append(f"| {arm} | " + " | ".join(cells) + " |")
         checks.append("")
-        figs += [f"- {exp.id}: " + ", ".join(f"[{p.parent.name}]({p.relative_to(EXPERIMENTS_ROOT / level)})"
-                                            for p in sorted((exp.dir / "figures").glob("*/*.png"))
+        figs += [f"- {exp.id}: " + ", ".join(f"[{p.parent.name}]({os.path.relpath(p, EXPERIMENTS_ROOT / level)})"
+                                            for p in sorted(exp.figure_dir.glob("*/*.png"))
                                             if not p.stem.endswith("_blind"))]
     path = EXPERIMENTS_ROOT / level / "summary.md"
     kept = path.read_text().split(KEEP, 1)[1] if path.exists() and KEEP in path.read_text() else (

@@ -30,6 +30,8 @@ from affdrift.runtime import ROOT
 
 BASE_PATH = ROOT / "configs" / "base_B0.yaml"
 EXPERIMENTS_ROOT = ROOT / "experiments"
+#: Every figure lives here, mirroring the experiment hierarchy (CLAUDE.md §1, §8.7).
+FIGURES_ROOT = ROOT / "figures"
 
 
 #: The original Drifting arm every experiment must carry (CLAUDE.md §2.11).
@@ -174,6 +176,14 @@ class Experiment:
     @property
     def reference_arm(self) -> str:
         return self.spec.get("reference_arm", next(iter(self.arms)))
+
+    @property
+    def figure_dir(self) -> Path:
+        """``figures/<Level>/<ID>/`` — experiment-level figures; run-level ones under ``runs/<arm>/seed<k>/``."""
+        return FIGURES_ROOT / self.level / self.id
+
+    def run_figure_dir(self, arm: str, seed: int) -> Path:
+        return self.figure_dir / "runs" / arm / f"seed{seed}"
 
     def ref_of(self, arm: str) -> str:
         return self.arms[arm].get("ref", self.reference_arm)
