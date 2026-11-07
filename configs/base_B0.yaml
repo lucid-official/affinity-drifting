@@ -104,5 +104,8 @@ levels:
       steps: 20000
       steps_multiplier: 1     # E1.5 "긴 학습": 3 (D19)
       batch_conditions: 64    # × gen.M = 8 samples each
+      batch_mode: uniform     # uniform | clustered (E1.5: anchors + caption-weighted neighbours)
+      group: 8                # clustered: conditions per anchor group
       ema: 0.999
       log_every: 100
+      eval_every: 10          # materialise params/EMA/Adam state every 10 steps (CLAUDE.md §7.4)

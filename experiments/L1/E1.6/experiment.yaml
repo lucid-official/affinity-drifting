@@ -1,0 +1,90 @@
+id: E1.6
+level: L1
+claim: h 선택
+title: W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h
+runner: train
+seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+reference_arm: hx1
+allowed_delta:
+- h_p.*
+- field
+arms:
+  hx0.25:
+    set:
+      h_p.scale: 0.25
+  hx0.5:
+    set:
+      h_p.scale: 0.5
+  hx1: {}
+  hx2:
+    set:
+      h_p.scale: 2.0
+  hx4:
+    set:
+      h_p.scale: 4.0
+  hx8:
+    set:
+      h_p.scale: 8.0
+  fixed:
+    set:
+      h_p.rule: fixed
+      h_p.fixed_value: 0.011310193203992451
+  drifting:
+    set:
+      field: release
+judge:
+  kind: composite
+  checks:
+  - type: argmin_in
+    arms:
+    - hx0.25
+    - hx0.5
+    - hx1
+    - hx2
+    - hx4
+    - hx8
+    metric: w2_heldout
+    allowed:
+    - hx0.5
+    - hx1
+    - hx2
+  - type: paired
+    a: hx0.25
+    b: hx1
+    metric: w2_heldout
+  - type: paired
+    a: hx8
+    b: hx1
+    metric: w2_heldout
+  - type: argmin_in
+    arms:
+    - hx0.25
+    - hx0.5
+    - hx1
+    - hx2
+    - hx4
+    - hx8
+    metric: raw_drift_energy
+    allowed:
+    - hx4
+    - hx8
+report_metrics:
+- w2_heldout
+- w2_train
+- raw_drift_energy
+- mci_heldout
+figures:
+  FC.1: {}
+  F1.7:
+    arms:
+    - hx0.25
+    - hx0.5
+    - hx1
+    - hx2
+    - hx4
+    - hx8

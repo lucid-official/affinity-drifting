@@ -22,6 +22,14 @@ How to read this file
 | L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | aggregated | FAIL | [report](experiments/L0/E0.5/report.md) |
 | L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | aggregated | PASS | [report](experiments/L0/E0.5b/report.md) |
 | L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | aggregated | FAIL | [report](experiments/L0/E0.6/report.md) |
+| L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | planned | — | — |
+| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | planned | — | — |
+| L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | planned | — | — |
+| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | planned | — | — |
+| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | planned | — | — |
+| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | planned | — | — |
+| L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | planned | — | — |
+| L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | pre-registered | — | — |
 <!-- index:end -->
 
 ## Log
@@ -453,3 +461,65 @@ How to read this file
   conditioning modalities (T2I). Recorded as D15–D19: σ = median N*-th-NN distance in φ space (L1+); E1.4 h_p axis
   decoupled from δ (multiples of the N_eff bandwidth); G4 picks lr by marginal W2 and freezes it; β = 2 confirmed;
   fixed-step training, no early stopping.
+
+### 2026-11-07 21:22 UTC · G4 · smoke
+
+- commit `764685a494`
+- arms ['k5_lr3e-4', 'k5_lr1e-3', 'k5_lr3e-3', 'drifting'] × seeds [0]
+- 4 complete, 0 skipped, 0 failed
+- wall time 270 s
+
+### 2026-11-07 21:32 UTC · G4 · sweep
+
+- commit `764685a494`
+- arms ['drifting'] × seeds [0, 1, 2, 3, 4]
+- 0 complete, 0 skipped, 5 failed
+- wall time 553 s
+- FAILED G4/drifting/seed0: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/drifting/seed1: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/drifting/seed2: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/drifting/seed3: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/drifting/seed4: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+
+### 2026-11-07 21:33 UTC · G4 · sweep
+
+- commit `764685a494`
+- arms ['k5_lr1e-3'] × seeds [0, 1, 2, 3, 4]
+- 0 complete, 0 skipped, 5 failed
+- wall time 641 s
+- FAILED G4/k5_lr1e-3/seed0: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr1e-3/seed1: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr1e-3/seed2: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr1e-3/seed3: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr1e-3/seed4: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+
+### 2026-11-07 21:33 UTC · G4 · sweep
+
+- commit `764685a494`
+- arms ['k5_lr3e-3'] × seeds [0, 1, 2, 3, 4]
+- 0 complete, 0 skipped, 5 failed
+- wall time 648 s
+- FAILED G4/k5_lr3e-3/seed0: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-3/seed1: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-3/seed2: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-3/seed3: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-3/seed4: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+
+### 2026-11-07 21:33 UTC · G4 · sweep
+
+- commit `764685a494`
+- arms ['k5_lr3e-4'] × seeds [0, 1, 2, 3, 4]
+- 0 complete, 0 skipped, 5 failed
+- wall time 648 s
+- FAILED G4/k5_lr3e-4/seed0: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-4/seed1: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-4/seed2: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-4/seed3: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+- FAILED G4/k5_lr3e-4/seed4: failed: RuntimeError: [metal::malloc] Resource limit (499000) exceeded.
+
+### 2026-11-08 · G4 · failed first attempt (hand entry)
+
+- All four G4 arms failed at ~18.3k steps: `metal::malloc Resource limit (499000) exceeded` inside `Adam.step`.
+  Cause: only the loss was evaluated each step; parameters, EMA and Adam moments stayed lazy. Fix: evaluate all of
+  them every 10 steps (`train.eval_every`). A 25k-step dev run with per-step evaluation finished; the failed runs keep
+  their `status.json` (failed, with traceback) until the sweep reruns them.

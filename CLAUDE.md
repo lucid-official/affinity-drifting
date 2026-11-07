@@ -126,8 +126,10 @@ tests/                            # affdrift/ 구조를 그대로 미러링
    Lucid가 함수로만 제공하는 것은 그 함수들을 단계별 메서드로 그대로 위임하는 기반 클래스로 감싸고, 그 클래스가 Lucid
    원본과 비트 단위로 같다는 테스트를 둔다(예: `DriftLoss` ↔ `lucid...drifting._model._drift_loss`). 복붙 재구현 금지.
 3. **이름에 `Lucid`를 넣지 않는다.** 클래스·함수·모듈 이름은 하는 일로 짓는다(`DriftLoss`, `AffinityDrift`).
-4. **Metal은 lazy(MLX)다.** 반복 루프에서는 매 스텝 결과를 평가한다. 텐서 하나는 `t.eval()`(예: `loss.eval()`),
-   여러 개는 `lucid.eval(a, b, ...)`로 한 번에. 평가 없이 루프를 돌리면 그래프가 쌓여 Metal 자원 한도에 걸린다.
+4. **Metal은 lazy(MLX)다.** 반복 루프에서는 결과를 평가한다. 텐서 하나는 `t.eval()`(예: `loss.eval()`),
+   여러 개는 `lucid.eval(a, b, ...)`로 한 번에. 손실만이 아니라 갱신된 파라미터, EMA, 옵티마이저 상태까지 평가해야 한다
+   (손실만 평가하다 G4가 1.8만 스텝에서 Metal 자원 한도에 걸렸다). particle 적분은 매 스텝, 학습 루프는 고정 간격
+   `train.eval_every`(기본 10스텝; 매 스텝 11.3ms → 10스텝 3.7ms)로 평가한다.
 5. **`lucid.compile`을 먼저 시도한다.** 반복되는 스텝 함수는 compile하되, 시작할 때 eager와 결과가 같은지 확인하고
    다르거나 실패하면 eager로 돌린 뒤 그 사실을 run 기록(`metrics.json`의 `notes`)에 남긴다.
 6. **최신 Python(3.14).** PEP 695 `type` 별칭과 제네릭 문법, `match`, `StrEnum`, `@dataclass(frozen=True, slots=True, kw_only=True)`,

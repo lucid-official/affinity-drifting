@@ -42,6 +42,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- L1 training materialises loss, parameters, EMA copy and Adam state every `train.eval_every` = 10 steps. Evaluating
+  only the loss let the update graphs grow until Metal's resource limit (first G4 run failed at ~18k steps); every
+  step works but costs 11.3 ms/step against 3.7 ms/step at 10. CLAUDE.md §7.4 updated.
+
 - Figures moved out of `experiments/`: every figure now lives under the root `figures/<Level>/<ID>/` (run-level under
   `runs/<arm>/seed<k>/`). `Experiment.figure_dir` / `run_figure_dir` are the only source of these paths; run
   directories no longer get a `figs/` folder. Existing L0 figures were moved, not regenerated (user request,

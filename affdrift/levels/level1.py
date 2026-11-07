@@ -253,9 +253,25 @@ def _cross_condition_repulsion(x: Tensor, idx: np.ndarray, pos: Positives, ratio
     return TargetSet(x.reshape(1, b * m, d), to_tensor(log_normalize(full), pos.device))
 
 
-def sample_conditions(cfg: Config, n: int, b: int, rng: np.random.Generator) -> np.ndarray:
-    """Bank indices for one batch: uniform over the bank (E1.8 changes p(c))."""
-    return rng.integers(0, n, size=b)
+def sample_conditions(cfg: Config, bank: Bank, b: int, rng: np.random.Generator) -> np.ndarray:
+    """Bank indices for one batch.
+
+    ``uniform`` (B0): i.i.d. over the bank. ``clustered`` (E1.5, every arm alike): ``b / group`` anchors, each with
+    ``group − 1`` neighbours drawn from its caption weights w̃(c_anchor), so that repulsion with h_q > 0 has
+    neighbouring conditions' samples in the batch to act on.
+    """
+    n = len(bank.c)
+    match cfg["train"]["batch_mode"]:
+        case "uniform":
+            return rng.integers(0, n, size=b)
+        case "clustered":
+            group = int(cfg["train"]["group"])
+            anchors = rng.integers(0, n, size=b // group)
+            hp = bandwidths({**cfg, "h_p": {**cfg["h_p"], "rule": "n_eff", "scale": 1.0}}, bank)
+            w = np.exp(caption_log_weights(bank.c[anchors], bank.c, hp[anchors]))
+            return np.concatenate([np.r_[a, rng.choice(n, size=group - 1, p=row)] for a, row in zip(anchors, w)])
+        case other:
+            raise ValueError(f"unknown train.batch_mode {other!r}")
 
 
 @dataclass(slots=True)
@@ -280,6 +296,7 @@ def train(run: Run, cfg: Config, bank: Bank, sigma: float, *, steps: int, on_log
     g = lucid.Generator(device=device)
     g.manual_seed(seed)
     b, m, eps_dim = int(cfg["train"]["batch_conditions"]), int(cfg["gen"]["M"]), int(cfg["model"]["eps_dim"])
+    eval_every = int(cfg["train"]["eval_every"])
     probe = probe_inputs(cfg, device)
     snaps_at = {0, steps // 4, steps // 2, steps}
     snaps: dict[int, FloatArray] = {}
@@ -290,7 +307,7 @@ def train(run: Run, cfg: Config, bank: Bank, sigma: float, *, steps: int, on_log
             snaps[step] = sample(ema.module if step else model, probe["eps"], probe["c"])
         if step == steps:
             break
-        idx = sample_conditions(cfg, len(bank.c), b, rng)
+        idx = sample_conditions(cfg, bank, b, rng)
         c_np = bank.c[idx]
         eps = lucid.randn(b, m, eps_dim, generator=g, device=device)
         x = model(eps, to_tensor(c_np, device).unsqueeze(1))
@@ -299,7 +316,8 @@ def train(run: Run, cfg: Config, bank: Bank, sigma: float, *, steps: int, on_log
         loss.backward()
         opt.step()
         ema.update_parameters(model)
-        loss.eval()
+        if step % eval_every == 0 or step == steps - 1:
+            _materialize(loss, model, ema, opt)
         if step % int(cfg["train"]["log_every"]) == 0:
             row = {"loss": float(loss.item())} | {k: float(v.item()) for k, v in info.items() if v.ndim == 0}
             if not math.isfinite(row["loss"]):
@@ -307,6 +325,18 @@ def train(run: Run, cfg: Config, bank: Bank, sigma: float, *, steps: int, on_log
             log.append({"step": step, **row})
             on_log(step, row)
     return Trained(model, ema, log, snaps, time.perf_counter() - start), resolved
+
+
+def _materialize(loss: Tensor, model: MLPGenerator, ema: AveragedModel, opt: Adam) -> None:
+    """Evaluate everything a step produced (CLAUDE.md §7.4).
+
+    Metal is lazy: evaluating only the loss leaves the updated parameters, the EMA copy and Adam's moments as
+    pending graphs, which grow until Metal's resource limit (seen at ~18k steps in the first G4 run). Called every
+    ``train.eval_every`` steps: every step costs 11.3 ms/step, every 10 steps 3.7 ms/step (measured), and a
+    10-step graph is far below the limit.
+    """
+    state = [t for st in opt.state.values() for t in st.values() if isinstance(t, Tensor)]
+    lucid.eval(loss, *model.parameters(), *ema.module.parameters(), *state)
 
 
 # ── sampling and evaluation ─────────────────────────────────────────────────
