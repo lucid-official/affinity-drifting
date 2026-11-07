@@ -1,0 +1,71 @@
+id: E1.2
+level: L1
+claim: C1
+title: single positive collapses to the conditional mean; the oracle does not
+runner: train
+seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+reference_arm: single
+allowed_delta:
+- h_p.rule
+- positives.source
+- field
+arms:
+  single:
+    set:
+      h_p.rule: zero
+  K4:
+    set:
+      h_p.rule: zero
+      positives.source: oracle
+  drifting:
+    set:
+      h_p.rule: zero
+      field: release
+judge:
+  kind: composite
+  checks:
+  - type: band
+    arm: single
+    metric: mci_heldout
+    pass_ge: 0.5
+    fail_lt: 0.3
+  - type: paired
+    a: single
+    b: K4
+    metric: off_manifold_heldout
+  - type: band
+    arm: K4
+    metric: mci_heldout
+    pass_le: 0.1
+    otherwise: INCONCLUSIVE
+  - type: band_vs
+    arm: K4
+    metric: w2_heldout
+    ref_metric: w2_datadata_heldout
+    factor: 2.0
+    otherwise: INCONCLUSIVE
+report_metrics:
+- mci_heldout
+- off_manifold_heldout
+- w2_heldout
+- w2_datadata_heldout
+- mode_coverage_heldout
+- mci_train
+- precision_heldout
+- recall_heldout
+- coverage_heldout
+- mmd_heldout
+figures:
+  FC.1: {}
+  FC.3: {}
+  FC.4: {}
+  F1.1:
+    arms:
+    - drifting
+    - single
+    - K4
