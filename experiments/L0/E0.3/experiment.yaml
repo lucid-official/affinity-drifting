@@ -1,0 +1,22 @@
+id: E0.3
+level: L0
+claim: Prop C
+title: h_q = 0 gives the NW mixture w̃
+runner: particles
+seeds: [0, 1, 2, 3, 4]
+reference_arm: b0
+allowed_delta: [field]
+arms:
+  b0: {}                                     # B0 as is
+  drifting: {set: {field: release}}          # baseline (D11)
+judge:
+  kind: threshold
+  arm: b0
+  metric: tv_mean
+  fail_above: 0.1
+report_metrics: [tv_mean, tv_max, self_mean, own_dist_mean, steps, final_rms_v, n_eff_mean, wall_time_s]
+figures:
+  FC.1: {arms: [drifting, b0]}
+  FC.2: {arm: b0}
+  F0.1: {arms: [drifting, b0]}
+  F0.2: {arms: [b0, drifting]}
