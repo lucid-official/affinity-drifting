@@ -1,0 +1,6 @@
+{
+  "sigma": 0.6983749393062032,
+  "rule": "half_median_pairwise",
+  "computed_from_arm": "lam_0",
+  "time_utc": "2026-11-07T14:49:22+00:00"
+}

@@ -1,0 +1,41 @@
+{
+  "sigma": 0.6983749393062032,
+  "steps": 1150,
+  "stable": true,
+  "diverged": false,
+  "field": "affd",
+  "density": "gaussian_closure",
+  "converged_at": 150,
+  "final_rms_v": 1.3352091343676875e-07,
+  "final_rms_v_plus": 1.5130478143692017,
+  "final_rms_v_minus": 0.49034589529037476,
+  "final_rms_v_neg": 2.6895618438720703,
+  "compiled": true,
+  "wall_time_s": 5.386749666999094,
+  "notes": [
+    "compiled step matches eager (max diff 1.2e-07)"
+  ],
+  "lambda": 0.5,
+  "mean_c0": [
+    2.9999994292738847,
+    9.0701917088154e-09
+  ],
+  "var_c0": 0.6188637503807974,
+  "pred_mean_c0": [
+    3.0,
+    0.0
+  ],
+  "pred_particle_var_c0": 0.6188637779254715,
+  "mean_c1": [
+    -2.9999997429549694,
+    -8.975305831881997e-09
+  ],
+  "var_c1": 0.6188638135889086,
+  "pred_mean_c1": [
+    -3.0,
+    0.0
+  ],
+  "pred_particle_var_c1": 0.6188637779254715,
+  "rel_err_mean": 1.902660613788156e-07,
+  "rel_err_var": 3.222819120648125e-08
+}

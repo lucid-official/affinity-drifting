@@ -1,0 +1,29 @@
+{
+  "sigma": 0.6983749393062032,
+  "steps": 50,
+  "stable": false,
+  "diverged": true,
+  "field": "release",
+  "density": "gaussian_closure",
+  "converged_at": null,
+  "final_rms_v": NaN,
+  "final_rms_v_plus": 0.0,
+  "final_rms_v_minus": 0.0,
+  "final_rms_v_neg": 0.0,
+  "compiled": true,
+  "wall_time_s": 4.366550250037108,
+  "notes": [
+    "compiled step matches eager (max diff 2.1e-05)"
+  ],
+  "lambda": 0.0,
+  "mean_c0": [
+    NaN,
+    NaN
+  ],
+  "var_c0": NaN,
+  "mean_c1": [
+    NaN,
+    NaN
+  ],
+  "var_c1": NaN
+}

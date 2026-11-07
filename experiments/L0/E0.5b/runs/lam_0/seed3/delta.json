@@ -1,0 +1,24 @@
+{
+  "arm": "lam_0",
+  "reference_arm": "lam_0",
+  "knobs_vs_reference": [],
+  "vs_B0": {
+    "gen.M": {
+      "B0": 256,
+      "arm": 2048
+    },
+    "level0.density": {
+      "B0": "kde",
+      "arm": "gaussian_closure"
+    },
+    "level0.problem": {
+      "B0": "single_bank",
+      "arm": "gaussian_pair"
+    },
+    "negative.type": {
+      "B0": "self",
+      "arm": "counterfactual"
+    }
+  },
+  "vs_reference": {}
+}

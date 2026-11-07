@@ -1,0 +1,29 @@
+{
+  "sigma": 0.6983749393062032,
+  "steps": 300,
+  "stable": false,
+  "diverged": true,
+  "field": "affd",
+  "density": "gaussian_closure",
+  "converged_at": null,
+  "final_rms_v": 796.4595336914062,
+  "final_rms_v_plus": 7979.59765625,
+  "final_rms_v_minus": 0.331242173910141,
+  "final_rms_v_neg": 7978.23193359375,
+  "compiled": true,
+  "wall_time_s": 0.717151584016392,
+  "notes": [
+    "compiled step matches eager (max diff 3.0e-08)"
+  ],
+  "lambda": 1.1,
+  "mean_c0": [
+    20.53103083744645,
+    8.846040390508847e-05
+  ],
+  "var_c0": 0.25105691282352893,
+  "mean_c1": [
+    -17070.20412826538,
+    -0.07731249959033448
+  ],
+  "var_c1": 784.7543860572592
+}
