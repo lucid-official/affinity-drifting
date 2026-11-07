@@ -1,0 +1,25 @@
+id: E0.2
+level: L0
+claim: Prop A
+title: symmetric h_q = h_p memorises
+runner: particles
+seeds: [0, 1, 2, 3, 4]
+reference_arm: sym
+allowed_delta: [h_q.ratio, h_p.scale, field]
+arms:
+  sym: {set: {h_q.ratio: 1.0}}                         # the plan's Δ
+  sym_hp_x0.5: {set: {h_q.ratio: 1.0, h_p.scale: 0.5}} # "모든 유한 h_p": robustness (D10)
+  sym_hp_x2: {set: {h_q.ratio: 1.0, h_p.scale: 2.0}}
+  hq0: {ref: hq0}                                      # B0, for F0.1 / F0.5 only (not judged)
+  drifting: {set: {field: release}, ref: hq0}          # baseline (D11)
+judge:
+  kind: memorization
+  arms: [sym, sym_hp_x0.5, sym_hp_x2]
+  metric: self_mean
+  min: 0.95
+report_metrics: [self_mean, self_min, own_dist_mean, tv_mean, steps, final_rms_v, n_eff_mean, wall_time_s]
+figures:
+  FC.1: {arms: [drifting, hq0, sym, sym_hp_x0.5, sym_hp_x2]}
+  FC.2: {arm: sym}
+  F0.1: {arms: [drifting, hq0, sym]}
+  F0.5: {arms: [drifting, hq0, sym]}
