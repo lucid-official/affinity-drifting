@@ -446,3 +446,10 @@ How to read this file
   0.0001 smoothed. E0.2 self ratio still rising at the step cap. Details: `experiments/L0/analysis/README.md`.
 - Figures relocated to the root `figures/<Level>/<ID>/` (user request).
 - Stopped for the user's go/no-go (plan §9). Level 1 not started.
+
+### 2026-11-08 · L1 · go and pre-L1 decisions (hand entry)
+
+- User: go to Level 1; decisions 1–5 delegated to the engineer, framed by the goal of extending Drifting to new
+  conditioning modalities (T2I). Recorded as D15–D19: σ = median N*-th-NN distance in φ space (L1+); E1.4 h_p axis
+  decoupled from δ (multiples of the N_eff bandwidth); G4 picks lr by marginal W2 and freezes it; β = 2 confirmed;
+  fixed-step training, no early stopping.
