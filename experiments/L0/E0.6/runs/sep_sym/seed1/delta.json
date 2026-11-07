@@ -1,0 +1,19 @@
+{
+  "arm": "sep_sym",
+  "reference_arm": "sep_hq0",
+  "knobs_vs_reference": [
+    "h_q.ratio"
+  ],
+  "vs_B0": {
+    "h_q.ratio": {
+      "B0": 0.0,
+      "arm": 1.0
+    }
+  },
+  "vs_reference": {
+    "h_q.ratio": {
+      "reference": 0.0,
+      "arm": 1.0
+    }
+  }
+}

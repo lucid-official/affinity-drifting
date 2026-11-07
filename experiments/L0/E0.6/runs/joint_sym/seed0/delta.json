@@ -1,0 +1,23 @@
+{
+  "arm": "joint_sym",
+  "reference_arm": "sep_sym",
+  "knobs_vs_reference": [
+    "softmax"
+  ],
+  "vs_B0": {
+    "h_q.ratio": {
+      "B0": 0.0,
+      "arm": 1.0
+    },
+    "softmax": {
+      "B0": "separate",
+      "arm": "joint"
+    }
+  },
+  "vs_reference": {
+    "softmax": {
+      "reference": "separate",
+      "arm": "joint"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "arm A": "joint_sym",
+  "arm B": "joint_hq0",
+  "arm C": "sep_sym",
+  "arm D": "drifting",
+  "arm E": "sep_hq0"
+}

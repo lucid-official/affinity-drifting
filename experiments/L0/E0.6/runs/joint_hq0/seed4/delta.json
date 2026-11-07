@@ -1,0 +1,19 @@
+{
+  "arm": "joint_hq0",
+  "reference_arm": "sep_hq0",
+  "knobs_vs_reference": [
+    "softmax"
+  ],
+  "vs_B0": {
+    "softmax": {
+      "B0": "separate",
+      "arm": "joint"
+    }
+  },
+  "vs_reference": {
+    "softmax": {
+      "reference": "separate",
+      "arm": "joint"
+    }
+  }
+}
