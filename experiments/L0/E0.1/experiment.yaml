@@ -1,0 +1,18 @@
+id: E0.1
+level: L0
+claim: Lemma 1
+title: V = σ²∇log(p̂/q̂) for a Gaussian kernel
+runner: lemma1
+seeds: [0, 1, 2, 3, 4]
+reference_arm: check
+allowed_delta: [field]
+arms:
+  check: {}                                  # AffD field (B0), both repulsion forms
+  drifting: {set: {field: release}}          # baseline: DriftLoss ≡ Lucid release (loss and gradient)
+judge:
+  kind: max_below
+  arms: [check]
+  metrics: [max_err_f64_cpu]
+  threshold: 1.0e-6
+report_metrics: [max_err_f64_cpu, max_err_f32_metal, release_max_diff]
+figures: {}
