@@ -16,12 +16,12 @@ How to read this file
 | Level | ID | Claim | Title | Status | Verdict | Report |
 | --- | --- | --- | --- | --- | --- | --- |
 | L0 | [E0.1](experiments/L0/E0.1/) | Lemma 1 | V = σ²∇log(p̂/q̂) for a Gaussian kernel | aggregated | PASS | [report](experiments/L0/E0.1/report.md) |
-| L0 | [E0.2](experiments/L0/E0.2/) | Prop A | symmetric h_q = h_p memorises | running | — | — |
-| L0 | [E0.3](experiments/L0/E0.3/) | Prop C | h_q = 0 gives the NW mixture w̃ | running | — | — |
-| L0 | [E0.4](experiments/L0/E0.4/) | Prop A–C | h_q interpolates monotonically from NW mixture to memorisation | running | — | — |
-| L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | running | — | — |
-| L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | pre-registered | — | — |
-| L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | running | — | — |
+| L0 | [E0.2](experiments/L0/E0.2/) | Prop A | symmetric h_q = h_p memorises | aggregated | INCONCLUSIVE | [report](experiments/L0/E0.2/report.md) |
+| L0 | [E0.3](experiments/L0/E0.3/) | Prop C | h_q = 0 gives the NW mixture w̃ | aggregated | FAIL | [report](experiments/L0/E0.3/report.md) |
+| L0 | [E0.4](experiments/L0/E0.4/) | Prop A–C | h_q interpolates monotonically from NW mixture to memorisation | aggregated | PASS | [report](experiments/L0/E0.4/report.md) |
+| L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | aggregated | FAIL | [report](experiments/L0/E0.5/report.md) |
+| L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | aggregated | PASS | [report](experiments/L0/E0.5b/report.md) |
+| L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | aggregated | FAIL | [report](experiments/L0/E0.6/report.md) |
 <!-- index:end -->
 
 ## Log
@@ -162,3 +162,287 @@ How to read this file
   in `log.jsonl` and the local `wandb/` directory.
 - Fix: `WandbSink` now disables wandb's telemetry proxy and error reporting outside `online` mode (test added).
   All sweeps were stopped and relaunched at 00:11 KST; complete runs were kept, each in-flight run restarts from scratch.
+
+### 2026-11-07 16:31 UTC · E0.5 · sweep
+
+- commit `bce86ecdc3`
+- arms ['lam_0', 'lam_0.25', 'lam_0.5', 'lam_0.75', 'lam_0.9', 'lam_1.1', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 30 complete, 5 skipped, 0 failed
+- wall time 4818 s
+
+### 2026-11-07 16:55 UTC · E0.5b · sweep
+
+- commit `bce86ecdc3`
+- arms ['lam_0', 'lam_0.25', 'lam_0.5', 'lam_0.75', 'lam_0.9', 'lam_1.1', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 35 complete, 0 skipped, 0 failed
+- wall time 1425 s
+
+### 2026-11-07 17:01 UTC · E0.3 · sweep
+
+- commit `bce86ecdc3`
+- arms ['b0', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 5 complete, 5 skipped, 0 failed
+- wall time 6650 s
+
+### 2026-11-07 18:20 UTC · E0.6 · sweep
+
+- commit `bce86ecdc3`
+- arms ['sep_hq0', 'joint_hq0', 'sep_sym', 'joint_sym', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 23 complete, 2 skipped, 0 failed
+- wall time 11391 s
+
+### 2026-11-07 18:21 UTC · E0.2 · sweep
+
+- commit `bce86ecdc3`
+- arms ['sym', 'sym_hp_x0.5', 'sym_hp_x2', 'hq0', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 22 complete, 3 skipped, 0 failed
+- wall time 11427 s
+
+### 2026-11-07 18:21 UTC · E0.4 · sweep
+
+- commit `bce86ecdc3`
+- arms ['hq_0', 'hq_0.25', 'hq_0.5', 'hq_1', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 20 complete, 5 skipped, 0 failed
+- wall time 11436 s
+
+### 2026-11-07 19:18 UTC · E0.1 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (max_below)
+- report: `experiments/L0/E0.1/report.md`
+
+### 2026-11-07 19:18 UTC · E0.2 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **INCONCLUSIVE** (memorization)
+- INCONCLUSIVE: sym/seed0 — self_mean = 0.2881, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed1 — self_mean = 0.3049, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed2 — self_mean = 0.3043, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed3 — self_mean = 0.2946, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed4 — self_mean = 0.2996, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed0 — self_mean = 0.5001, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed1 — self_mean = 0.5243, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed2 — self_mean = 0.5027, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed3 — self_mean = 0.5013, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed4 — self_mean = 0.5015, stable = False, steps = 50000
+- report: `experiments/L0/E0.2/report.md`
+
+### 2026-11-07 19:18 UTC · E0.3 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (threshold)
+- FAIL: b0:tv_mean — seed mean 0.1469 [0.1446, 0.1491] vs fail_above 0.1
+- report: `experiments/L0/E0.3/report.md`
+
+### 2026-11-07 19:19 UTC · E0.4 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (monotone)
+- report: `experiments/L0/E0.4/report.md`
+
+### 2026-11-07 19:19 UTC · E0.5 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (closed_form)
+- FAIL: lam_0.5:rel_err_mean — seed mean 3145 [2914, 3382] vs 0.05
+- FAIL: lam_0.5:rel_err_var — seed mean 2.895 [2.767, 3.114] vs 0.05
+- FAIL: lam_0.75:rel_err_mean — seed mean 4697 [4540, 4831] vs 0.05
+- FAIL: lam_0.75:rel_err_var — seed mean 15.94 [15.06, 16.41] vs 0.05
+- FAIL: lam_0.9:rel_err_mean — seed mean 1.665e+05 [1.607e+05, 1.712e+05] vs 0.05
+- FAIL: lam_0.9:rel_err_var — seed mean 7.393e+04 [7.38e+04, 7.401e+04] vs 0.05
+- report: `experiments/L0/E0.5/report.md`
+
+### 2026-11-07 19:19 UTC · E0.5b · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (closed_form)
+- report: `experiments/L0/E0.5b/report.md`
+
+### 2026-11-07 19:19 UTC · E0.6 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (equivalence)
+- INCONCLUSIVE: tv_mean: joint_hq0 − sep_hq0 — paired diff 0.02043 [0.01772, 0.02286], margin ±0.02
+- FAIL: tv_mean: joint_sym − sep_sym — paired diff -0.0398 [-0.04328, -0.03663], margin ±0.02
+- INCONCLUSIVE: self_mean: joint_sym − sep_sym — paired diff -0.02661 [-0.03535, -0.01787], margin ±0.02
+- report: `experiments/L0/E0.6/report.md`
+
+### 2026-11-07 19:19 UTC · E0.2 · figures
+
+- commit `bce86ecdc3`
+- `experiments/L0/E0.2/figures/FC.1/FC.1.png`
+- `experiments/L0/E0.2/figures/FC.2/FC.2.png`
+- `experiments/L0/E0.2/figures/F0.1/F0.1.png`
+- `experiments/L0/E0.2/figures/F0.5/F0.5.png`
+
+### 2026-11-07 19:19 UTC · E0.3 · figures
+
+- commit `bce86ecdc3`
+- `experiments/L0/E0.3/figures/FC.1/FC.1.png`
+- `experiments/L0/E0.3/figures/FC.2/FC.2.png`
+- `experiments/L0/E0.3/figures/F0.1/F0.1.png`
+- `experiments/L0/E0.3/figures/F0.2/F0.2.png`
+
+### 2026-11-07 20:02 UTC · E0.4 · figures
+
+- commit `bce86ecdc3`
+- `experiments/L0/E0.4/figures/FC.1/FC.1.png`
+- `experiments/L0/E0.4/figures/F0.3/F0.3.png`
+
+### 2026-11-07 20:03 UTC · E0.5 · figures
+
+- commit `bce86ecdc3`
+- `experiments/L0/E0.5/figures/FC.1/FC.1.png`
+- `experiments/L0/E0.5/figures/F0.4/F0.4.png`
+
+### 2026-11-07 20:03 UTC · E0.5b · figures
+
+- commit `bce86ecdc3`
+- `experiments/L0/E0.5b/figures/FC.1/FC.1.png`
+- `experiments/L0/E0.5b/figures/F0.4/F0.4.png`
+
+### 2026-11-07 20:03 UTC · E0.6 · figures
+
+- commit `bce86ecdc3`
+- `experiments/L0/E0.6/figures/FC.1/FC.1.png`
+- `experiments/L0/E0.6/figures/F0.3/F0.3.png`
+
+### 2026-11-07 20:03 UTC · E0.1 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (max_below)
+- report: `experiments/L0/E0.1/report.md`
+
+### 2026-11-07 20:03 UTC · E0.2 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **INCONCLUSIVE** (memorization)
+- INCONCLUSIVE: sym/seed0 — self_mean = 0.2881, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed1 — self_mean = 0.3049, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed2 — self_mean = 0.3043, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed3 — self_mean = 0.2946, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed4 — self_mean = 0.2996, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed0 — self_mean = 0.5001, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed1 — self_mean = 0.5243, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed2 — self_mean = 0.5027, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed3 — self_mean = 0.5013, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed4 — self_mean = 0.5015, stable = False, steps = 50000
+- report: `experiments/L0/E0.2/report.md`
+
+### 2026-11-07 20:03 UTC · E0.3 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (threshold)
+- FAIL: b0:tv_mean — seed mean 0.1469 [0.1446, 0.1491] vs fail_above 0.1
+- report: `experiments/L0/E0.3/report.md`
+
+### 2026-11-07 20:03 UTC · E0.4 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (monotone)
+- report: `experiments/L0/E0.4/report.md`
+
+### 2026-11-07 20:03 UTC · E0.5 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (closed_form)
+- FAIL: lam_0.5:rel_err_mean — seed mean 3145 [2914, 3382] vs 0.05
+- FAIL: lam_0.5:rel_err_var — seed mean 2.895 [2.767, 3.114] vs 0.05
+- FAIL: lam_0.75:rel_err_mean — seed mean 4697 [4540, 4831] vs 0.05
+- FAIL: lam_0.75:rel_err_var — seed mean 15.94 [15.06, 16.41] vs 0.05
+- FAIL: lam_0.9:rel_err_mean — seed mean 1.665e+05 [1.607e+05, 1.712e+05] vs 0.05
+- FAIL: lam_0.9:rel_err_var — seed mean 7.393e+04 [7.38e+04, 7.401e+04] vs 0.05
+- report: `experiments/L0/E0.5/report.md`
+
+### 2026-11-07 20:03 UTC · E0.5b · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (closed_form)
+- report: `experiments/L0/E0.5b/report.md`
+
+### 2026-11-07 20:03 UTC · E0.6 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (equivalence)
+- INCONCLUSIVE: tv_mean: joint_hq0 − sep_hq0 — paired diff 0.02043 [0.01772, 0.02286], margin ±0.02
+- FAIL: tv_mean: joint_sym − sep_sym — paired diff -0.0398 [-0.04328, -0.03663], margin ±0.02
+- INCONCLUSIVE: self_mean: joint_sym − sep_sym — paired diff -0.02661 [-0.03535, -0.01787], margin ±0.02
+- report: `experiments/L0/E0.6/report.md`
+
+### 2026-11-07 20:07 UTC · E0.1 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (max_below)
+- report: `experiments/L0/E0.1/report.md`
+
+### 2026-11-07 20:07 UTC · E0.2 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **INCONCLUSIVE** (memorization)
+- INCONCLUSIVE: sym/seed0 — self_mean = 0.2881, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed1 — self_mean = 0.3049, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed2 — self_mean = 0.3043, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed3 — self_mean = 0.2946, stable = False, steps = 50000
+- INCONCLUSIVE: sym/seed4 — self_mean = 0.2996, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed0 — self_mean = 0.5001, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed1 — self_mean = 0.5243, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed2 — self_mean = 0.5027, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed3 — self_mean = 0.5013, stable = False, steps = 50000
+- INCONCLUSIVE: sym_hp_x0.5/seed4 — self_mean = 0.5015, stable = False, steps = 50000
+- report: `experiments/L0/E0.2/report.md`
+
+### 2026-11-07 20:07 UTC · E0.3 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (threshold)
+- FAIL: b0:tv_mean — seed mean 0.1469 [0.1446, 0.1491] vs fail_above 0.1
+- report: `experiments/L0/E0.3/report.md`
+
+### 2026-11-07 20:07 UTC · E0.4 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (monotone)
+- report: `experiments/L0/E0.4/report.md`
+
+### 2026-11-07 20:07 UTC · E0.5 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (closed_form)
+- FAIL: lam_0.5:rel_err_mean — seed mean 3145 [2914, 3382] vs 0.05
+- FAIL: lam_0.5:rel_err_var — seed mean 2.895 [2.767, 3.114] vs 0.05
+- FAIL: lam_0.75:rel_err_mean — seed mean 4697 [4540, 4831] vs 0.05
+- FAIL: lam_0.75:rel_err_var — seed mean 15.94 [15.06, 16.41] vs 0.05
+- FAIL: lam_0.9:rel_err_mean — seed mean 1.665e+05 [1.607e+05, 1.712e+05] vs 0.05
+- FAIL: lam_0.9:rel_err_var — seed mean 7.393e+04 [7.38e+04, 7.401e+04] vs 0.05
+- report: `experiments/L0/E0.5/report.md`
+
+### 2026-11-07 20:07 UTC · E0.5b · aggregate
+
+- commit `bce86ecdc3`
+- verdict **PASS** (closed_form)
+- report: `experiments/L0/E0.5b/report.md`
+
+### 2026-11-07 20:07 UTC · E0.6 · aggregate
+
+- commit `bce86ecdc3`
+- verdict **FAIL** (equivalence)
+- INCONCLUSIVE: tv_mean: joint_hq0 − sep_hq0 — paired diff 0.02043 [0.01772, 0.02286], margin ±0.02
+- FAIL: tv_mean: joint_sym − sep_sym — paired diff -0.0398 [-0.04328, -0.03663], margin ±0.02
+- INCONCLUSIVE: self_mean: joint_sym − sep_sym — paired diff -0.02661 [-0.03535, -0.01787], margin ±0.02
+- report: `experiments/L0/E0.6/report.md`
+
+### 2026-11-07 20:09 UTC · L0 · summary
+
+- commit `e594287d00`
+- `experiments/L0/summary.md` regenerated
+
+### 2026-11-08 · L0 · results and analysis (hand entry)
+
+- All 165 L0 runs complete; aggregated with the pre-registered judges. E0.1 PASS, E0.2 INCONCLUSIVE, E0.3 FAIL,
+  E0.4 PASS, E0.5 FAIL, E0.5b PASS, E0.6 FAIL. Figures for every experiment regenerated after the previous session was
+  cut off mid-run (exit 137 during E0.4 figures).
+- Exploratory (not pre-registered) analysis `scripts/analysis_l0_smoothed.py`: with σ = 0.554 above the positive spacing
+  (0.15–0.4), h_q = 0 runs match p̂ to smoothed TV 0.0001 while nearest-positive TV is 0.147; E0.6 hq0 pair differs by
+  0.0001 smoothed. E0.2 self ratio still rising at the step cap. Details: `experiments/L0/analysis/README.md`.
+- Figures relocated to the root `figures/<Level>/<ID>/` (user request).
+- Stopped for the user's go/no-go (plan §9). Level 1 not started.
