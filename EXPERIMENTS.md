@@ -27,8 +27,8 @@ How to read this file
 | L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | aggregated | PASS | [report](experiments/L1/E1.3/report.md) |
 | L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | pre-registered | — | — |
 | L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | running | — | — |
-| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | pre-registered | — | — |
-| L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | running | — | — |
+| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | running | — | — |
+| L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | aggregated | PASS | [report](experiments/L1/E1.6/report.md) |
 | L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
 | L1 | [G4b](experiments/L1/G4b/) | Gate G4 (2nd) | unconditional drifting (full-batch repulsion) fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4b/report.md) |
 | L1 | [G4c](experiments/L1/G4c/) | Gate G4 (3rd) | unconditional drifting (full-batch repulsion, whole-field normalisation) fits the marginal; lr fixed here | aggregated | PASS | [report](experiments/L1/G4c/report.md) |
@@ -821,3 +821,44 @@ How to read this file
 - verdict **PASS** (composite)
 - preprint rebuilt: `paper/main.pdf`
 - report: `experiments/L1/E1.3/report.md`
+
+### 2026-11-08 15:09 UTC · E1.6 · sweep
+
+- commit `9952a885e2`
+- arms ['hx0.25', 'hx0.5', 'hx1', 'hx2', 'hx4', 'hx8', 'fixed', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 40 complete, 0 skipped, 0 failed
+- wall time 5490 s
+
+### 2026-11-08 15:12 UTC · E1.6 · aggregate
+
+- commit `9952a885e2`
+- verdict **PASS** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- report: `experiments/L1/E1.6/report.md`
+
+### 2026-11-08 15:12 UTC · E1.6 · figures
+
+- commit `9952a885e2`
+- `figures/L1/E1.6/FC.1/FC.1.png`
+- `figures/L1/E1.6/F1.7/F1.7.png`
+
+### 2026-11-08 15:15 UTC · E1.2 · aggregate
+
+- commit `9952a885e2`
+- verdict **PASS** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- report: `experiments/L1/E1.2/report.md`
+
+### 2026-11-08 15:16 UTC · E1.3 · aggregate
+
+- commit `9952a885e2`
+- verdict **PASS** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- report: `experiments/L1/E1.3/report.md`
+
+### 2026-11-08 15:18 UTC · E1.6 · aggregate
+
+- commit `9952a885e2`
+- verdict **PASS** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- report: `experiments/L1/E1.6/report.md`

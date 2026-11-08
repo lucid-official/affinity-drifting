@@ -1,0 +1,14 @@
+{
+  "state": "complete",
+  "reason": "",
+  "time_utc": "2026-11-08T14:59:49+00:00",
+  "git_commit": "76d57163c928a42dd3f35a140aafe6382f466204",
+  "git_dirty": "True",
+  "git_branch": "affinity-drifting",
+  "python": "3.14.6",
+  "lucid": "3.16.4",
+  "numpy": "2.5.4",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "device": "metal"
+}

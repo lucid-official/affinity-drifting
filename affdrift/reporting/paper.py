@@ -149,6 +149,9 @@ def numbers() -> dict[str, str]:
     n["EOneThreeAffDRecall"] = _num("E1.3", "AffD", "recall_heldout")
     for arm, key in (("AffD", "AffD"), ("K2", "KTwo")):
         n[f"EOneThree{key}Prec"] = _num("E1.3", arm, "precision_heldout")
+    for arm, key in (("hx0.25", "Quarter"), ("hx1", "One"), ("hx8", "Eight"), ("fixed", "Fixed")):
+        n[f"EOneSix{key}W"] = _num("E1.6", arm, "w2_heldout", digits=3)
+        n[f"EOneSix{key}Energy"] = _num("E1.6", arm, "raw_drift_energy", digits=3)
     a, s = _ci("E1.3", "AffD", "w2_heldout"), _ci("E1.3", "single", "w2_heldout")
     n["EOneThreeRatio"] = PENDING if a is None or s is None else rf"${a['mean'] / s['mean']:.2f}$"
     return n

@@ -1,0 +1,27 @@
+{
+  "arm": "fixed",
+  "reference_arm": "hx1",
+  "knobs_vs_reference": [
+    "h_p.*"
+  ],
+  "vs_B0": {
+    "h_p.fixed_value": {
+      "B0": null,
+      "arm": 0.011310193203992451
+    },
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "fixed"
+    }
+  },
+  "vs_reference": {
+    "h_p.fixed_value": {
+      "reference": null,
+      "arm": 0.011310193203992451
+    },
+    "h_p.rule": {
+      "reference": "n_eff",
+      "arm": "fixed"
+    }
+  }
+}

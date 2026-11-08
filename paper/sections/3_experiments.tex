@@ -94,6 +94,16 @@ fixed-point analysis allows.
   \label{fig:mechanism}
 \end{figure}
 
+\paragraph{Bandwidth.} Scaling the bandwidth $h(c)$ selected by $n_\mathrm{eff}=n^\star$ by a factor
+$m\in\{\tfrac14,\tfrac12,1,2,4,8\}$ gives a U-shaped held-out $W_2$ with its minimum at $m=1$ (\VerdictEOneSix):
+\EOneSixQuarterW\ at $m=\tfrac14$, \EOneSixOneW\ at $m=1$ and \EOneSixEightW\ at $m=8$. Too small a bandwidth pools too
+few positives to resolve the modes; too large a bandwidth pools conditions whose modes lie elsewhere. A single
+bandwidth shared by all conditions, set to the median of the selected $h(c)$, performs alike in this toy
+(\EOneSixFixedW), where conditions are uniformly dense. The unnormalized drift energy
+$\mathbb E\lVert V_{p,q}\rVert^2$ after training decreases monotonically in $h$ (\EOneSixOneEnergy\ at $m=1$,
+\EOneSixEightEnergy\ at $m=8$): a larger bandwidth gives a smoother target that is easier to match, not a better
+model. The drift energy is therefore not a criterion for selecting $h$; we never use it for selection.
+
 \paragraph{The gap grows as conditional resolution decreases.} \VerdictEOneFour\ (\cref{fig:phase}).
 
 \begin{figure}[t]
