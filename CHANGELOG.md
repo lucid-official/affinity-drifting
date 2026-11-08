@@ -58,6 +58,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- B0 `levels.L1.train.lr` = 1e-3, fixed by Gate G4c (PASS).
+
 - B0 `levels.L1`: `normalization.drift_target: total` (D24) and `train.lr: null` until Gate G4c. L1 runs made under
   per-term normalisation moved to `experiments/L1/<ID>/runs_superseded/D24/` (kept, not deleted).
 

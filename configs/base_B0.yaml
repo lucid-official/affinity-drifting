@@ -107,7 +107,7 @@ levels:
       cond_hidden: 64
     train:
       optimizer: adam         # betas (0.9, 0.999), no weight decay
-      lr: null                # to be fixed by Gate G4c (D24); null so nothing trains on an unvalidated lr
+      lr: 1.0e-3              # fixed by Gate G4c (PASS, marginal W2 0.136 ≤ 0.175)
       steps: 20000
       steps_multiplier: 1     # E1.5 "긴 학습": 3 (D19)
       batch_conditions: 8     # D22: × gen.M = 64 samples each (512 per batch, as before)
