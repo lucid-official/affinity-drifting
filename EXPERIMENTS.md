@@ -30,6 +30,7 @@ How to read this file
 | L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | pre-registered | — | — |
 | L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | pre-registered | — | — |
 | L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
+| L1 | [G4b](experiments/L1/G4b/) | Gate G4 (2nd) | unconditional drifting (full-batch repulsion) fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4b/report.md) |
 <!-- index:end -->
 
 ## Log
@@ -574,3 +575,48 @@ How to read this file
   repelled within each condition's 8 samples instead of across the batch; full-batch repulsion gives 0.228, plus a
   multi-scale kernel 0.175 (at the threshold). Proposed D20 (multi-scale kernel), D21 (G4 redefined as full-batch
   unconditional drifting, re-registered), D22 (keep M = 8 or move to 64 samples × 8 conditions) for the user.
+
+### 2026-11-08 08:37 UTC · G4b · smoke
+
+- commit `ecb1d69e07`
+- arms ['uncond_lr1e-4', 'uncond_lr3e-4', 'uncond_lr1e-3', 'drifting'] × seeds [0]
+- 1 complete, 0 skipped, 3 failed
+- wall time 129 s
+- FAILED G4b/uncond_lr3e-4/seed0: failed: TypeError: float() argument must be a string or a real number, not 'list'
+- FAILED G4b/uncond_lr1e-3/seed0: failed: TypeError: float() argument must be a string or a real number, not 'list'
+- FAILED G4b/drifting/seed0: failed: TypeError: float() argument must be a string or a real number, not 'list'
+
+### 2026-11-08 08:41 UTC · G4b · smoke
+
+- commit `882093848b`
+- arms ['uncond_lr1e-4', 'uncond_lr3e-4', 'uncond_lr1e-3', 'drifting'] × seeds [0]
+- 3 complete, 1 skipped, 0 failed
+- wall time 227 s
+
+### 2026-11-08 09:17 UTC · G4b · sweep
+
+- commit `0af89039be`
+- arms ['uncond_lr1e-3', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 9 complete, 1 skipped, 0 failed
+- wall time 1640 s
+
+### 2026-11-08 09:28 UTC · G4b · sweep
+
+- commit `0af89039be`
+- arms ['uncond_lr3e-4', 'uncond_lr1e-4'] × seeds [0, 1, 2, 3, 4]
+- 9 complete, 1 skipped, 0 failed
+- wall time 2276 s
+
+### 2026-11-08 09:28 UTC · G4b · aggregate
+
+- commit `0af89039be`
+- verdict **FAIL** (composite)
+- FAIL: selected uncond_lr1e-3 — w2_marginal_heldout 0.1849 [0.1748, 0.1944] vs 2.0 × w2_marginal_datadata_heldout 0.08763; all: {uncond_lr1e-4: 0.1885, uncond_lr3e-4: 0.1942, uncond_lr1e-3: 0.1849}
+- report: `experiments/L1/G4b/report.md`
+
+### 2026-11-08 18:30 KST · G4b · FAIL (narrow), L1 stopped again (hand entry)
+
+- G4b aggregated with its pre-registered rule: FAIL. Selected lr 1e-3, marginal W2 0.1849 [0.1748, 0.1944] against the
+  threshold 2 × 0.0876 = 0.1753. All three learning rates land at 0.185–0.194: a plateau, not an lr problem.
+- Large improvement over G4 (0.578) from D20–D22; the miss is ≈ 5 % of the threshold, and the CI's lower end touches it.
+- No E1.x run was started. Decision needed from the user (see the session report).
