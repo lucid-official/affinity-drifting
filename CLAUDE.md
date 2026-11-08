@@ -37,6 +37,7 @@ experiments/
   <Level>/<ID>/runs/<arm>/seed<k>/        # config.yaml, config_hash.txt, delta.json, env.json, status.json,
                                           # log.jsonl, metrics.json, arrays.npz(git 제외)
   <Level>/<ID>/runs_smoke/<arm>/seed0/    # smoke run (집계에 쓰지 않음)
+  <Level>/<ID>/runs_superseded/<D>/       # 승인된 수정(D번호)으로 무효가 된 run. 지우지 않고 옮겨 둔다(집계 안 함)
   <Level>/<ID>/aggregate.json     # 판정과 seed 집계 (자동)
   <Level>/<ID>/report.md          # 결과 보고서 (자동 생성 + 사람이 적는 칸)
 figures/                          # 모든 figure는 여기에만. 실험 계층을 그대로 따른다

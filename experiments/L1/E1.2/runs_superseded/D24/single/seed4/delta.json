@@ -1,0 +1,12 @@
+{
+  "arm": "single",
+  "reference_arm": "single",
+  "knobs_vs_reference": [],
+  "vs_B0": {
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "zero"
+    }
+  },
+  "vs_reference": {}
+}

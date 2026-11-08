@@ -1,0 +1,111 @@
+{
+  "id": "E1.1",
+  "time_utc": "2026-11-08T10:25:13+00:00",
+  "commit": "96a90729a20b786ebf08ae73a1fbc88931ba701c",
+  "judgement": {
+    "verdict": "PASS",
+    "kind": "composite",
+    "checks": [
+      {
+        "name": "check:max_grad_err",
+        "verdict": "PASS",
+        "detail": "seed mean 0 [0, 0] (pass ≤ 1e-05, fail > 1e-05)",
+        "ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 5
+        }
+      }
+    ]
+  },
+  "summary": {
+    "check": {
+      "max_grad_err": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 5
+      },
+      "max_grad_abs": {
+        "mean": 0.15522531270980836,
+        "lo": 0.11465263366699219,
+        "hi": 0.1941882014274597,
+        "n": 5
+      },
+      "max_grad_rel_err": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 5
+      }
+    },
+    "drifting": {
+      "max_grad_err": {
+        "mean": 0.1535797044634819,
+        "lo": 0.11344417319633067,
+        "hi": 0.19218974886462092,
+        "n": 5
+      },
+      "max_grad_abs": {
+        "mean": 0.15522531270980836,
+        "lo": 0.11465263366699219,
+        "hi": 0.1941882014274597,
+        "n": 5
+      },
+      "max_grad_rel_err": {
+        "mean": 0.9893079615245377,
+        "lo": 0.9887711246755462,
+        "hi": 0.9898321868587059,
+        "n": 5
+      }
+    }
+  },
+  "missing": [],
+  "runs": {
+    "check": {
+      "0": {
+        "config_hash": "f45394c286aa",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "f45394c286aa",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "f45394c286aa",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "f45394c286aa",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "f45394c286aa",
+        "state": "complete"
+      }
+    },
+    "drifting": {
+      "0": {
+        "config_hash": "298c7baaeb1e",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "298c7baaeb1e",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "298c7baaeb1e",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "298c7baaeb1e",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "298c7baaeb1e",
+        "state": "complete"
+      }
+    }
+  }
+}

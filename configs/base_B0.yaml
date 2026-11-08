@@ -96,6 +96,8 @@ levels:
       lipschitz: null         # spectral-norm Lipschitz L of the c path (E1.4b)
       mode_std: 0.1
       mix_beta: 2.0           # D18
+    normalization:
+      drift_target: total     # D24: normalise the whole field per scale, as the release does per temperature
     eval:
       workers: 5              # CPU processes for per-condition metrics (two sweeps share 10 performance cores)
     model:                    # MLP f(ε, g(c)), SiLU; fixed a priori, never tuned per arm
@@ -105,7 +107,7 @@ levels:
       cond_hidden: 64
     train:
       optimizer: adam         # betas (0.9, 0.999), no weight decay
-      lr: 1.0e-3              # selected by G4b's rule (G4b FAIL, narrow; user go: D23)
+      lr: null                # to be fixed by Gate G4c (D24); null so nothing trains on an unvalidated lr
       steps: 20000
       steps_multiplier: 1     # E1.5 "긴 학습": 3 (D19)
       batch_conditions: 8     # D22: × gen.M = 64 samples each (512 per batch, as before)

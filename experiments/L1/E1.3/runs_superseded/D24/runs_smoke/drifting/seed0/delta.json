@@ -1,0 +1,23 @@
+{
+  "arm": "drifting",
+  "reference_arm": "single",
+  "knobs_vs_reference": [
+    "field"
+  ],
+  "vs_B0": {
+    "field": {
+      "B0": "affd",
+      "arm": "release"
+    },
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "zero"
+    }
+  },
+  "vs_reference": {
+    "field": {
+      "reference": "affd",
+      "arm": "release"
+    }
+  }
+}
