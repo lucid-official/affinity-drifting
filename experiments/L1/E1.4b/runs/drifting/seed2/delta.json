@@ -1,0 +1,31 @@
+{
+  "arm": "drifting",
+  "reference_arm": "L16_h0",
+  "knobs_vs_reference": [
+    "field"
+  ],
+  "vs_B0": {
+    "field": {
+      "B0": "affd",
+      "arm": "release"
+    },
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "zero"
+    },
+    "level1.delta": {
+      "B0": 0.0625,
+      "arm": 0.0
+    },
+    "level1.lipschitz": {
+      "B0": null,
+      "arm": 16
+    }
+  },
+  "vs_reference": {
+    "field": {
+      "reference": "affd",
+      "arm": "release"
+    }
+  }
+}

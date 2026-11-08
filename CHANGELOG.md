@@ -71,6 +71,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- Preprint macros for E1.4b (`EOneFourB*`: W2 of the one-positive objective and of Affinity Drifting at L = 64 and L = 1).
 - Preprint (`paper/`, `affdrift/reporting/paper.py`): literature terminology and the notation of Deng et al. (2602.04770)
   only (CLAUDE.md §8.10). Method restated as drifting with positives from the Nadaraya–Watson estimate p̂_h(·|c) and
   negatives from q̂_{h'}(·|c) (h, h′ replace h_p, h_q; Kish effective sample size n_eff, n* replace N_eff, N*); MCI

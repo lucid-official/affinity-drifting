@@ -25,7 +25,7 @@ How to read this file
 | L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | aggregated | PASS | [report](experiments/L1/E1.1/report.md) |
 | L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | aggregated | PASS | [report](experiments/L1/E1.2/report.md) |
 | L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | aggregated | PASS | [report](experiments/L1/E1.3/report.md) |
-| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | running | — | — |
+| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | aggregated | INCONCLUSIVE | [report](experiments/L1/E1.4b/report.md) |
 | L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | aggregated | FAIL | [report](experiments/L1/E1.4/report.md) |
 | L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | aggregated | FAIL | [report](experiments/L1/E1.5/report.md) |
 | L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | aggregated | PASS | [report](experiments/L1/E1.6/report.md) |
@@ -944,3 +944,49 @@ How to read this file
   (½ median NN spacing = 0.0077), because 10k positives densely cover the modes. AffD is at chance level; single's
   0.004 is low because its samples sit between the modes. The memorization metric is uninformative at this
   data density. Preprint corrected. E1.3 verdict unaffected (memorization is not part of its judge).
+
+### 2026-11-08 18:15 UTC · E1.4b · sweep
+
+- commit `edb00b01fb`
+- arms ['drifting', 'L1_h4', 'L1_h2', 'L1_h1', 'L1_h0.5', 'L1_h0'] × seeds [0, 1, 2, 3, 4]
+- 30 complete, 0 skipped, 0 failed
+- wall time 5140 s
+
+### 2026-11-08 19:28 UTC · E1.4b · sweep
+
+- commit `edb00b01fb`
+- arms ['L64_h0', 'L64_h0.5', 'L64_h1', 'L64_h2', 'L64_h4', 'L16_h0', 'L16_h0.5', 'L16_h1', 'L16_h2', 'L16_h4', 'L4_h0', 'L4_h0.5', 'L4_h1', 'L4_h2', 'L4_h4', 'L1_h0', 'L1_h0.5', 'L1_h1', 'L1_h2', 'L1_h4', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 75 complete, 30 skipped, 0 failed
+- wall time 11962 s
+
+### 2026-11-08 19:30 UTC · E1.4b · aggregate
+
+- commit `edb00b01fb`
+- verdict **INCONCLUSIVE** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- INCONCLUSIVE: w2_train gap increasing — gaps [0.9941, 0.9742, 0.994, 0.9998]; step 0: -0.01995 [-0.06282, 0.01748]; step 1: 0.01988 [0.009322, 0.03398]; step 2: 0.005725 [-0.009748, 0.01844]
+- report: `experiments/L1/E1.4b/report.md`
+
+### 2026-11-08 19:30 UTC · E1.4b · figures
+
+- commit `edb00b01fb`
+- `figures/L1/E1.4b/FC.1/FC.1.png`
+- `figures/L1/E1.4b/F1.4/F1.4.png`
+- `figures/L1/E1.4b/F1.5/F1.5.png`
+
+### 2026-11-08 19:32 UTC · E1.4b · aggregate
+
+- commit `edb00b01fb`
+- verdict **INCONCLUSIVE** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- INCONCLUSIVE: w2_train gap increasing — gaps [0.9941, 0.9742, 0.994, 0.9998]; step 0: -0.01995 [-0.06282, 0.01748]; step 1: 0.01988 [0.009322, 0.03398]; step 2: 0.005725 [-0.009748, 0.01844]
+- report: `experiments/L1/E1.4b/report.md`
+
+### 2026-11-08 19:40 UTC · E1.4b · observation (manual)
+
+- commit `edb00b01fb` (판정 이후 기록)
+- 판정 INCONCLUSIVE. 격차 g(L)은 0.97–1.00으로 L과 무관하다(E1.4 FAIL과 같은 그림).
+- **용량 손잡이가 걸리지 않는다.** spectral norm은 plan §5.1 원문대로 c 경로 g에만 걸었고, 뒤의 body는 제약이 없어
+  f 전체는 c에 대해 L-Lipschitz가 아니다. AffD(h1) W2는 L = 64에서 0.445, L = 1에서 0.418이다. mode 중심의 c₁ 변화
+  속도가 2π(1 + c₂)이므로 진짜 1-Lipschitz 생성기라면 AffD도 나빠졌어야 한다. 따라서 이 실험은 C3를 검정하지 못한다.
+- f 전체를 제약하는 재설계는 plan과 다른 변경이라 deviations.md 항목과 사용자 승인이 필요하다(아직 제안 안 함, L1 go/no-go에서 논의).

@@ -1,0 +1,16 @@
+{
+  "arm": "L16_h1",
+  "reference_arm": "L16_h1",
+  "knobs_vs_reference": [],
+  "vs_B0": {
+    "level1.delta": {
+      "B0": 0.0625,
+      "arm": 0.0
+    },
+    "level1.lipschitz": {
+      "B0": null,
+      "arm": 16
+    }
+  },
+  "vs_reference": {}
+}

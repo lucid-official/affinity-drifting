@@ -120,6 +120,15 @@ MLP trained for $20{,}000$ steps on $10{,}000$ conditions regresses to the condi
 quantized. Collapse is therefore the default behavior of the one-positive objective here, and explicit quantization
 from $\delta=0$ to $1/16$ does not change it.
 
+A smooth version of the same test, with spectral normalization constraining the condition embedding $g$ to be
+$L$-Lipschitz for $L\in\{64,16,4,1\}$, gives the same picture and is \VerdictEOneFourB\ under its pre-registered rule:
+the $W_2$ of the one-positive objective is \EOneFourBSixtyFourOneW\ at $L=64$ and \EOneFourBOneOneW\ at $L=1$,
+against \EOneFourBSixtyFourAffW\ and \EOneFourBOneAffW\ for Affinity Drifting. The constraint, however, does not
+bind. It acts on $g$ only, and the unconstrained layers that follow can rescale $g(c)$, so $f_\theta$ itself is not
+$L$-Lipschitz in $c$. Even at $L=1$, Affinity Drifting is no worse than at $L=64$, although the mode centers of
+$p_\mathrm{data}(\cdot\mid c)$ move at rate $2\pi(1+c_2)$ in $c_1$. This experiment therefore does not test the
+dependence on capacity.
+
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{generated/figures/fig_phase}

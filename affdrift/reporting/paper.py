@@ -153,6 +153,8 @@ def numbers() -> dict[str, str]:
                      ("d4_h0", "FourOne"), ("d4_h1", "FourAff")):
         n[f"EOneFour{key}W"] = _num("E1.4", arm, "w2_train", digits=3)
         n[f"EOneFour{key}TVR"] = _num_one_minus("E1.4", arm, "mci_train", digits=3)
+    for arm, key in (("L64_h0", "SixtyFourOne"), ("L64_h1", "SixtyFourAff"), ("L1_h0", "OneOne"), ("L1_h1", "OneAff")):
+        n[f"EOneFourB{key}W"] = _num("E1.4b", arm, "w2_train", digits=3)
     for arm, key in (("hq0", "Zero"), ("sym", "Sym")):
         n[f"EOneFive{key}Mem"] = _num("E1.5", arm, "memorization_train", digits=3)
         n[f"EOneFive{key}Own"] = _num("E1.5", arm, "own_positive_share_train", digits=2)
