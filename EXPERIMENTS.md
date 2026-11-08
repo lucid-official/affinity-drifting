@@ -25,9 +25,9 @@ How to read this file
 | L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | aggregated | PASS | [report](experiments/L1/E1.1/report.md) |
 | L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | aggregated | PASS | [report](experiments/L1/E1.2/report.md) |
 | L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | aggregated | PASS | [report](experiments/L1/E1.3/report.md) |
-| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | pre-registered | — | — |
+| L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | running | — | — |
 | L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | aggregated | FAIL | [report](experiments/L1/E1.4/report.md) |
-| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | running | — | — |
+| L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | aggregated | FAIL | [report](experiments/L1/E1.5/report.md) |
 | L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | aggregated | PASS | [report](experiments/L1/E1.6/report.md) |
 | L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
 | L1 | [G4b](experiments/L1/G4b/) | Gate G4 (2nd) | unconditional drifting (full-batch repulsion) fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4b/report.md) |
@@ -902,3 +902,45 @@ How to read this file
   and E1.5 keep running as pre-registered.
 - Preprint: the capacity paragraph now reports the failure; the abstract and contribution (i) say collapse occurs
   even at full resolution in this toy; the diagnosis is marked as not pre-registered.
+
+### 2026-11-08 16:33 UTC · E1.5 · sweep
+
+- commit `11e6944352`
+- arms ['hq0', 'sym', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 15 complete, 0 skipped, 0 failed
+- wall time 5006 s
+
+### 2026-11-08 16:35 UTC · E1.5 · aggregate
+
+- commit `11e6944352`
+- verdict **FAIL** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- FAIL: hq0:nw_tv_train — seed mean 0.3861 [0.3842, 0.3879] (pass ≤ 0.1, fail > 0.1)
+- report: `experiments/L1/E1.5/report.md`
+
+### 2026-11-08 16:43 UTC · E1.5 · figures
+
+- commit `11e6944352`
+- `figures/L1/E1.5/FC.1/FC.1.png`
+- `figures/L1/E1.5/F1.6/F1.6.png`
+
+### 2026-11-08 16:50 UTC · E1.5 · observation (manual, exploratory — not pre-registered)
+
+- commit `11e6944352` (before the E1.5 results commit)
+- Verdict stands: **FAIL** (NW-TV check 0.386 > 0.1; memorization check PASS but tiny: sym − hq0 = 0.0016).
+- hq0 and sym are nearly identical (memorization 0.166 / 0.168, own-positive share 5e-4 / 5e-4, W2_train 0.458 / 0.466):
+  h' does not select the equilibrium of the trained generator, unlike L0 particles (E0.4 PASS).
+- Reference (`scripts/analysis_l1_reference.py` → `experiments/L1/analysis/reference.json`): TV between the smoothed
+  NW mixture and smoothed TRUE p(x|c) samples on the same 64 conditions and σ = 0.0711 is 0.359 (floor TV(true,true)
+  = 0.089). The generator (0.386) is about as far from the 16-point mixture as p(x|c) itself: it approximates p(x|c),
+  not the discrete NW fixed point. Same pattern as E1.4: the network's smoothness in c overrides the
+  non-parametric fixed-point analysis.
+
+### 2026-11-08 16:50 UTC · E1.3 · correction (manual)
+
+- commit `11e6944352`
+- Correction of my earlier reading (briefings and preprint, commit 76d5716): AffD's memorization_train = 0.165 is
+  NOT a sign of copying neighbors. TRUE samples of p(x|c) on training conditions score 0.166 with the same ε
+  (½ median NN spacing = 0.0077), because 10k positives densely cover the modes. AffD is at chance level; single's
+  0.004 is low because its samples sit between the modes. The memorization metric is uninformative at this
+  data density. Preprint corrected. E1.3 verdict unaffected (memorization is not part of its judge).

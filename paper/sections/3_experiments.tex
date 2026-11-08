@@ -80,10 +80,10 @@ places most of them off the conditional support (off-support share \EOneThreeKTw
 with noise of matched variance still collapses (variance ratio \EOneThreeKThreeTVR). The gain therefore comes from the
 $x$-dependent assignment of samples to the modes of semantically similar positives, not from more or smoother
 targets. \Cref{fig:mechanism} shows this assignment: with one positive every attraction vector points at the same
-target, whereas the pooled positives partition the plane into one basin per mode. One caveat is already visible: with
-ample capacity, some samples land on pooled training positives (share within half the median nearest-neighbor spacing of a
-training positive: \EOneThreeAffDMem\ on training conditions, against \EOneThreeSingleMem\ with one positive), as the
-fixed-point analysis allows.
+target, whereas the pooled positives partition the plane into one basin per mode. We see no sign of memorization: the share of samples within half the median nearest-neighbor
+spacing of some training positive is \EOneThreeAffDMem\ on training conditions, the same as for true samples of
+$p_\mathrm{data}(\cdot\mid c)$ (\RefMemChance, an analysis that was not pre-registered), whereas the one-positive
+objective, whose samples sit between the modes, scores \EOneThreeSingleMem.
 
 \begin{figure}[t]
   \centering
@@ -113,7 +113,8 @@ fails (\VerdictEOneFour; \cref{fig:phase}). On training conditions the $W_2$ of 
 $\delta=1/4$ (\EOneFourFourOneW\ against \EOneFourFourAffW) because Affinity Drifting degrades there, not because the
 one-positive objective improves. Even without quantization, the one-positive generator does not fit its training
 positives: its variance ratio on training conditions is \EOneFourZeroOneTVR, and in an analysis that was not
-pre-registered, its samples lie close to the conditional mean $\mathbb E[x\mid c]$ rather than at the positive $y_i$.
+pre-registered, the mean of its samples lies \RefOneToMean\ from the conditional mean $\mathbb E[x\mid c]$ and
+\RefOneToOwn\ from the condition's own positive $y_i$.
 The network's own smoothness in $c$, not the quantization step, thus sets its effective resolution in this range: an
 MLP trained for $20{,}000$ steps on $10{,}000$ conditions regresses to the conditional mean whether or not $c$ is
 quantized. Collapse is therefore the default behavior of the one-positive objective here, and explicit quantization
@@ -128,3 +129,18 @@ from $\delta=0$ to $1/16$ does not change it.
   $\delta=0$ does not occur.}
   \label{fig:phase}
 \end{figure}
+
+\paragraph{The negative bandwidth does not select the equilibrium of a trained generator.} In the particle system,
+$h'$ moved the equilibrium from the Nadaraya--Watson mixture ($h'=0$) to memorization ($h'=h$). We predicted the same
+for the trained generator: more memorization of training positives with $h'=h$, and, with $h'=0$, a generated
+distribution within total variation $0.1$ of the Nadaraya--Watson mixture, both smoothed at the finest kernel scale.
+The prediction fails (\VerdictEOneFive). The two settings are nearly indistinguishable: memorization share
+\EOneFiveZeroMem\ with $h'=0$ and \EOneFiveSymMem\ with $h'=h$ (the difference is positive but small, and both equal
+the share for true samples, \RefMemChance), share of
+samples at the condition's own positive \EOneFiveZeroOwn\ and \EOneFiveSymOwn, and $W_2$ \EOneFiveZeroW\ and
+\EOneFiveSymW\ on training conditions. The total variation to the mixture is \EOneFiveZeroTV\ with $h'=0$. In an
+analysis that was not pre-registered, the true conditional $p_\mathrm{data}(\cdot\mid c)$ is at \RefNWTrueTV\ from the
+same mixture (finite-sample floor \RefTrueTrueTV): the generator is about as far from the mixture of the 16 pooled
+points as the true conditional is, and close to the latter in $W_2$. As with quantization, the trained generator
+does not reach the non-parametric fixed points; it interpolates between nearby conditions and approximates
+$p_\mathrm{data}(\cdot\mid c)$ rather than the discrete mixture or the training positives.

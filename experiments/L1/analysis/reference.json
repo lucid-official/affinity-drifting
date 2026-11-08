@@ -1,0 +1,32 @@
+{
+ "note": "Exploratory, NOT pre-registered: reference values for interpreting the E1.4 and E1.5 failures.",
+ "commit": "11e6944352",
+ "time_utc": "2026-11-08T16:45:06+00:00",
+ "E1.5 NW reference": {
+  "sigma": 0.07110099055452695,
+  "tv_nw_vs_true": 0.3588035027881239,
+  "tv_true_vs_true": 0.08932425762390156
+ },
+ "memorization chance level": {
+  "eps": 0.007650822362196215,
+  "true_samples": 0.165924072265625
+ },
+ "E1.4 one-positive sample mean": {
+  "d0_h0": {
+   "to_conditional_mean": 0.0983012293985304,
+   "to_own_positive": 1.5096175339521487
+  },
+  "d64_h0": {
+   "to_conditional_mean": 0.09464594793075914,
+   "to_own_positive": 1.5049527558439086
+  },
+  "d16_h0": {
+   "to_conditional_mean": 0.1031304832333553,
+   "to_own_positive": 1.4994447915297784
+  },
+  "d4_h0": {
+   "to_conditional_mean": 0.19744737927666928,
+   "to_own_positive": 1.517990558521613
+  }
+ }
+}

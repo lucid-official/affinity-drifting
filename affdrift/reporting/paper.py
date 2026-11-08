@@ -153,6 +153,18 @@ def numbers() -> dict[str, str]:
                      ("d4_h0", "FourOne"), ("d4_h1", "FourAff")):
         n[f"EOneFour{key}W"] = _num("E1.4", arm, "w2_train", digits=3)
         n[f"EOneFour{key}TVR"] = _num_one_minus("E1.4", arm, "mci_train", digits=3)
+    for arm, key in (("hq0", "Zero"), ("sym", "Sym")):
+        n[f"EOneFive{key}Mem"] = _num("E1.5", arm, "memorization_train", digits=3)
+        n[f"EOneFive{key}Own"] = _num("E1.5", arm, "own_positive_share_train", digits=2)
+        n[f"EOneFive{key}TV"] = _num("E1.5", arm, "nw_tv_train", digits=3)
+        n[f"EOneFive{key}W"] = _num("E1.5", arm, "w2_train", digits=3)
+    ref = EXPERIMENTS_ROOT / "L1" / "analysis" / "reference.json"
+    r = json.loads(ref.read_text()) if ref.exists() else None
+    n["RefNWTrueTV"] = rf"${_fmt(r['E1.5 NW reference']['tv_nw_vs_true'], 3)}$" if r else PENDING
+    n["RefTrueTrueTV"] = rf"${_fmt(r['E1.5 NW reference']['tv_true_vs_true'], 3)}$" if r else PENDING
+    n["RefMemChance"] = rf"${_fmt(r['memorization chance level']['true_samples'], 3)}$" if r else PENDING
+    n["RefOneToMean"] = rf"${_fmt(r['E1.4 one-positive sample mean']['d0_h0']['to_conditional_mean'], 2)}$" if r else PENDING
+    n["RefOneToOwn"] = rf"${_fmt(r['E1.4 one-positive sample mean']['d0_h0']['to_own_positive'], 3)}$" if r else PENDING
     for arm, key in (("hx0.25", "Quarter"), ("hx1", "One"), ("hx8", "Eight"), ("fixed", "Fixed")):
         n[f"EOneSix{key}W"] = _num("E1.6", arm, "w2_heldout", digits=3)
         n[f"EOneSix{key}Energy"] = _num("E1.6", arm, "raw_drift_energy", digits=3)

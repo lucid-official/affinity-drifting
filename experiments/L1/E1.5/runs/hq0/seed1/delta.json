@@ -1,0 +1,20 @@
+{
+  "arm": "hq0",
+  "reference_arm": "hq0",
+  "knobs_vs_reference": [],
+  "vs_B0": {
+    "level1.delta": {
+      "B0": 0.0625,
+      "arm": 0.0
+    },
+    "train.batch_mode": {
+      "B0": "uniform",
+      "arm": "clustered"
+    },
+    "train.steps_multiplier": {
+      "B0": 1,
+      "arm": 3
+    }
+  },
+  "vs_reference": {}
+}

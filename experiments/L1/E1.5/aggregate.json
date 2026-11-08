@@ -1,0 +1,200 @@
+{
+  "id": "E1.5",
+  "time_utc": "2026-11-08T16:33:46+00:00",
+  "commit": "11e694435208c276a08e777e74c1d70719cd508c",
+  "judgement": {
+    "verdict": "FAIL",
+    "kind": "composite",
+    "checks": [
+      {
+        "name": "memorization_train: sym − hq0 > 0",
+        "verdict": "PASS",
+        "detail": "paired diff 0.001598 [0.0005707, 0.002724]",
+        "ci": {
+          "mean": 0.00159759521484375,
+          "lo": 0.0005706787109375,
+          "hi": 0.00272369384765625,
+          "n": 5
+        }
+      },
+      {
+        "name": "hq0:nw_tv_train",
+        "verdict": "FAIL",
+        "detail": "seed mean 0.3861 [0.3842, 0.3879] (pass ≤ 0.1, fail > 0.1)",
+        "ci": {
+          "mean": 0.3860545382817504,
+          "lo": 0.38418502610899863,
+          "hi": 0.38792405045450223,
+          "n": 5
+        }
+      }
+    ]
+  },
+  "summary": {
+    "hq0": {
+      "memorization_train": {
+        "mean": 0.16629486083984374,
+        "lo": 0.165570068359375,
+        "hi": 0.16695556640625,
+        "n": 5
+      },
+      "own_positive_share_train": {
+        "mean": 0.000482177734375,
+        "lo": 0.000421142578125,
+        "hi": 0.000567626953125,
+        "n": 5
+      },
+      "nw_tv_train": {
+        "mean": 0.3860545382817504,
+        "lo": 0.38418502610899863,
+        "hi": 0.38792405045450223,
+        "n": 5
+      },
+      "w2_train": {
+        "mean": 0.4576657322904566,
+        "lo": 0.4517578102027734,
+        "hi": 0.46185351897950844,
+        "n": 5
+      },
+      "w2_heldout": {
+        "mean": 0.4497580917263659,
+        "lo": 0.4442338236369536,
+        "hi": 0.4565094207860937,
+        "n": 5
+      }
+    },
+    "sym": {
+      "memorization_train": {
+        "mean": 0.1678924560546875,
+        "lo": 0.16712493896484376,
+        "hi": 0.16852874755859376,
+        "n": 5
+      },
+      "own_positive_share_train": {
+        "mean": 0.000518798828125,
+        "lo": 0.00047607421875,
+        "hi": 0.000567626953125,
+        "n": 5
+      },
+      "nw_tv_train": {
+        "mean": 0.37443631773676866,
+        "lo": 0.3698097993656722,
+        "hi": 0.37906283610786506,
+        "n": 5
+      },
+      "w2_train": {
+        "mean": 0.4662777006497464,
+        "lo": 0.4554048142760075,
+        "hi": 0.477493903115226,
+        "n": 5
+      },
+      "w2_heldout": {
+        "mean": 0.45894102633054523,
+        "lo": 0.44836683209788025,
+        "hi": 0.46754164946819393,
+        "n": 5
+      }
+    },
+    "drifting": {
+      "memorization_train": {
+        "mean": 0.0138336181640625,
+        "lo": 0.009735107421875,
+        "hi": 0.01793212890625,
+        "n": 5
+      },
+      "own_positive_share_train": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 5
+      },
+      "nw_tv_train": {
+        "mean": 0.9986059829334758,
+        "lo": 0.998248106896052,
+        "hi": 0.9989638589708998,
+        "n": 5
+      },
+      "w2_train": {
+        "mean": 1.4273916713063521,
+        "lo": 1.4258032473983122,
+        "hi": 1.4289800952143923,
+        "n": 5
+      },
+      "w2_heldout": {
+        "mean": 1.4294955945455607,
+        "lo": 1.4279171937195518,
+        "hi": 1.4310739953715699,
+        "n": 5
+      }
+    }
+  },
+  "missing": [],
+  "runs": {
+    "hq0": {
+      "0": {
+        "config_hash": "3d55388b974e",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "3d55388b974e",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "3d55388b974e",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "3d55388b974e",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "3d55388b974e",
+        "state": "complete"
+      }
+    },
+    "sym": {
+      "0": {
+        "config_hash": "2cecf7de85d0",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "2cecf7de85d0",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "2cecf7de85d0",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "2cecf7de85d0",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "2cecf7de85d0",
+        "state": "complete"
+      }
+    },
+    "drifting": {
+      "0": {
+        "config_hash": "18c42224bb53",
+        "state": "complete"
+      },
+      "1": {
+        "config_hash": "18c42224bb53",
+        "state": "complete"
+      },
+      "2": {
+        "config_hash": "18c42224bb53",
+        "state": "complete"
+      },
+      "3": {
+        "config_hash": "18c42224bb53",
+        "state": "complete"
+      },
+      "4": {
+        "config_hash": "18c42224bb53",
+        "state": "complete"
+      }
+    }
+  }
+}

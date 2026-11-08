@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Added
 
+- `scripts/analysis_l1_reference.py` (exploratory, never feeds a verdict): reference values for E1.4/E1.5 —
+  TV(NW mixture, true p(x|c)), memorization chance level of true samples, one-positive sample mean vs E[x|c] and y_i.
+  Output `experiments/L1/analysis/reference.json`, read by the preprint.
 - `affdrift` package (Python 3.14, `lucid-dl==3.16.4`), installed editable by `scripts/setup_env.sh`.
 - `core/drift.py`: `DriftLoss`, the Lucid release drifting loss split into overridable steps and bit-identical
   to `lucid.models.generative.drifting._model._drift_loss` (loss and gradient); `RawDriftLoss` (release field

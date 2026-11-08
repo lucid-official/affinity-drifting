@@ -1,0 +1,31 @@
+{
+  "arm": "drifting",
+  "reference_arm": "hq0",
+  "knobs_vs_reference": [
+    "field"
+  ],
+  "vs_B0": {
+    "field": {
+      "B0": "affd",
+      "arm": "release"
+    },
+    "level1.delta": {
+      "B0": 0.0625,
+      "arm": 0.0
+    },
+    "train.batch_mode": {
+      "B0": "uniform",
+      "arm": "clustered"
+    },
+    "train.steps_multiplier": {
+      "B0": 1,
+      "arm": 3
+    }
+  },
+  "vs_reference": {
+    "field": {
+      "reference": "affd",
+      "arm": "release"
+    }
+  }
+}
