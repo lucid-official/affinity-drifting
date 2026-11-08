@@ -49,6 +49,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
   dropped weight is < 1e-12 × the row maximum (zero in float32); otherwise the whole bank. Speed only; tested equal
   to the full computation.
 
+- `eval.metrics.evaluate_conditions`: per-condition L1 metrics split over `eval.workers` = 5 processes
+  (`ProcessPoolExecutor`); evaluation was single-threaded and left the GPU idle for ~1 min per run. Tested equal to
+  the serial computation.
+
 ### Changed
 
 - B0 `levels.L1`: σ rule `multiscale` (D20), `gen.M` 64 and `train.batch_conditions` 8 (D22). Affects every L1

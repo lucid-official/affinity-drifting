@@ -420,27 +420,9 @@ def evaluate(model: MLPGenerator, cfg: Config, bank: Bank, *, device: str, sigma
         fake = generate(model, conds, n, eps_dim, EVAL_SEED + seed, device)
         real, _ = bank.true_samples(conds, n, seed=EVAL_SEED + 10 + seed)
         centres = bank.modes(conds)
-        per: dict[str, list[float]] = {k: [] for k in ("w2", "mci", "off_manifold", "mode_coverage", "memorization",
-                                                          "precision", "recall", "density", "coverage", "mmd")}
         real2, _ = bank.true_samples(conds, n, seed=EVAL_SEED + 20 + seed)   # independent draw: data–data floor
-        lp_fake = bank.log_density(fake, conds)
-        lp_real = bank.log_density(real, conds)
-        per["w2_datadata"] = []
-        for i in range(len(conds)):
-            f, r = fake[i], real[i]
-            per["w2"].append(_w2(f, r))
-            per["w2_datadata"].append(_w2(real2[i], r))
-            per["mci"].append(M.mci(f, r))
-            per["off_manifold"].append(M.off_manifold(lp_fake[i], float(np.quantile(lp_real[i], 0.01))))
-            per["mode_coverage"].append(M.mode_coverage(M.nearest_mode(f, centres[i]), 3))
-            per["memorization"].append(M.memorization(f, bank.y, mem_eps))
-            p_, r_ = M.precision_recall(r, f)
-            d_, c_ = M.density_coverage(r, f)
-            per["precision"].append(p_)
-            per["recall"].append(r_)
-            per["density"].append(d_)
-            per["coverage"].append(c_)
-            per["mmd"].append(M.mmd_rbf(f, r))
+        per = M.evaluate_conditions(fake, real, real2, bank.log_density(fake, conds), bank.log_density(real, conds),
+                                    centres, bank.y, mem_eps, workers=int(cfg["eval"]["workers"]))
         for k, v in per.items():
             out[f"{k}_{split}"] = float(np.mean(v))
         pool = numpy_rng(EVAL_SEED, 60 + seed).choice(len(conds) * n, size=2048, replace=False)

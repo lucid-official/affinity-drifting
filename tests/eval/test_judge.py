@@ -73,3 +73,16 @@ def test_standard_metrics_sanity() -> None:
     _, cov = density_coverage(real, collapsed)
     assert cov < 0.3
     assert mmd_rbf(real, same) < mmd_rbf(real, collapsed)
+
+
+def test_parallel_condition_metrics_equal_serial() -> None:
+    from affdrift.eval.metrics import evaluate_conditions
+
+    rng = np.random.default_rng(0)
+    c, n = 7, 64
+    args = (rng.normal(size=(c, n, 2)), rng.normal(size=(c, n, 2)), rng.normal(size=(c, n, 2)),
+            rng.normal(size=(c, n)), rng.normal(size=(c, n)), rng.normal(size=(c, 3, 2)), rng.normal(size=(300, 2)), 0.05)
+    serial = evaluate_conditions(*args, workers=1)
+    parallel = evaluate_conditions(*args, workers=3)
+    for k in serial:
+        np.testing.assert_allclose(serial[k], parallel[k])

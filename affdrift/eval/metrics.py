@@ -115,3 +115,49 @@ def mmd_rbf(x: FloatArray, y: FloatArray) -> float:
 def nearest_mode(samples: FloatArray, centres: FloatArray) -> IntArray:
     """Index of the nearest true mode centre for each sample (mode coverage, plan §5.1)."""
     return cdist(samples, centres).argmin(axis=1)
+
+
+# ── per-condition evaluation, parallel over conditions ─────────────────────
+
+CONDITION_METRICS = ("w2", "w2_datadata", "mci", "off_manifold", "mode_coverage", "memorization",
+                     "precision", "recall", "density", "coverage", "mmd")
+
+
+def condition_metrics(fake: FloatArray, real: FloatArray, real2: FloatArray, lp_fake: FloatArray, lp_real: FloatArray,
+                      centres: FloatArray, train: FloatArray, mem_eps: float) -> dict[str, float]:
+    """Every plan §5.1 and standard metric for one condition (pure NumPy/SciPy, safe to run in a worker)."""
+    return {
+        "w2": w2(fake, real),
+        "w2_datadata": w2(real2, real),
+        "mci": mci(fake, real),
+        "off_manifold": off_manifold(lp_fake, float(np.quantile(lp_real, 0.01))),
+        "mode_coverage": mode_coverage(nearest_mode(fake, centres), 3),
+        "memorization": memorization(fake, train, mem_eps),
+        **dict(zip(("precision", "recall"), precision_recall(real, fake), strict=True)),
+        **dict(zip(("density", "coverage"), density_coverage(real, fake), strict=True)),
+        "mmd": mmd_rbf(fake, real),
+    }
+
+
+def _chunk(args: tuple) -> list[dict[str, float]]:
+    fake, real, real2, lp_fake, lp_real, centres, train, mem_eps = args
+    return [condition_metrics(f, r, r2, lf, lr, c, train, mem_eps)
+            for f, r, r2, lf, lr, c in zip(fake, real, real2, lp_fake, lp_real, centres, strict=True)]
+
+
+def evaluate_conditions(fake: FloatArray, real: FloatArray, real2: FloatArray, lp_fake: FloatArray,
+                        lp_real: FloatArray, centres: FloatArray, train: FloatArray, mem_eps: float,
+                        *, workers: int = 5) -> dict[str, list[float]]:
+    """:func:`condition_metrics` for every condition, split over ``workers`` processes (1 = in this process)."""
+    import concurrent.futures
+
+    n = len(fake)
+    bounds = np.linspace(0, n, max(1, workers) * 3 + 1).astype(int)
+    jobs = [(fake[a:b], real[a:b], real2[a:b], lp_fake[a:b], lp_real[a:b], centres[a:b], train, mem_eps)
+            for a, b in zip(bounds, bounds[1:]) if b > a]
+    if workers <= 1:
+        rows = [row for job in jobs for row in _chunk(job)]
+    else:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
+            rows = [row for part in pool.map(_chunk, jobs) for row in part]
+    return {k: [row[k] for row in rows] for k in CONDITION_METRICS}

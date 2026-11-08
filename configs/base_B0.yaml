@@ -95,6 +95,8 @@ levels:
       lipschitz: null         # spectral-norm Lipschitz L of the c path (E1.4b)
       mode_std: 0.1
       mix_beta: 2.0           # D18
+    eval:
+      workers: 5              # CPU processes for per-condition metrics (two sweeps share 10 performance cores)
     model:                    # MLP f(ε, g(c)), SiLU; fixed a priori, never tuned per arm
       eps_dim: 4
       hidden: 256
