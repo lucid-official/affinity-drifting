@@ -122,11 +122,18 @@ def test_own_samples_excludes_self() -> None:
 
 
 def test_drift_norm_gives_unit_energy(rng: np.random.Generator) -> None:
+    from affdrift.core.drift import DriftNorm
+
     x = _t(rng.normal(size=(4, 16, 3)))
     pos = TargetSet.uniform(_t(rng.normal(size=(4, 9, 3))))
-    terms = AffinityDrift(DriftSpec(sigma=1.0)).field(x, pos)
+    terms = AffinityDrift(DriftSpec(sigma=1.0, norm_target=DriftNorm.TERM)).field(x, pos)
     for t in (terms.v_plus, terms.v_minus):
         assert math.isclose(float((t * t).mean().item()), 1.0, rel_tol=1e-4)
+    total = AffinityDrift(DriftSpec(sigma=1.0, norm_target=DriftNorm.TOTAL)).field(x, pos)
+    assert math.isclose(float((total.v * total.v).mean().item()), 1.0, rel_tol=1e-4)
+    raw = AffinityDrift(DriftSpec(sigma=1.0, drift_norm=False)).field(x, pos).v
+    cos = float((total.v * raw).sum().item()) / float(lucid.sqrt((total.v ** 2).sum() * (raw ** 2).sum()).item())
+    assert cos == pytest.approx(1.0, abs=1e-5)   # TOTAL only rescales the field: same direction, same zeros
 
 
 def test_k3_requires_generator() -> None:

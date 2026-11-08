@@ -48,7 +48,7 @@ from lucid.models.generative.drifting import _model as release
 
 from affdrift.core.kernels import XKernel, log_x_kernel, sqdist
 
-__all__ = ["AffinityDrift", "DriftLoss", "DriftSpec", "DriftTerms", "MultiScaleAffinityDrift", "RawDriftLoss", "Softmax",
+__all__ = ["AffinityDrift", "DriftLoss", "DriftNorm", "DriftSpec", "DriftTerms", "MultiScaleAffinityDrift", "RawDriftLoss", "Softmax",
            "TargetSet"]
 
 type Info = dict[str, Tensor]
@@ -189,6 +189,17 @@ class RawDriftLoss(DriftLoss):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+class DriftNorm(StrEnum):
+    """What drift normalisation scales to E‖·‖²/S = 1 per batch (and per kernel scale)."""
+
+    #: The whole field V = V⁺ − V⁻ − λV_neg, as the release does per temperature (``_drift_force``).
+    TOTAL = "total"
+    #: Each term separately — CLAUDE.md §4's fallback for when the release could not be checked. It forces V⁺ and
+    #: V⁻ to unit size even where both should vanish (a point-mass target), which flung single-positive samples to
+    #: radius > 100 in the first L1 runs.
+    TERM = "term"
+
+
 class Softmax(StrEnum):
     """How attraction and repulsion weights are normalised (E0.6)."""
 
@@ -209,6 +220,7 @@ class DriftSpec:
     repulsion: bool = True
     neg_lambda: float = 0.0
     drift_norm: bool = True
+    norm_target: DriftNorm = DriftNorm.TERM
     feature_scale: float = 1.0
     pos_noise_std: float = 0.0
 
@@ -406,7 +418,7 @@ class AffinityDrift(DriftLoss):
                 v_plus = self.mean_shift(x, pos)
                 v_minus = None if gen is None else self.mean_shift(x, gen)
                 v_neg = None if neg is None or spec.neg_lambda == 0 else self.mean_shift(x, neg)
-                if spec.drift_norm:
+                if spec.drift_norm and spec.norm_target == DriftNorm.TERM:
                     v_plus, v_minus, v_neg = (
                         None if t is None else _unit_energy(t) for t in (v_plus, v_minus, v_neg)
                     )
@@ -415,6 +427,8 @@ class AffinityDrift(DriftLoss):
                     v = v - v_minus
                 if v_neg is not None:
                     v = v - spec.neg_lambda * v_neg
+                if spec.drift_norm and spec.norm_target == DriftNorm.TOTAL:
+                    v = _unit_energy(v)
                 return DriftTerms(v=v, v_plus=v_plus, v_minus=v_minus, v_neg=v_neg)
 
             case Softmax.JOINT:

@@ -22,11 +22,11 @@ How to read this file
 | L0 | [E0.5](experiments/L0/E0.5/) | Prop E | counterfactual negatives tilt to the closed-form Gaussian | aggregated | FAIL | [report](experiments/L0/E0.5/report.md) |
 | L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | aggregated | PASS | [report](experiments/L0/E0.5b/report.md) |
 | L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | aggregated | FAIL | [report](experiments/L0/E0.6/report.md) |
-| L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | pre-registered | — | — |
-| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | pre-registered | — | — |
+| L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | aggregated | PASS | [report](experiments/L1/E1.1/report.md) |
+| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | running | — | — |
 | L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | pre-registered | — | — |
 | L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | pre-registered | — | — |
-| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | pre-registered | — | — |
+| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | running | — | — |
 | L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | pre-registered | — | — |
 | L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | pre-registered | — | — |
 | L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
@@ -620,3 +620,75 @@ How to read this file
   threshold 2 × 0.0876 = 0.1753. All three learning rates land at 0.185–0.194: a plateau, not an lr problem.
 - Large improvement over G4 (0.578) from D20–D22; the miss is ≈ 5 % of the threshold, and the CI's lower end touches it.
 - No E1.x run was started. Decision needed from the user (see the session report).
+
+### 2026-11-08 09:52 UTC · E1.1 · smoke
+
+- commit `96a90729a2`
+- arms ['check', 'drifting'] × seeds [0]
+- 2 complete, 0 skipped, 0 failed
+- wall time 2 s
+
+### 2026-11-08 09:54 UTC · E1.2 · smoke
+
+- commit `96a90729a2`
+- arms ['single', 'K4', 'drifting'] × seeds [0]
+- 3 complete, 0 skipped, 0 failed
+- wall time 156 s
+
+### 2026-11-08 09:55 UTC · E1.4 · smoke
+
+- commit `96a90729a2`
+- arms ['d0_h0', 'd4_h4', 'd16_h1', 'drifting'] × seeds [0]
+- 4 complete, 0 skipped, 0 failed
+- wall time 184 s
+
+### 2026-11-08 09:58 UTC · E1.4b · smoke
+
+- commit `96a90729a2`
+- arms ['L1_h1', 'L64_h0', 'L16_h1', 'drifting'] × seeds [0]
+- 4 complete, 0 skipped, 0 failed
+- wall time 198 s
+
+### 2026-11-08 09:58 UTC · E1.3 · smoke
+
+- commit `96a90729a2`
+- arms ['AffD', 'single', 'K1', 'K2', 'K3', 'drifting'] × seeds [0]
+- 6 complete, 0 skipped, 0 failed
+- wall time 243 s
+
+### 2026-11-08 10:01 UTC · E1.5 · smoke
+
+- commit `96a90729a2`
+- arms ['hq0', 'sym', 'drifting'] × seeds [0]
+- 3 complete, 0 skipped, 0 failed
+- wall time 161 s
+
+### 2026-11-08 10:05 UTC · E1.6 · smoke
+
+- commit `96a90729a2`
+- arms ['hx0.25', 'hx0.5', 'hx1', 'hx2', 'hx4', 'hx8', 'fixed', 'drifting'] × seeds [0]
+- 8 complete, 0 skipped, 0 failed
+- wall time 281 s
+
+### 2026-11-08 10:06 UTC · E1.1 · sweep
+
+- commit `96a90729a2`
+- arms ['check', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 10 complete, 0 skipped, 0 failed
+- wall time 4 s
+
+### 2026-11-08 10:25 UTC · E1.1 · aggregate
+
+- commit `96a90729a2`
+- verdict **PASS** (composite)
+- report: `experiments/L1/E1.1/report.md`
+
+### 2026-11-08 19:30 KST · L1 · main sweeps stopped (hand entry)
+
+- E1.1 PASS (gradient error 0). E1.2 `single` (4 seeds) and E1.4 `d0_h0` (4 seeds) finished with MCI ≈ −11 and W2 ≈ 4.5:
+  ~98 % of samples form a blob inside the ring, ~2 % are flung to radius 3–170 (data radius ≤ 2). Metrics recomputed
+  from the saved samples agree, so evaluation is not at fault.
+- Suspected cause: drift normalisation per term (CLAUDE.md §4's fallback) although the release, which normalises the
+  whole field per temperature, had been checked. Per-term normalisation keeps V⁺ and V⁻ at unit size where both should
+  vanish (point-mass target of the single arm). All sweeps were stopped at 19:26; completed runs are kept as records.
+- Exploratory comparison (single arm, seed 0): total-field normalisation at lr 1e-3 vs per-term at lr 1e-4, running.

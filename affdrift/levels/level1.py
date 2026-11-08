@@ -39,7 +39,7 @@ from scipy.spatial.distance import cdist
 from affdrift._typing import Config, FloatArray, Metrics
 from affdrift.config import Experiment
 from affdrift.core.bandwidth import solve_hp
-from affdrift.core.drift import AffinityDrift, DriftLoss, DriftSpec, MultiScaleAffinityDrift, RawDriftLoss, Softmax, TargetSet
+from affdrift.core.drift import AffinityDrift, DriftLoss, DriftNorm, DriftSpec, MultiScaleAffinityDrift, RawDriftLoss, Softmax, TargetSet
 from affdrift.core.kernels import XKernel, caption_log_weights, log_normalize
 from affdrift.data.toy2d import Bank, make_bank
 from affdrift.eval import metrics as M
@@ -255,7 +255,8 @@ def make_loss(cfg: Config, bank: Bank, sigma: float | list[float], device: str, 
             noise = 0.0 if cfg["positives"]["noise"] == "none" else pos.matched_noise_std
             sigmas = sigma if isinstance(sigma, list) else [sigma]
             spec = DriftSpec(sigma=sigmas[0], kernel=XKernel(cfg["x_kernel"]["kind"]), softmax=Softmax(cfg["softmax"]),
-                             repulsion=True, drift_norm=bool(cfg["normalization"]["drift"]), pos_noise_std=noise)
+                             repulsion=True, drift_norm=bool(cfg["normalization"]["drift"]),
+                             norm_target=DriftNorm(cfg["normalization"]["drift_target"]), pos_noise_std=noise)
             gen = lucid.Generator(device=device) if noise > 0 else None
             if gen is not None:
                 gen.manual_seed(seed)

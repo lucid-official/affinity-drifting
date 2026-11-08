@@ -53,6 +53,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
   (`ProcessPoolExecutor`); evaluation was single-threaded and left the GPU idle for ~1 min per run. Tested equal to
   the serial computation.
 
+- `core/drift.DriftNorm` and B0 `normalization.drift_target` (`term` default = behaviour of every run so far;
+  `total` = normalise the whole field per batch and per kernel scale, as the release does per temperature).
+
 ### Changed
 
 - B0 `levels.L1.train.lr` = 1e-3, chosen by G4b's pre-registered rule; G4b itself failed narrowly and the user decided

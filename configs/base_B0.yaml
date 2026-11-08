@@ -34,7 +34,8 @@ positives:
 
 normalization:
   feature: frozen             # scale computed once and frozen in sigma.json (D3)
-  drift: true                 # each V term scaled to E‖V‖²/C = 1 per batch
+  drift: true                 # V scaled to E‖V‖²/C = 1 per batch (and per kernel scale)
+  drift_target: term          # term | total — what is normalised (D24: L1 moves to total, as the release)
 
 softmax: separate             # separate (B0) | joint (E0.6)
 
