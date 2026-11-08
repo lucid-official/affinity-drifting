@@ -60,6 +60,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
   regenerated from `aggregate.json` after every aggregation and compiled with tectonic; `scripts/build_paper.py`.
   CLAUDE.md §8.10.
 
+### Fixed
+
+- `pipeline._anomalies`: the "step cap reached without a stable ‖V‖" flag applies only to particle runs (which
+  report `stable`); it fired on every fixed-step L1 training run (D19). E1.2/E1.3 reports regenerated; verdicts and
+  numbers unchanged (seeded bootstrap). Test `tests/test_pipeline.py`.
+
 ### Changed
 
 - Preprint (`paper/`, `affdrift/reporting/paper.py`): literature terminology and the notation of Deng et al. (2602.04770)

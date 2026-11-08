@@ -154,7 +154,8 @@ def _anomalies(runs: dict[str, dict[int, Any]]) -> list[str]:
     for arm, rs in runs.items():
         for s, r in rs.items():
             m = r.metrics
-            if m.get("steps") is not None and not m.get("stable") and not m.get("diverged"):
+            # particle runs only (they report "stable"); trained generators run a fixed number of steps (D19)
+            if "stable" in m and m.get("steps") is not None and not m["stable"] and not m.get("diverged"):
                 flags.append(f"`{arm}/seed{s}`: step cap reached without a stable ‖V‖ < tol "
                              f"(final RMS‖V‖ = {m.get('final_rms_v', float('nan')):.2e})")
             if m.get("diverged") and not str(arm).startswith("lam_1"):

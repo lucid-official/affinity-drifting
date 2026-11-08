@@ -1,6 +1,6 @@
 # E1.2 — single positive collapses to the conditional mean; the oracle does not: 결과 보고서
 
-> 자동 생성: `scripts/aggregate.py E1.2` · commit `1cbf7ca489` · 2026-11-08 12:16 UTC
+> 자동 생성: `scripts/aggregate.py E1.2` · commit `9952a885e2` · 2026-11-08 15:13 UTC
 > 사전 등록: [prereg.md](prereg.md) (결과를 본 뒤 수정 금지) · 판정 규칙: `experiment.yaml`의 `judge:`
 
 ## 판정: **PASS**
@@ -31,21 +31,7 @@
 
 ## 이상 징후
 
-- `single/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K4/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K4/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K4/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K4/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K4/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
+- (자동 감지 없음)
 
 ### 사람이 적는 이상 징후
 

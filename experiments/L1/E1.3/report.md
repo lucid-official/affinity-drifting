@@ -1,6 +1,6 @@
 # E1.3 — AffD restores the mixture and beats single, K1, K2, K3: 결과 보고서
 
-> 자동 생성: `scripts/aggregate.py E1.3` · commit `75d2109e82` · 2026-11-08 13:49 UTC
+> 자동 생성: `scripts/aggregate.py E1.3` · commit `9952a885e2` · 2026-11-08 15:15 UTC
 > 사전 등록: [prereg.md](prereg.md) (결과를 본 뒤 수정 금지) · 판정 규칙: `experiment.yaml`의 `judge:`
 
 ## 판정: **PASS**
@@ -38,36 +38,7 @@
 
 ## 이상 징후
 
-- `AffD/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `AffD/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `AffD/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `AffD/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `AffD/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `single/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K1/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K1/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K1/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K1/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K1/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K2/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K2/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K2/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K2/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K2/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K3/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K3/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K3/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K3/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `K3/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed0`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed1`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed2`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed3`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
-- `drifting/seed4`: step cap reached without a stable ‖V‖ < tol (final RMS‖V‖ = nan)
+- (자동 감지 없음)
 
 ### 사람이 적는 이상 징후
 
