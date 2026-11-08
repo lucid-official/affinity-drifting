@@ -55,6 +55,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- B0 `levels.L1.train.lr` = 1e-3, chosen by G4b's pre-registered rule; G4b itself failed narrowly and the user decided
+  to proceed (D23). Affects every L1 experiment.
+
 - B0 `levels.L1`: σ rule `multiscale` (D20), `gen.M` 64 and `train.batch_conditions` 8 (D22). Affects every L1
   experiment; E1.x pre-registrations get an addendum before any run. G4 is re-registered as G4b with full-batch
   unconditional repulsion (D21).
