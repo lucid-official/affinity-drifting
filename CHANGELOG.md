@@ -45,6 +45,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
   median heuristic, 3 geometric scales). Not used by any registered experiment (candidate D20, awaiting approval).
 - L1 runs also save F1.3's ε-slice outputs.
 
+- L1 `Positives.neighbourhood`: the caption-weighted field is computed over the 1,024 nearest conditions when every
+  dropped weight is < 1e-12 × the row maximum (zero in float32); otherwise the whole bank. Speed only; tested equal
+  to the full computation.
+
 ### Changed
 
 - B0 `levels.L1`: σ rule `multiscale` (D20), `gen.M` 64 and `train.batch_conditions` 8 (D22). Affects every L1

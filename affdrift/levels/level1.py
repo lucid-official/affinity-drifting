@@ -185,12 +185,39 @@ class Positives:
             logw = logw[:, lucid.tensor(self.permutation, device=self.device)]
         return logw.unsqueeze(1)
 
+    #: Neighbours kept when the caption weights beyond them are exactly negligible (see :meth:`neighbourhood`).
+    TOP_K = 1024
+    #: Largest weight dropped, relative to the row maximum, for the neighbourhood to be used.
+    DROP_TOL = 1e-12
+
+    @functools.cached_property
+    def neighbourhood(self) -> np.ndarray | None:
+        """``(N, K)`` caption-space neighbours of every bank condition, or ``None`` when truncation is not exact.
+
+        A pure speed-up: the field is computed over the K nearest conditions only when every dropped caption weight
+        is below ``DROP_TOL`` × the row maximum, i.e. zero in float32. Rules ``inf``, ``zero``, random neighbours and
+        bandwidths too wide for that fall back to the whole bank.
+        """
+        hp = self.cfg["h_p"]
+        if hp["rule"] not in ("n_eff", "fixed") or hp["neighbors"] != "semantic":
+            return None
+        d, nbr = cKDTree(self.bank.c).query(self.bank.c, k=self.TOP_K)
+        dropped = np.exp(-(d[:, -1] ** 2) / (2 * self.h_p**2))      # weight just outside the kept set
+        return nbr if float(dropped.max()) < self.DROP_TOL else None
+
     def __call__(self, idx: np.ndarray, c: FloatArray) -> TargetSet:
         match self.cfg["positives"]["source"]:
             case "oracle":
                 n = int(self.cfg["positives"]["oracle_n"])
                 y, _ = self.bank.true_samples(c, n, seed=int(self.rng.integers(1 << 31)))
                 return TargetSet.uniform(to_tensor(y, self.device))
+            case "bank" if (nbr := self.neighbourhood) is not None:
+                rows = nbr[idx]                                                # (B, K)
+                d2 = ((self.bank.c[rows] - self.bank.c[idx][:, None, :]) ** 2).sum(-1)
+                logits = -d2 / (2 * self.h_p[idx][:, None] ** 2)
+                logw = logits - logits.max(-1, keepdims=True)
+                logw -= np.log(np.exp(logw).sum(-1, keepdims=True))
+                return TargetSet(to_tensor(self.bank.y[rows], self.device), to_tensor(logw[:, None, :], self.device))
             case "bank":
                 return TargetSet(self.bank_y, self.log_weights(idx))
             case other:
