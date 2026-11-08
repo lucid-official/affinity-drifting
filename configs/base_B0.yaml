@@ -82,7 +82,9 @@ levels:
   # Standard recipe (Adam, EMA 0.999, fixed steps, eval with EMA weights); lr fixed once at Gate G4 (D17, D19).
   L1:
     x_kernel:
-      sigma_rule: knn_median  # D15: median distance to the N*-th nearest positive
+      sigma_rule: multiscale  # D20: kNN width (D15) → median heuristic, 3 geometric scales
+    gen:
+      M: 64                   # D22: generated samples per condition (plan B0: 8)
     level1:
       n_train: 10000          # unique conditions, one positive each
       n_heldout: 256
@@ -103,7 +105,7 @@ levels:
       lr: null                # fixed at Gate G4 (D17)
       steps: 20000
       steps_multiplier: 1     # E1.5 "긴 학습": 3 (D19)
-      batch_conditions: 64    # × gen.M = 8 samples each
+      batch_conditions: 8     # D22: × gen.M = 64 samples each (512 per batch, as before)
       batch_mode: uniform     # uniform | clustered (E1.5: anchors + caption-weighted neighbours)
       group: 8                # clustered: conditions per anchor group
       ema: 0.999

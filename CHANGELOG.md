@@ -47,6 +47,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- B0 `levels.L1`: σ rule `multiscale` (D20), `gen.M` 64 and `train.batch_conditions` 8 (D22). Affects every L1
+  experiment; E1.x pre-registrations get an addendum before any run. G4 is re-registered as G4b with full-batch
+  unconditional repulsion (D21).
+
 - L1 training materialises loss, parameters, EMA copy and Adam state every `train.eval_every` = 10 steps. Evaluating
   only the loss let the update graphs grow until Metal's resource limit (first G4 run failed at ~18k steps); every
   step works but costs 11.3 ms/step against 3.7 ms/step at 10. CLAUDE.md §7.4 updated.
