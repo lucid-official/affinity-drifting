@@ -112,7 +112,7 @@ def frozen_sigma(exp: Experiment) -> float | list[float]:
         rec = json.loads(path.read_text())
         if rec["rule"] != rule:
             raise ValueError(f"{path} frozen with {rec['rule']!r}, config asks {rule!r}")
-        return float(rec["sigma"])
+        return [float(v) for v in rec["sigma"]] if isinstance(rec["sigma"], list) else float(rec["sigma"])
     match rule:
         case "knn_median":
             sigma = knn_median_sigma(bank_of(ref).y, int(ref["h_p"]["n_star"]))
