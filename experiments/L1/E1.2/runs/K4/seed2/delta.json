@@ -1,0 +1,23 @@
+{
+  "arm": "K4",
+  "reference_arm": "single",
+  "knobs_vs_reference": [
+    "positives.source"
+  ],
+  "vs_B0": {
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "zero"
+    },
+    "positives.source": {
+      "B0": "bank",
+      "arm": "oracle"
+    }
+  },
+  "vs_reference": {
+    "positives.source": {
+      "reference": "bank",
+      "arm": "oracle"
+    }
+  }
+}

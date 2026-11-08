@@ -23,7 +23,7 @@ How to read this file
 | L0 | [E0.5b](experiments/L0/E0.5b/) | Prop E (diagnostic) | Prop E under a Gaussian closure — algebra without finite-sample tails | aggregated | PASS | [report](experiments/L0/E0.5b/report.md) |
 | L0 | [E0.6](experiments/L0/E0.6/) | 단서 1 | joint vs separate softmax share the fixed point | aggregated | FAIL | [report](experiments/L0/E0.6/report.md) |
 | L1 | [E1.1](experiments/L1/E1.1/) | C0 | single positive with repulsion off is L2 regression (G2) | aggregated | PASS | [report](experiments/L1/E1.1/report.md) |
-| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | running | — | — |
+| L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | aggregated | PASS | [report](experiments/L1/E1.2/report.md) |
 | L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | pre-registered | — | — |
 | L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | pre-registered | — | — |
 | L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | running | — | — |
@@ -31,6 +31,7 @@ How to read this file
 | L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | pre-registered | — | — |
 | L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
 | L1 | [G4b](experiments/L1/G4b/) | Gate G4 (2nd) | unconditional drifting (full-batch repulsion) fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4b/report.md) |
+| L1 | [G4c](experiments/L1/G4c/) | Gate G4 (3rd) | unconditional drifting (full-batch repulsion, whole-field normalisation) fits the marginal; lr fixed here | aggregated | PASS | [report](experiments/L1/G4c/report.md) |
 <!-- index:end -->
 
 ## Log
@@ -692,3 +693,99 @@ How to read this file
   whole field per temperature, had been checked. Per-term normalisation keeps V⁺ and V⁻ at unit size where both should
   vanish (point-mass target of the single arm). All sweeps were stopped at 19:26; completed runs are kept as records.
 - Exploratory comparison (single arm, seed 0): total-field normalisation at lr 1e-3 vs per-term at lr 1e-4, running.
+
+### 2026-11-08 10:45 UTC · G4c · smoke
+
+- commit `b7a04fbaca`
+- arms ['uncond_lr1e-4', 'uncond_lr3e-4', 'uncond_lr1e-3', 'drifting'] × seeds [0]
+- 4 complete, 0 skipped, 0 failed
+- wall time 183 s
+
+### 2026-11-08 11:16 UTC · G4c · sweep
+
+- commit `b7a04fbaca`
+- arms ['uncond_lr1e-3', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 10 complete, 0 skipped, 0 failed
+- wall time 1849 s
+
+### 2026-11-08 11:26 UTC · G4c · sweep
+
+- commit `b7a04fbaca`
+- arms ['uncond_lr3e-4', 'uncond_lr1e-4'] × seeds [0, 1, 2, 3, 4]
+- 10 complete, 0 skipped, 0 failed
+- wall time 2441 s
+
+### 2026-11-08 11:26 UTC · G4c · aggregate
+
+- commit `b7a04fbaca`
+- verdict **PASS** (composite)
+- report: `experiments/L1/G4c/report.md`
+
+### 2026-11-08 11:30 UTC · E1.2 · smoke
+
+- commit `1cbf7ca489`
+- arms ['single', 'K4', 'drifting'] × seeds [0]
+- 3 complete, 0 skipped, 0 failed
+- wall time 189 s
+
+### 2026-11-08 11:30 UTC · E1.4 · smoke
+
+- commit `1cbf7ca489`
+- arms ['d0_h0', 'd4_h4', 'd16_h1', 'drifting'] × seeds [0]
+- 4 complete, 0 skipped, 0 failed
+- wall time 217 s
+
+### 2026-11-08 11:34 UTC · E1.4b · smoke
+
+- commit `1cbf7ca489`
+- arms ['L1_h1', 'L64_h0', 'L16_h1', 'drifting'] × seeds [0]
+- 4 complete, 0 skipped, 0 failed
+- wall time 197 s
+
+### 2026-11-08 11:34 UTC · E1.3 · smoke
+
+- commit `1cbf7ca489`
+- arms ['AffD', 'single', 'K1', 'K2', 'K3', 'drifting'] × seeds [0]
+- 6 complete, 0 skipped, 0 failed
+- wall time 250 s
+
+### 2026-11-08 11:36 UTC · E1.5 · smoke
+
+- commit `1cbf7ca489`
+- arms ['hq0', 'sym', 'drifting'] × seeds [0]
+- 3 complete, 0 skipped, 0 failed
+- wall time 163 s
+
+### 2026-11-08 11:42 UTC · E1.6 · smoke
+
+- commit `1cbf7ca489`
+- arms ['hx0.25', 'hx0.5', 'hx1', 'hx2', 'hx4', 'hx8', 'fixed', 'drifting'] × seeds [0]
+- 8 complete, 0 skipped, 0 failed
+- wall time 346 s
+
+### 2026-11-08 12:15 UTC · E1.2 · sweep
+
+- commit `1cbf7ca489`
+- arms ['single', 'K4', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 15 complete, 0 skipped, 0 failed
+- wall time 2239 s
+
+### 2026-11-08 12:16 UTC · E1.2 · aggregate
+
+- commit `1cbf7ca489`
+- verdict **PASS** (composite)
+- report: `experiments/L1/E1.2/report.md`
+
+### 2026-11-08 12:16 UTC · E1.2 · figures
+
+- commit `1cbf7ca489`
+- `figures/L1/E1.2/FC.1/FC.1.png`
+- `figures/L1/E1.2/FC.3/FC.3.png`
+- `figures/L1/E1.2/FC.4/FC.4.png`
+- `figures/L1/E1.2/F1.1/F1.1.png`
+
+### 2026-11-08 12:16 UTC · E1.2 · aggregate
+
+- commit `1cbf7ca489`
+- verdict **PASS** (composite)
+- report: `experiments/L1/E1.2/report.md`
