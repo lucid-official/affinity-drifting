@@ -990,3 +990,8 @@ How to read this file
   f 전체는 c에 대해 L-Lipschitz가 아니다. AffD(h1) W2는 L = 64에서 0.445, L = 1에서 0.418이다. mode 중심의 c₁ 변화
   속도가 2π(1 + c₂)이므로 진짜 1-Lipschitz 생성기라면 AffD도 나빠졌어야 한다. 따라서 이 실험은 C3를 검정하지 못한다.
 - f 전체를 제약하는 재설계는 plan과 다른 변경이라 deviations.md 항목과 사용자 승인이 필요하다(아직 제안 안 함, L1 go/no-go에서 논의).
+
+### 2026-11-08 19:35 UTC · L1 · summary
+
+- commit `182336311d`
+- `experiments/L1/summary.md` regenerated
