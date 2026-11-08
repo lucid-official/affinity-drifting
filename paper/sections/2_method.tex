@@ -1,45 +1,65 @@
 \section{Method}
 \label{sec:method}
 
-\paragraph{Drifting.} A generator $f_\theta(\epsilon, c)$ maps noise to samples. Given a field $V(x\mid c)$, it is
-trained with $\mathcal L = \lVert f_\theta(\epsilon,c) - \mathrm{sg}(f_\theta(\epsilon,c) + V)\rVert^2$, where
-$\mathrm{sg}$ stops the gradient. The field is attraction minus repulsion, $V = \Vp - \Vm$, each a kernel mean-shift:
+\paragraph{Drifting.} A generator $f_\theta:\mathbb R^{C}\times\mathcal C\to\mathbb R^{D}$ maps noise
+$\epsilon\sim p_\epsilon$ and a condition $c$ to a sample $x=f_\theta(\epsilon,c)$, with conditional pushforward
+$q_\theta(\cdot\mid c)$. Following~\cite{deng2026drifting}, the drifting field is
 \begin{equation}
-  \Vp(x\mid c) = \frac{\sum_i w_i(c)\,k(x, y_i)\,(y_i - x)}{\sum_i w_i(c)\,k(x, y_i)},
+  \Vp(x) = \frac{1}{Z_p(x)}\,\mathbb E_{p}\big[k(x,y^+)(y^+-x)\big],
   \label{eq:vplus}
 \end{equation}
-and $\Vm$ the same over the other generated samples. In the original method the positives are the samples of the
-condition's own class, $w_i(c) = \mathbf{1}[c_i = c]$, and the field is normalised to unit energy per batch.
-
-\begin{lemma}[Single positive is regression]\label{lem:regression}
-If condition $c$ has one positive $y$ and repulsion is off, $\Vp(x\mid c) = y - x$ for every kernel, so
-$\nabla_\theta\mathcal L = \nabla_\theta\lVert f_\theta - y\rVert^2$.
-\end{lemma}
-
-\paragraph{Affinity Drifting.} \affd keeps \eqref{eq:vplus} but borrows positives from similar conditions,
+with $Z_p(x)=\mathbb E_{p}[k(x,y^+)]$, $\Vm$ the same expression over $y^-\sim q$, and $V_{p,q}=\Vp-\Vm$. With $p=p_\mathrm{data}(\cdot\mid c)$ and
+$q=q_\theta(\cdot\mid c)$ the generator is trained with
 \begin{equation}
-  w_i(c) = \exp\!\big(-\lVert\psi(c) - \psi(c_i)\rVert^2 / 2h_p(c)^2\big),
+  \mathcal L=\mathbb E_{c,\epsilon}\big\lVert f_\theta(\epsilon,c)-\operatorname{stopgrad}\big(f_\theta(\epsilon,c)
+  +V_{p,q_\theta}(f_\theta(\epsilon,c))\big)\big\rVert^2 .
+  \label{eq:loss}
 \end{equation}
-with a frozen condition embedding $\psi$ (an oracle in the toy, a text encoder later). The bandwidth $h_p(c)$ is the
-smallest value whose effective number of neighbours $N_\mathrm{eff} = (\sum_i w_i)^2/\sum_i w_i^2$ reaches $N^*=16$,
-so every condition borrows equally strongly. Repulsion uses a caption bandwidth $h_q$; by default $h_q=0$, \ie a sample
-is repelled only by the other samples of its own condition. The single-positive objective is the limit $h_p\to 0$ of
-the same code; unconditional drifting is $h_p, h_q\to\infty$.
+In practice $V$ is replaced by the normalized drift $\tilde V=V/\lambda$, $\lambda=\big(\mathbb E[\tfrac1D\lVert
+V\rVert^2]\big)^{1/2}$ over the batch, summed over several kernel scales~\cite{deng2026drifting}.
 
-\paragraph{Fixed points.} For a Gaussian kernel of width $\sigma$, \eqref{eq:vplus} is a scaled score:
-\begin{lemma}[Score ratio]\label{lem:score}
-$V(x\mid c) = \sigma^2\nabla_x\big[\log\hat p(x\mid c) - \log\hat q(x\mid c)\big]$, where $\hat p = \sum_i w_i(c)\,
-k_\sigma(\cdot, y_i)$ and $\hat q$ is the kernel density of the generated samples.
+Let the training set be $\{(c_i,y_i)\}_{i=1}^N$ with distinct conditions, so that the empirical conditional at $c_i$
+is $\delta_{y_i}$.
+\begin{lemma}[One positive is regression]\label{lem:regression}
+If $p=\delta_{y}$, then $\Vp(x)=y-x$ for every kernel $k>0$. Without negatives, the gradient of \eqref{eq:loss} equals
+that of $\mathbb E_\epsilon\lVert f_\theta(\epsilon,c)-y\rVert^2$.
 \end{lemma}
-Hence $V\equiv 0$ exactly when $\hat q = \hat p$. With $h_q = 0$ the equilibrium of a condition is the
-Nadaraya--Watson mixture of its borrowed positives,
-$q_c = \sum_i \tilde w_i(c)\,\delta_{y_i}$ with $\tilde w = w/\sum w$ (Proposition~C in our plan); with symmetric
-repulsion $h_q = h_p$ the mixing cancels on both sides and every condition memorises its own positive
-(Proposition~A). The bandwidth $h_q$ thus selects the equilibrium.
 
-\paragraph{Implementation choices.} We use a mixture of kernel widths, $\sigma\in\{0.071, 0.384, 2.07\}$ from the
-$N^*$-th-nearest-neighbour distance to the median pairwise distance of the positives, summing one field per width;
-each width satisfies Lemma~\ref{lem:score}, so the fixed point is unchanged. As in the original method, the
-\emph{whole} field is normalised to unit energy per batch and per width. A per-term normalisation, which we first
-used, keeps $\Vp$ and $\Vm$ at unit size even where both should vanish and flung a few percent of single-positive
-samples far outside the data; we report it in \cref{sec:status}.
+\paragraph{Affinity Drifting.} We draw positives from the Nadaraya--Watson estimate of the conditional
+distribution~\cite{nadaraya1964,watson1964},
+\begin{equation}
+  \hat p_h(\cdot\mid c)=\sum_{i=1}^N\tilde w_i(c)\,\delta_{y_i},\qquad
+  \tilde w_i(c)=\frac{w_i(c)}{\sum_{j=1}^N w_j(c)},
+  \label{eq:nw}
+\end{equation}
+where $w_i(c)=\exp\!\big(-\lVert\psi(c)-\psi(c_i)\rVert^2/2h^2\big)$ with a fixed condition embedding $\psi$ (the true coordinates in the toy; a frozen text encoder in later stages), and
+keep \eqref{eq:vplus} with $p=\hat p_h(\cdot\mid c)$. Negatives are drawn from the analogous estimate
+$\hat q_{h'}(\cdot\mid c)=\sum_i\tilde w_i(c)\,q_\theta(\cdot\mid c_i)$ with its own bandwidth $h'$; by default $h'=0$,
+\ie $q_\theta(\cdot\mid c)$ itself. The bandwidth $h=h(c)$ is set per condition to the smallest value whose effective
+sample size~\cite{kish1965survey} $n_\mathrm{eff}(c)=(\sum_i w_i)^2/\sum_i w_i^2$ reaches $n^\star=16$, so every
+condition pools equally many positives. The limit $h\to0$ recovers the one-positive objective, and $h,h'\to\infty$
+unconditional drifting.
+
+\paragraph{Fixed points.} For a Gaussian kernel $k(x,y)=\exp(-\lVert x-y\rVert^2/2\sigma^2)$, $Z_p$ is proportional
+to the density of $p*\mathcal N(0,\sigma^2I)$, and $\nabla_x Z_p(x)=\sigma^{-2}\,\mathbb E_p[k(x,y^+)(y^+-x)]$. Hence:
+\begin{lemma}[Score difference]\label{lem:score}
+For the Gaussian kernel,
+\begin{equation*}
+  V_{p,q}(x)=\sigma^2\,\nabla_x\big[\log Z_p(x)-\log Z_q(x)\big].
+\end{equation*}
+\end{lemma}
+$V_{p,q}\equiv0$ therefore holds if and only if $p*\mathcal N(0,\sigma^2I)=q*\mathcal N(0,\sigma^2I)$, \ie $q=p$,
+since Gaussian convolution is injective on probability measures. With $h'=0$ the equilibrium of each condition is the
+Nadaraya--Watson mixture, $q_\theta(\cdot\mid c)=\hat p_h(\cdot\mid c)$. With $h'=h$ the weights $\tilde w_i(c)$ act
+on both sides, and $q_\theta(\cdot\mid c_i)=\delta_{y_i}$, memorization of the training positives, is a fixed point
+for every $c$. The negative bandwidth $h'$ thus selects the equilibrium.
+
+\paragraph{Implementation.} We use three Gaussian scales $\sigma\in\{0.071, 0.384, 2.07\}$, from the
+$n^\star$-th-nearest-neighbor distance of the positives to the median pairwise distance (the median
+heuristic~\cite{gretton2012kernel}), and sum one normalized field per scale as in the multi-temperature drift
+of~\cite{deng2026drifting}; each scale satisfies \cref{lem:score}, so the fixed point is unchanged. As
+in~\cite{deng2026drifting}, the normalization $\lambda$ is computed for the whole field $V_{p,q}$, not separately for
+$\Vp$ and $\Vm$. Separate normalization, which we used first, keeps both terms at unit scale even where they should
+cancel, and sent a few percent of one-positive samples far outside the data (\cref{sec:status}). Drifting uses the
+kernel $\exp(-\lVert x-y\rVert/\tau)$; we use the Gaussian kernel so that \cref{lem:score} applies, and report the
+original kernel and normalization unchanged as the baseline.

@@ -1,22 +1,23 @@
 \section{Status, deviations and limitations}
 \label{sec:status}
 
-This is a working draft; \cref{tab:status} lists every pre-registered experiment and its verdict at the time of the
-build. Changes to the plan made along the way are logged with reasons and approvals; the ones that matter for reading
-the results are: the learning-rate gate failed twice before passing, first because unconditional drifting was
-mis-specified (repulsion within each condition's samples instead of the whole batch) and then narrowly; a
-single-width kernel transported mass too locally and was replaced by a mixture of widths; 64 instead of 8 samples per
-condition are generated, since self-only repulsion estimated from 8 samples is strongly biased; and the drift
-normalisation was corrected from per-term to whole-field, as in the original method, after the per-term version flung
-single-positive samples outside the data. Runs made before a correction are kept and excluded.
+This is a working draft; \cref{tab:status} lists every pre-registered experiment and its outcome at the time of the
+build. Changes to the plan are logged with reasons and approvals before any affected run; those that matter for
+reading the results are the following. The learning-rate selection failed twice before passing: first because the
+unconditional model was mis-specified (negatives from each condition's samples rather than from the whole batch), then
+narrowly. A single kernel scale transported mass too locally and was replaced by three scales. 64 instead of 8 samples
+per condition are generated, since negatives estimated from 8 samples are strongly biased. The drift normalization was
+changed from separate normalization of $\Vp$ and $\Vm$ to normalization of the whole field, as
+in~\cite{deng2026drifting}, after the separate version sent one-positive samples outside the data. Runs made before a
+correction are kept and excluded from all results.
 
-The toy uses an oracle condition embedding; text embeddings, learned features and real captions are later stages of
-the plan, not reported here.
+The toy uses the true condition coordinates as the embedding $\psi$; text embeddings, learned features and real
+captions are later stages of the study and are not reported here.
 
 \begin{table}[h]
   \centering
   \small
-  \input{generated/tab_status}
-  \caption{Pre-registered experiments and their verdicts at build time.}
+  \resizebox{\linewidth}{!}{\input{generated/tab_status}}
+  \caption{Pre-registered experiments and their outcomes at build time.}
   \label{tab:status}
 \end{table}

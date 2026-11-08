@@ -62,6 +62,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- Preprint (`paper/`, `affdrift/reporting/paper.py`): literature terminology and the notation of Deng et al. (2602.04770)
+  only (CLAUDE.md §8.10). Method restated as drifting with positives from the Nadaraya–Watson estimate p̂_h(·|c) and
+  negatives from q̂_{h'}(·|c) (h, h′ replace h_p, h_q; Kish effective sample size n_eff, n* replace N_eff, N*); MCI
+  reported as the total variance ratio tr Σ_q / tr Σ_p = 1 − MCI; K1–K4 shown as ablation names; experiment, gate and
+  deviation IDs removed from text, tables and figure placeholders; `\affd` macro removed. No result changes.
 - B0 `levels.L1.train.lr` = 1e-3, fixed by Gate G4c (PASS).
 
 - B0 `levels.L1`: `normalization.drift_target: total` (D24) and `train.lr: null` until Gate G4c. L1 runs made under

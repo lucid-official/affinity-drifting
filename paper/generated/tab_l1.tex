@@ -1,15 +1,15 @@
 % generated — do not edit
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-Method & W2 $\downarrow$ & MCI $\downarrow$ & Off-man. $\downarrow$ & Mode cov. $\uparrow$ & Recall $\uparrow$ \\
+Method & $W_2$ $\downarrow$ & $\operatorname{tr}\Sigma_q/\operatorname{tr}\Sigma_p$ & Prec. $\uparrow$ & Rec. $\uparrow$ & Modes $\uparrow$ \\
 \midrule
-Drifting & $1.4$ & $1$ & $1$ & $0.34$ & $0$ \\
-Single positive & $1.4$ & $1$ & $1$ & $0.35$ & $1.5\times10^{-6}$ \\
-K1 ($k_x\equiv 1$) & $1.3$ & $0.99$ & $1$ & $0.48$ & $0.007$ \\
-K2 (random nbrs) & $1.1$ & $-0.29$ & $0.92$ & $1$ & $0.97$ \\
-K3 (noisy single) & $1.4$ & $1$ & $1$ & $0.36$ & $0$ \\
+Drifting & $1.4$ & $2.8\times10^{-5}$ & $0.0023$ & $0$ & $0.34$ \\
+One positive ($h\to 0$) & $1.4$ & $3.8\times10^{-4}$ & $0.0017$ & $1.5\times10^{-6}$ & $0.35$ \\
+Constant sample kernel & $1.3$ & $0.012$ & $0.0022$ & $0.007$ & $0.48$ \\
+Random neighbors & $1.1$ & $1.3$ & $0.1$ & $0.97$ & $1$ \\
+Noisy positive & $1.4$ & $4.4\times10^{-4}$ & $1.2\times10^{-5}$ & $0$ & $0.36$ \\
 \midrule
-\textbf{AffD (ours)} & $0.47$ & $0.026$ & $0.28$ & $1$ & $0.94$ \\
-Oracle (K4) & $0.5$ & $0.091$ & $0.18$ & $0.98$ & $0.78$ \\
+\textbf{Affinity Drifting} & $0.47$ & $0.97$ & $0.74$ & $0.94$ & $1$ \\
+Oracle (16 samples) & $0.5$ & $0.91$ & $0.83$ & $0.78$ & $0.98$ \\
 \bottomrule
 \end{tabular}

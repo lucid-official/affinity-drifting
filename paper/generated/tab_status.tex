@@ -1,24 +1,22 @@
 % generated — do not edit
-\begin{tabular}{@{}llll@{}}
+\begin{tabular}{@{}llc@{}}
 \toprule
-Level & ID & Claim & Verdict \\
+Setting & Pre-registered claim & Outcome \\
 \midrule
-L0 & E0.1 & Lemma 1 & \textsc{pass} \\
-L0 & E0.2 & Prop A & \textsc{inconclusive} \\
-L0 & E0.3 & Prop C & \textsc{fail} \\
-L0 & E0.4 & Prop A–C & \textsc{pass} \\
-L0 & E0.5 & Prop E & \textsc{fail} \\
-L0 & E0.5b & Prop E (diagnostic) & \textsc{pass} \\
-L0 & E0.6 & Normalisation (cue 1) & \textsc{fail} \\
-L1 & E1.1 & C0 & \textsc{pass} \\
-L1 & E1.2 & C1 & \textsc{pass} \\
-L1 & E1.3 & C2 & \textsc{pass} \\
-L1 & E1.4b & C3 & \pending{} \\
-L1 & E1.4 & C3 & \pending{} \\
-L1 & E1.5 & C4 & \pending{} \\
-L1 & E1.6 & Bandwidth selection & \pending{} \\
-L1 & G4 & Gate G4 & \textsc{fail} \\
-L1 & G4b & Gate G4 (2nd) & \textsc{fail} \\
-L1 & G4c & Gate G4 (3rd) & \textsc{pass} \\
+Particles & Mean shift equals the scaled score difference & \textsc{pass} \\
+Particles & Negatives with $h'=h$ memorize the positives & \textsc{inconclusive} \\
+Particles & Negatives with $h'=0$: Nadaraya--Watson equilibrium & \textsc{fail} \\
+Particles & Equilibrium moves monotonically with $h'$ & \textsc{pass} \\
+Particles & Cross-condition negatives: closed-form equilibrium & \textsc{fail} \\
+Particles & Same, under a Gaussian moment closure & \textsc{pass} \\
+Particles & Joint vs.\ separate softmax: same equilibrium & \textsc{fail} \\
+2-D toy & Unconditional model fits the marginal (learning rate) & \textsc{fail} / \textsc{fail} / \textsc{pass} \\
+2-D toy & One positive, no negatives: $\ell_2$ regression & \textsc{pass} \\
+2-D toy & One positive regresses to the conditional mean & \textsc{pass} \\
+2-D toy & Affinity Drifting restores the mixture; beats ablations & \textsc{pass} \\
+2-D toy & Gap grows as resolution in $c$ coarsens (quantization) & \pending{} \\
+2-D toy & Same, with a Lipschitz constraint on $c$ & \pending{} \\
+2-D toy & $h'$ selects the equilibrium of a trained generator & \pending{} \\
+2-D toy & Bandwidth: U-shaped error, minimum near $n^\star$ & \pending{} \\
 \bottomrule
 \end{tabular}

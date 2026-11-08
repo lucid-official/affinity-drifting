@@ -38,8 +38,28 @@ RC = {
     "xtick.labelsize": 6, "ytick.labelsize": 6, "legend.fontsize": 6, "axes.linewidth": 0.5,
     "savefig.bbox": "tight", "savefig.pad_inches": 0.01, "pdf.fonttype": 42,
 }
-LABEL = {BASELINE: "Drifting", "single": "Single positive", "AffD": "AffD (ours)", "K4": "Oracle (K4)",
-         "K1": r"K1 ($k_x\equiv 1$)", "K2": "K2 (random nbrs)", "K3": "K3 (noisy single)"}
+#: Display names in the paper: literature terms only, never internal arm labels (CLAUDE.md §8.10).
+LABEL = {BASELINE: "Drifting", "single": r"One positive ($h\to 0$)", "AffD": "Affinity Drifting",
+         "K4": "Oracle (16 samples)", "K1": "Constant sample kernel", "K2": "Random neighbors",
+         "K3": "Noisy positive"}
+
+#: Every pre-registered experiment, described in literature terms for the paper's status table.
+DESCRIBE = {
+    "E0.1": ("Particles", "Mean shift equals the scaled score difference"),
+    "E0.2": ("Particles", r"Negatives with $h'=h$ memorize the positives"),
+    "E0.3": ("Particles", r"Negatives with $h'=0$: Nadaraya--Watson equilibrium"),
+    "E0.4": ("Particles", r"Equilibrium moves monotonically with $h'$"),
+    "E0.5": ("Particles", "Cross-condition negatives: closed-form equilibrium"),
+    "E0.5b": ("Particles", "Same, under a Gaussian moment closure"),
+    "E0.6": ("Particles", r"Joint vs.\ separate softmax: same equilibrium"),
+    "E1.1": ("2-D toy", r"One positive, no negatives: $\ell_2$ regression"),
+    "E1.2": ("2-D toy", "One positive regresses to the conditional mean"),
+    "E1.3": ("2-D toy", "Affinity Drifting restores the mixture; beats ablations"),
+    "E1.4": ("2-D toy", r"Gap grows as resolution in $c$ coarsens (quantization)"),
+    "E1.4b": ("2-D toy", r"Same, with a Lipschitz constraint on $c$"),
+    "E1.5": ("2-D toy", r"$h'$ selects the equilibrium of a trained generator"),
+    "E1.6": ("2-D toy", r"Bandwidth: U-shaped error, minimum near $n^\star$"),
+}
 
 
 # ── reading results ─────────────────────────────────────────────────────────
@@ -73,6 +93,15 @@ def _num(eid: str, arm: str, metric: str, *, digits: int = 3, ci: bool = False) 
     return rf"${s}$" if not ci else rf"${s}$ {{\scriptsize$[{_fmt(c['lo'], digits)}, {_fmt(c['hi'], digits)}]$}}"
 
 
+def _num_one_minus(eid: str, arm: str, metric: str, *, digits: int = 3, ci: bool = False) -> str:
+    """1 − metric with its interval flipped (total variance ratio from the stored mean-collapse index)."""
+    c = _ci(eid, arm, metric)
+    if c is None:
+        return PENDING
+    s = _fmt(1 - c["mean"], digits)
+    return rf"${s}$" if not ci else rf"${s}$ {{\scriptsize$[{_fmt(1 - c['hi'], digits)}, {_fmt(1 - c['lo'], digits)}]$}}"
+
+
 def _macro_id(eid: str) -> str:
     words = {"0": "Zero", "1": "One", "2": "Two", "3": "Three", "4": "Four", "5": "Five", "6": "Six",
              "7": "Seven", "8": "Eight", "9": "Nine", "b": "B", "c": "C", ".": ""}
@@ -103,19 +132,23 @@ def numbers() -> dict[str, str]:
     n["GFourCW"] = _num("G4c", "uncond_lr1e-3", "w2_marginal_heldout", ci=True)
     n["GFourCFloor"] = _num("G4c", "uncond_lr1e-3", "w2_marginal_datadata_heldout")
     for arm, key in ((BASELINE, "Drifting"), ("single", "Single"), ("K4", "Oracle")):
-        n[f"EOneTwo{key}MCI"] = _num("E1.2", arm, "mci_heldout", ci=True, digits=4)
+        n[f"EOneTwo{key}TVR"] = _num_one_minus("E1.2", arm, "mci_heldout", ci=True, digits=3)
+        n[f"EOneTwo{key}TVRMean"] = _num_one_minus("E1.2", arm, "mci_heldout", digits=3)
         n[f"EOneTwo{key}W"] = _num("E1.2", arm, "w2_heldout")
         n[f"EOneTwo{key}Off"] = _num("E1.2", arm, "off_manifold_heldout")
         n[f"EOneTwo{key}Cov"] = _num("E1.2", arm, "mode_coverage_heldout")
+        n[f"EOneTwo{key}Prec"] = _num("E1.2", arm, "precision_heldout")
     for arm, key in (("AffD", "AffD"), ("single", "Single"), ("K1", "KOne"), ("K2", "KTwo"), ("K3", "KThree"),
                      (BASELINE, "Drifting")):
         n[f"EOneThree{key}W"] = _num("E1.3", arm, "w2_heldout", ci=True)
-        n[f"EOneThree{key}MCI"] = _num("E1.3", arm, "mci_heldout", digits=4)
+        n[f"EOneThree{key}TVR"] = _num_one_minus("E1.3", arm, "mci_heldout", digits=3)
     for arm, key in (("AffD", "AffD"), ("single", "Single"), ("K2", "KTwo")):
         n[f"EOneThree{key}Mem"] = _num("E1.3", arm, "memorization_train")
         n[f"EOneThree{key}Cov"] = _num("E1.3", arm, "mode_coverage_heldout")
         n[f"EOneThree{key}Off"] = _num("E1.3", arm, "off_manifold_heldout")
     n["EOneThreeAffDRecall"] = _num("E1.3", "AffD", "recall_heldout")
+    for arm, key in (("AffD", "AffD"), ("K2", "KTwo")):
+        n[f"EOneThree{key}Prec"] = _num("E1.3", arm, "precision_heldout")
     a, s = _ci("E1.3", "AffD", "w2_heldout"), _ci("E1.3", "single", "w2_heldout")
     n["EOneThreeRatio"] = PENDING if a is None or s is None else rf"${a['mean'] / s['mean']:.2f}$"
     return n
@@ -135,28 +168,31 @@ def _write_numbers(n: Mapping[str, str]) -> None:
 CLAIM_EN = {"단서 1": "Normalisation (cue 1)", "h 선택": "Bandwidth selection"}
 
 
+def _verdict(eid: str) -> str:
+    agg = _aggregate(eid)
+    return PENDING if agg is None else rf"\textsc{{{agg['judgement']['verdict'].lower()}}}"
+
+
 def _write_status_table() -> None:
-    rows = []
-    for exp in Experiment.all():
-        agg = _aggregate(exp.id)
-        verdict = PENDING if agg is None else rf"\textsc{{{agg['judgement']['verdict'].lower()}}}"
-        claim = CLAIM_EN.get(exp.spec.get("claim", ""), exp.spec.get("claim", "")).replace("_", r"\_")
-        rows.append(rf"{exp.level} & {exp.id} & {claim} & {verdict} \\")
+    rows = [rf"{setting} & {claim} & {_verdict(eid)} \\" for eid, (setting, claim) in DESCRIBE.items()]
+    lr = " / ".join(_verdict(e) for e in ("G4", "G4b", "G4c"))
+    rows.insert(7, rf"2-D toy & Unconditional model fits the marginal (learning rate) & {lr} \\")
     (GEN / "tab_status.tex").write_text(
-        "% generated — do not edit\n\\begin{tabular}{@{}llll@{}}\n\\toprule\nLevel & ID & Claim & Verdict \\\\\n\\midrule\n"
-        + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
+        "% generated — do not edit\n\\begin{tabular}{@{}llc@{}}\n\\toprule\nSetting & Pre-registered claim & Outcome \\\\\n"
+        "\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
 
 
 def _write_l1_table() -> None:
     arms = [(BASELINE, "E1.3"), ("single", "E1.3"), ("K1", "E1.3"), ("K2", "E1.3"), ("K3", "E1.3"), ("AffD", "E1.3"),
             ("K4", "E1.2")]
-    metrics = [("w2_heldout", r"W2 $\downarrow$"), ("mci_heldout", r"MCI $\downarrow$"),
-               ("off_manifold_heldout", r"Off-man. $\downarrow$"), ("mode_coverage_heldout", r"Mode cov. $\uparrow$"),
-               ("recall_heldout", r"Recall $\uparrow$")]
+    metrics = [("w2_heldout", r"$W_2$ $\downarrow$"), ("tvr", r"$\operatorname{tr}\Sigma_q/\operatorname{tr}\Sigma_p$"),
+               ("precision_heldout", r"Prec. $\uparrow$"), ("recall_heldout", r"Rec. $\uparrow$"),
+               ("mode_coverage_heldout", r"Modes $\uparrow$")]
     head = " & ".join(["Method"] + [m[1] for m in metrics]) + r" \\"
     rows = []
     for arm, eid in arms:
-        cells = [_num(eid, arm, m, digits=2) for m, _ in metrics]
+        cells = [_num_one_minus(eid, arm, "mci_heldout", digits=2) if m == "tvr" else _num(eid, arm, m, digits=2)
+                 for m, _ in metrics]
         name = LABEL.get(arm, arm)
         rows.append((rf"\textbf{{{name}}}" if arm == "AffD" else name) + " & " + " & ".join(cells) + r" \\")
         if arm == "K3":
@@ -263,7 +299,7 @@ def fig_l0() -> Figure:
     exp = Experiment.load("E0.4")
     runs = complete(exp)
     arms = [BASELINE, "hq_0", "hq_0.5", "hq_1"]
-    titles = {BASELINE: "Drifting", "hq_0": r"AffD, $h_q=0$", "hq_0.5": r"$h_q=\frac{1}{2}h_p$", "hq_1": r"$h_q=h_p$"}
+    titles = {BASELINE: "Drifting", "hq_0": r"$h^{\prime}=0$", "hq_0.5": r"$h^{\prime}=h/2$", "hq_1": r"$h^{\prime}=h$"}
     fig, axes = plt.subplots(1, len(arms) + 1, figsize=(FULL, 1.45))
     w = None
     for ax, arm in zip(axes, arms):
@@ -277,7 +313,7 @@ def fig_l0() -> Figure:
         ax.set(xticks=[], yticks=[], title=titles[arm])
     if w is not None:
         im = axes[-1].imshow(w, cmap="magma", vmin=0, vmax=0.35)
-        axes[-1].set(xticks=[], yticks=[], title=r"NW weights $\tilde w_j(c_k)$")
+        axes[-1].set(xticks=[], yticks=[], title="Nadaraya–Watson\n" + r"weights $\tilde w_j(c_k)$")
         fig.colorbar(im, ax=axes, fraction=0.015, pad=0.01)
     axes[0].set_ylabel("condition $k$")
     return fig
@@ -295,15 +331,15 @@ def fig_phase() -> Figure:
     deltas = [("d0", 0.0), ("d64", 1 / 64), ("d16", 1 / 16), ("d4", 1 / 4)]
     ready = _aggregate("E1.4") is not None
     if not ready:
-        _pending_axis(ax, "E1.4 capacity sweep")
+        _pending_axis(ax, "Conditional resolution sweep")
         return fig
     x = np.arange(len(deltas))
-    for arm_suffix, name, color in (("h0", "Single positive", arm_color("single")), ("h1", "AffD", arm_color("AffD"))):
+    for arm_suffix, name, color in (("h0", "One positive", arm_color("single")), ("h1", "Affinity Drifting", arm_color("AffD"))):
         cis = [bootstrap_ci([r.metrics["w2_train"] for r in runs[f"{d}_{arm_suffix}"].values()]) for d, _ in deltas]
         ax.plot(x, [c.mean for c in cis], "-o", ms=3, color=color, label=name, lw=1)
         ax.fill_between(x, [c.lo for c in cis], [c.hi for c in cis], color=color, alpha=0.2, lw=0)
     ax.set_xticks(x, ["0", "1/64", "1/16", "1/4"])
-    ax.set(xlabel=r"quantisation $\delta$ of $c$ (coarser $\rightarrow$)", ylabel="W2 (training $c$)")
+    ax.set(xlabel=r"quantization step $\delta$ of $c$ (coarser $\rightarrow$)", ylabel=r"$W_2$ (training $c$)")
     ax.legend(frameon=False)
     return fig
 

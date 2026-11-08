@@ -1,97 +1,105 @@
 \section{Experiments}
 \label{sec:experiments}
 
-\paragraph{Protocol.} Every comparison changes one knob of a base configuration; a run refuses to start if its
-configuration differs from the declared change. Predictions and falsification criteria are committed before any run,
-and verdicts (pass / fail / inconclusive) are computed from those committed rules only. All arms share seeds
-(five per experiment), probe inputs and the learning rate, which is fixed once on an unconditional run. Intervals are
-95\% paired bootstrap CIs over seeds. Every experiment also trains the original Drifting objective, unchanged, as a
-reference that is reported but not judged.
+\paragraph{Protocol.} Each comparison changes a single factor of a fixed base configuration; a run does not start if
+its configuration differs from the declared change. Predictions, falsification criteria and decision rules are
+committed before any run, and every outcome (pass, fail or inconclusive) is computed from those rules only. All
+methods share the seeds (five per experiment), the evaluation conditions and the learning rate, which is selected once
+on an unconditional model. Intervals are 95\% paired bootstrap confidence intervals over seeds ($10^4$ resamples). Every
+experiment also trains the original Drifting objective, unchanged, as a reference that is reported but not judged.
 
 \subsection{Fixed points in a particle system}
-\label{sec:l0}
+\label{sec:particles}
 
-Without a network, each of 32 conditions on a line owns 256 particles moved by $x \leftarrow x + \eta V(x\mid c)$, \ie
-a generator of unlimited capacity, with one positive per condition. The field matches the autograd score ratio of
-Lemma~\ref{lem:score} to \EZeroOneErr\ (float64; \VerdictEZeroOne). Increasing $h_q$ from $0$ to $h_p$ moves the
-equilibrium monotonically from the mixture to memorisation (\cref{fig:l0}; \VerdictEZeroFour), whereas the original
-Drifting objective memorises outright (own-positive share \EZeroThreeDriftingSelf).
+Without a network, each of 32 conditions on a line holds 256 particles updated by $x\leftarrow x+\eta\,V(x)$, a
+generator of unlimited capacity, with one positive per condition. The field agrees with the automatic-differentiation
+score difference of \cref{lem:score} to \EZeroOneErr\ in float64 (\VerdictEZeroOne). Increasing $h'$ from $0$ to $h$
+moves the equilibrium monotonically from the Nadaraya--Watson mixture to memorization (\cref{fig:particles};
+\VerdictEZeroFour), whereas the original Drifting objective memorizes outright (share of particles nearest their own
+positive: \EZeroThreeDriftingSelf).
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\linewidth]{generated/figures/fig_l0}
-  \caption{\textbf{$h_q$ selects the equilibrium} (particles, seed mean). Share of each condition's particles
-  nearest to each positive. Original Drifting memorises (diagonal). \affd with $h_q=0$ spreads mass over the
-  borrowed neighbours, as the Nadaraya--Watson weights $\tilde w$ predict (right); larger $h_q$ narrows the band
-  toward memorisation.}
-  \label{fig:l0}
+  \caption{\textbf{The negative bandwidth $h'$ selects the equilibrium} (particle system, mean over seeds). Entry
+  $(k,j)$: share of condition $k$'s particles nearest to positive $y_j$. The original Drifting objective memorizes
+  (diagonal). With $h'=0$, mass spreads over the pooled neighbors as the Nadaraya--Watson weights
+  $\tilde w_j(c_k)$ predict (right); larger $h'$ narrows the band toward memorization.}
+  \label{fig:particles}
 \end{figure*}
 
-The point-level assignment, however, misses the pre-registered tolerance for the mixture
-(TV \EZeroThreeTV\ against $0.1$; \VerdictEZeroThree): with a kernel wider than the spacing of the positives, the
-field cannot resolve which nearby positive a particle sits on. Compared at the kernel's resolution --- TV between the
-$\sigma$-smoothed densities, an analysis we did not pre-register --- the equilibrium matches $\hat p$ to
-\EZeroThreeSmoothTV. A counterfactual negative between two conditions has the predicted closed-form Gaussian
-equilibrium in its algebra (relative error \EZeroFiveBMaxErr\ under a Gaussian closure), but with finite samples it is
-stable only for small weights (error \EZeroFiveLamQuarterErr\ at $\lambda=0.25$, divergence from $\lambda=0.5$;
-\VerdictEZeroFive).
+The assignment of particles to individual positives, however, misses the pre-registered tolerance for the mixture
+(total variation \EZeroThreeTV\ against $0.1$; \VerdictEZeroThree): with a kernel wider than the spacing of the
+positives, the field cannot resolve which nearby positive a particle sits on. Compared at the resolution of the kernel
+--- total variation between the $\sigma$-smoothed densities, an analysis that was not pre-registered --- the equilibrium
+matches $\hat p_h$ to \EZeroThreeSmoothTV. We also draw negatives from another condition's data with weight $\lambda$,
+a two-condition analogue of the guidance in~\cite{deng2026drifting}. For Gaussian conditionals the predicted
+equilibrium is Gaussian in closed form, and the particle system reaches it under a Gaussian moment closure (relative
+error \EZeroFiveBMaxErr). With finite samples, however, it is stable only for small weights (error
+\EZeroFiveLamQuarterErr\ at $\lambda=0.25$, divergence from $\lambda=0.5$; \VerdictEZeroFive).
 
 \subsection{Mean collapse and its repair in a 2-D toy}
-\label{sec:l1}
+\label{sec:toy}
 
-\paragraph{Setup.} Conditions $c\in[0,1]^2$ are drawn once; each of the $10{,}000$ training conditions has a single
-positive from $p(x\mid c)$, a three-mode Gaussian mixture whose modes rotate with $c_1$ and whose radius and weights
-change with $c_2$, so the conditional mean falls between modes. An MLP generator $f(\epsilon, g(c))$ sees $c$ quantised
-to cells of width $\delta=1/16$, roughly 39 training conditions per cell. We train with Adam ($10^{-3}$, chosen on the
-unconditional model: marginal $W_2$ \GFourCW\ against a sampling floor of \GFourCFloor), an EMA of the weights,
-$20{,}000$ steps, and 8 conditions $\times$ 64 samples per batch, and evaluate on 256 held-out conditions with 512
-samples each. The mean-collapse index is $\mathrm{MCI} = 1 - \operatorname{tr}\mathrm{Cov}_q/\operatorname{tr}\mathrm{Cov}_p$.
+\paragraph{Setup.} Each of $N=10{,}000$ training conditions $c\in[0,1]^2$ has one sample from
+$p_\mathrm{data}(\cdot\mid c)$, a three-component Gaussian mixture whose components rotate with $c_1$ and whose
+radius and weights change with $c_2$, so the conditional mean lies between modes. An MLP generator
+$f_\theta(\epsilon,c)$ sees $c$ quantized to cells of width $\delta=1/16$, about 39 training conditions per cell. We
+train with Adam (learning rate $10^{-3}$, selected on the unconditional model, whose marginal Wasserstein-2 distance is
+\GFourCW\ against a finite-sample floor of \GFourCFloor), an exponential moving average of the weights, $20{,}000$
+steps and 8 conditions $\times$ 64 samples per batch, and evaluate 512 samples on each of 256 held-out conditions. We
+report the Wasserstein-2 distance $W_2$ to the true conditional, the ratio of total variances
+$\operatorname{tr}\Sigma_q/\operatorname{tr}\Sigma_p$ (1 for a correct spread, 0 for a point mass),
+precision and recall~\cite{kynkaanniemi2019improved}, the fraction of modes that receive at least 5\% of the samples,
+and the fraction of samples below the 1\% quantile of the true log-density (off-support samples).
 
-\paragraph{Single positive collapses (C1).} Both the original Drifting objective and the single-positive objective
-collapse every condition to a point at the conditional mean (MCI \EOneTwoDriftingMCI\ and \EOneTwoSingleMCI;
-off-manifold share \EOneTwoSingleOff), while the oracle with 16 true samples per condition and step covers the modes
-(MCI \EOneTwoOracleMCI, mode coverage \EOneTwoOracleCov). This is the failure \affd targets
-(\VerdictEOneTwo).
+\paragraph{One positive collapses.} Both the original Drifting objective and the one-positive objective ($h\to0$)
+collapse every condition to a point at the conditional mean (variance ratio \EOneTwoDriftingTVR\ and
+\EOneTwoSingleTVR; off-support share \EOneTwoSingleOff), while the oracle, given 16 true samples per condition and
+step, covers the modes (variance ratio \EOneTwoOracleTVR, modes captured \EOneTwoOracleCov; \VerdictEOneTwo).
 
 \begin{table}[t]
   \centering
   \small
   \resizebox{\linewidth}{!}{\input{generated/tab_l1}}
-  \caption{\textbf{2-D toy, held-out conditions} (seed means). Above the line: the single-positive regime and the
-  three mechanism controls; below: \affd and the oracle upper bound, which sees 16 true samples per condition and step.}
-  \label{tab:l1}
+  \caption{\textbf{2-D toy, held-out conditions} (mean over five seeds). Above the line: the one-positive objectives
+  and three ablations of Affinity Drifting; below: Affinity Drifting and an oracle that sees 16 true samples per
+  condition and step.}
+  \label{tab:toy}
 \end{table}
 
-\paragraph{Borrowing restores the mixture (C2).} \affd, trained on the same single positives, covers every mode
-(mode coverage \EOneThreeAffDCov, recall \EOneThreeAffDRecall) and reaches a held-out $W_2$ of \EOneThreeAffDW\ against
-\EOneThreeSingleW\ for the single-positive objective (ratio \EOneThreeRatio; \cref{tab:l1}), on par with the oracle that
-sees true samples. The pre-registered comparison is \VerdictEOneThree: \affd beats the single-positive objective and
-each control with paired CIs excluding zero. The controls fail in the ways the mechanism predicts. K1 borrows the same
-positives but drops the $x$-dependent kernel, so its target is their weighted average --- and it collapses like the
-single positive (MCI \EOneThreeKOneMCI). K2 borrows as many positives at random: samples spread over all modes
-(coverage \EOneThreeKTwoCov) but most fall off the conditional manifold (off-manifold share \EOneThreeKTwoOff).
-Noise-smoothed single targets (K3) still collapse (MCI \EOneThreeKThreeMCI). The gain therefore comes from the
-$x$-dependent mode assignment of semantically close positives, not from more targets or smoother ones.
-\Cref{fig:mechanism} shows that assignment: with one positive every attraction arrow points at the same target,
-whereas the borrowed positives split the space into one basin per mode. One caveat is visible already: with ample
-capacity, a share of \affd's samples lands on borrowed training positives (memorisation share \EOneThreeAffDMem\ on
-training conditions, against \EOneThreeSingleMem\ for the single positive), as the fixed-point analysis predicts.
+\paragraph{Pooling positives restores the mixture.} Trained on the same single positives, Affinity Drifting captures
+every mode (fraction \EOneThreeAffDCov, recall \EOneThreeAffDRecall) and reaches a held-out $W_2$ of
+\EOneThreeAffDW\ against \EOneThreeSingleW\ for the one-positive objective (ratio \EOneThreeRatio; \cref{tab:toy}), on
+par with the oracle. The pre-registered comparison is \VerdictEOneThree: Affinity Drifting improves on the
+one-positive objective and on every ablation, with paired confidence intervals that exclude zero. The ablations fail
+in the ways the mechanism predicts. With a constant sample-space kernel, the same pooled positives give an
+$x$-independent target, their weighted average, and the generator collapses as with one positive (variance ratio
+\EOneThreeKOneTVR). Pooling as many random neighbors spreads samples over all modes (fraction \EOneThreeKTwoCov) but
+places most of them off the conditional support (off-support share \EOneThreeKTwoOff). Perturbing the single positive
+with noise of matched variance still collapses (variance ratio \EOneThreeKThreeTVR). The gain therefore comes from the
+$x$-dependent assignment of samples to the modes of semantically similar positives, not from more or smoother
+targets. \Cref{fig:mechanism} shows this assignment: with one positive every attraction vector points at the same
+target, whereas the pooled positives partition the plane into one basin per mode. One caveat is already visible: with
+ample capacity, some samples land on pooled training positives (share within half the median nearest-neighbor spacing of a
+training positive: \EOneThreeAffDMem\ on training conditions, against \EOneThreeSingleMem\ with one positive), as the
+fixed-point analysis allows.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{generated/figures/fig_mechanism}
-  \caption{\textbf{Mechanism.} Direction of the attraction $\Vp(x\mid c)$ for one training condition. Single
-  positive: every arrow points at the one target. \affd: arrows point to the nearest mode of the borrowed positives
-  (circles, size $\propto$ weight).}
+  \caption{\textbf{Attraction field.} Direction of $\Vp(x)$ for one training condition $c$. One positive
+  ($p=\delta_{y}$): every vector points at the single target. Affinity Drifting ($p=\hat p_h(\cdot\mid c)$): vectors
+  point to the nearest mode of the pooled positives (circles, area $\propto\tilde w_i(c)$).}
   \label{fig:mechanism}
 \end{figure}
 
-\paragraph{The gap grows with lost capacity (C3).} \VerdictEOneFour\ (\cref{fig:phase}).
+\paragraph{The gap grows as conditional resolution decreases.} \VerdictEOneFour\ (\cref{fig:phase}).
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{generated/figures/fig_phase}
-  \caption{\textbf{Capacity.} $W_2$ of the single-positive objective and of \affd as the generator's resolution in
-  $c$ coarsens (seed mean, 95\% CI).}
+  \caption{\textbf{Conditional resolution.} $W_2$ of the one-positive objective and of Affinity Drifting as the
+  quantization of $c$ seen by the generator coarsens (mean over seeds, 95\% confidence interval).}
   \label{fig:phase}
 \end{figure}
