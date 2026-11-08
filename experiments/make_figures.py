@@ -2,8 +2,9 @@
 
     .venv/bin/python experiments/make_figures.py   # -> results/figures/*.png
 
-읽는 것: runs/flickr_s10000_*/{log.jsonl, caption_eval.json, samples_test.png, layout_cells.json},
-runs/mae_flickr32/train.log, results/phi_diagnostics.txt, results/layout_cells_retrieval.json.
+읽는 것: runs/flickr_s10000_*/{log.jsonl, caption_eval.json, samples_test.png, layout_cells.json, assignment.json},
+runs/mae_flickr32/train.log, results/phi_diagnostics.txt, results/layout_cells_retrieval.json,
+results/assignment_reference.json.
 아직 없는 실행이나 파일은 건너뛴다.
 """
 
@@ -18,7 +19,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
-from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
+from matplotlib.colors import LinearSegmentedColormap, PowerNorm  # noqa: E402
 from matplotlib.ticker import FuncFormatter, LogLocator, MaxNLocator, NullFormatter  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
@@ -508,6 +509,132 @@ def samples_figure(prompts: int = 6, per: int = 3, scale: int = 3) -> None:
     print(OUT / "samples.png")
 
 
+# 6. 배정 행렬 (experiments/assignment.py) ------------------------------------------------------------------
+
+
+W = r"$\tilde{w}$"  # 한글 글꼴에 결합 틸데가 없어 mathtext로 쓴다.
+
+
+def assignments(name: str) -> list[dict]:
+    return [json.loads((r / "assignment.json").read_text()) for r in RUNS[name] if (r / "assignment.json").exists()]
+
+
+def assignment_figure() -> None:
+    """affinity-drifting 브랜치 F0.3과 같은 배치: 예시 그룹 하나의 배정 행렬과 w̃."""
+    path = Path("results/assignment_reference.json")
+    if not path.exists():
+        return
+    ref = json.loads(path.read_text())
+    panels = [(f"{W}: joint kernel의 캡션 가중치", np.array(ref["example_w"]), f"자기 짝 {ref['w_self']:.2f} · pair 목표는 대각선")]
+    for name, label, _, _ in PRESENT:
+        rows = assignments(name)
+        if rows:
+            seeds = f"시드 {len(rows)}개 평균" if len(rows) > 1 else "시드 1개"
+            panels.append((f"{label} ({seeds})", np.mean([r["example"] for r in rows], axis=0),
+                           f"자기 짝 {np.mean([r['self'] for r in rows]):.3f} · TV {np.mean([r['tv_w'] for r in rows]):.2f}"))
+    norm = PowerNorm(0.5, vmin=0, vmax=max(p[1].max() for p in panels))
+    cols = 4
+    fig, axes = plt.subplots(-(-len(panels) // cols), cols, figsize=(12, 6.9))
+    for ax, (title, matrix, note) in zip(axes.flat, panels):
+        image = ax.imshow(matrix, cmap=RAMP, norm=norm, interpolation="nearest")
+        ax.set_title(f"{title}\n{note}", fontsize=9.5, loc="center")
+        ax.set_xticks([0, len(matrix) - 1])
+        ax.set_yticks([0, len(matrix) - 1])
+        ax.tick_params(length=0, labelsize=8)
+        ax.grid(False)
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+    for ax in axes.flat[len(panels):]:
+        ax.set_visible(False)
+    for ax in axes[:, 0]:
+        ax.set_ylabel("조건 k (캡션)")
+    for ax in axes[-1]:
+        ax.set_xlabel("positive j (학습 이미지)")
+    bar = fig.colorbar(image, ax=axes, fraction=0.015, pad=0.02, ticks=[0, 0.05, 0.2, 0.4, 0.6, 0.8])
+    bar.outline.set_visible(False)
+    bar.ax.tick_params(labelsize=8)
+    fig.text(0.45, 0.0,
+             f"텍스트 이웃 그룹 1개(학습 항목 {ref['members']}개, 텍스트 키 첫 주성분 순). 행마다 조건 k의 샘플 "
+             f"{ref['per_prompt']}장이 픽셀 공간에서 가장 가까운 y_j의 비율. 색은 제곱근 눈금.\n"
+             f"제목의 자기 짝(대각선 평균)과 TV(A, {W})는 그룹 {ref['groups']}개 평균. 우연이면 자기 짝 1/32 = 0.031, "
+             f"균등 배정의 TV는 {ref['tv_uniform_w']:.2f}.",
+             ha="center", va="top", color=MUTED, fontsize=9)
+    save(fig, "assignment.png")
+
+
+def dot_rows(ax, values_by_method: list[tuple[str, str, bool, np.ndarray]]) -> None:
+    """metrics_figure와 같은 표기: 시드별 작은 점과 범위, 평균은 큰 점."""
+    rows = list(range(len(values_by_method)))[::-1]
+    for y, (_, color, hollow, values) in zip(rows, values_by_method):
+        ax.plot([values.min(), values.max()], [y, y], color=color, linewidth=2, alpha=0.5, solid_capstyle="round")
+        ax.scatter(values, np.full(len(values), y), s=16, color=color, alpha=0.55, linewidths=0, zorder=3)
+        ax.plot([values.mean()], [y], linestyle="none", zorder=4, **marker_style(color, hollow, 9))
+    ax.set_ylim(-0.7, len(values_by_method) - 0.1)
+    ax.set_yticks(rows, [label for label, _, _, _ in values_by_method])
+    ax.grid(axis="y", visible=False)
+
+
+def reference_line(ax, x: float, text: str, top: float) -> None:
+    ax.axvline(x, color=MUTED, linewidth=1.0, zorder=1)
+    ax.annotate(text, (x, top), xytext=(3, 0), textcoords="offset points", fontsize=8, color=MUTED, va="center")
+
+
+def assignment_summary_figure() -> None:
+    path = Path("results/assignment_reference.json")
+    if not path.exists():
+        return
+    ref = json.loads(path.read_text())
+    chosen = [(label, color, hollow, assignments(name)) for name, label, color, hollow in PRESENT]
+    chosen = [c for c in chosen if c[3]]
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.3), gridspec_kw={"width_ratios": [1, 1, 1.35]})
+
+    ax = axes[0]
+    dot_rows(ax, [(label, color, hollow, np.array([r["self"] for r in rows])) for label, color, hollow, rows in chosen])
+    reference_line(ax, 1 / ref["members"], "우연 1/32", len(chosen) - 0.45)
+    ax.set_title("자기 짝 이미지에 배정된 비율")
+    ax.set_xlabel(f"목표: pair 1, {W} {ref['w_self']:.2f}, 실제 학습 그룹의 {W} {ref['sampler_self_mass']:.2f} (모두 축 밖)",
+                  fontsize=8, color=MUTED)
+    ax.xaxis.set_major_locator(MaxNLocator(4))
+
+    ax = axes[1]
+    dot_rows(ax, [(label, color, hollow, np.array([r["top3"] for r in rows])) for label, color, hollow, rows in chosen])
+    reference_line(ax, 3 / ref["members"], "균등 3/32", len(chosen) - 0.45)
+    ax.set_yticklabels([])
+    ax.set_title("그룹 32장 중 상위 3장에 몰린 비율")
+    ax.set_xlabel("조건과 상관없이 같은 몇 장으로 가는 정도", fontsize=8, color=MUTED)
+    ax.xaxis.set_major_locator(MaxNLocator(4))
+
+    ax = axes[2]
+    memo = ref["memorization"]
+    edges = np.array(memo["edges"])[::2]  # 1 단위 구간을 2 단위로 묶는다(실제 사진은 512장뿐이라 들쭉날쭉하다).
+    centers = (edges[:-1] + edges[1:]) / 2
+
+    def density(counts) -> np.ndarray:
+        counts = np.asarray(counts, float).reshape(-1, 2).sum(1)
+        return counts / counts.sum()
+
+    for name, label, color, _ in [m for m in PRESENT if m[0] in ("pixel_pair", "pixel_joint")]:
+        rows = assignments(name)
+        ax.plot(centers, density(np.sum([r["nn_hist"] for r in rows], axis=0)), color=color,
+                label=f"{label}: 최근접 학습 이미지까지")
+        ax.plot(centers, density(np.sum([r["own_hist"] for r in rows], axis=0)), color=color, linestyle=(0, (3, 2)),
+                label=f"{label}: 자기 짝 이미지까지")
+    ax.plot(centers, density(memo["real_loo_hist"]), color=INK2, label="실제 사진: 최근접 다른 학습 이미지까지")
+    ax.set_xlim(0, 60)
+    ax.set_ylim(bottom=0)
+    ax.set_xlabel("픽셀 공간 L2 거리 (외웠다면 0 근처에 몰린다)")
+    ax.set_ylabel("비율 (폭 2 구간)")
+    ax.set_title("학습 이미지 29,000장까지의 거리")
+    ax.legend(fontsize=8, loc="upper right")
+    ax.yaxis.set_major_locator(MaxNLocator(3))
+    fig.text(0.5, -0.06,
+             f"왼쪽·가운데: 텍스트 이웃 그룹 {ref['groups']}개 평균(큰 점은 시드 평균, 속 빈 점은 고정 MAE φ). "
+             f"오른쪽: 학습 캡션 {memo['prompts']}개 × {memo['per_prompt']}장, 시드 3개 합. α=1.",
+             ha="center", color=MUTED, fontsize=9)
+    fig.tight_layout(w_pad=2.5)
+    save(fig, "assignment_summary.png")
+
+
 if __name__ == "__main__":
     training_figure()
     training_mae_figure()
@@ -517,3 +644,5 @@ if __name__ == "__main__":
     layout_cells_figure()
     phi_figure()
     samples_figure()
+    assignment_figure()
+    assignment_summary_figure()
