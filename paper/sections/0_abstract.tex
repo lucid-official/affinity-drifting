@@ -10,6 +10,8 @@ while symmetric repulsion memorises. We test this bottom-up with pre-registered,
 non-parametric particle system the predicted fixed points are reached at the resolution of the kernel. In a 2-D toy
 whose conditional distributions are known, the original Drifting objective and the single-positive objective both
 collapse to the conditional mean (mean-collapse index \EOneTwoDriftingMCI\ and \EOneTwoSingleMCI), while an oracle with
-many positives does not (\EOneTwoOracleMCI). \affd's comparison against single-positive and three mechanism controls is
-\VerdictEOneThree\ at this draft.
+many positives does not (\EOneTwoOracleMCI). Borrowing positives restores the mixture: \affd covers every mode and
+lowers the held-out $W_2$ to \EOneThreeRatio\ of the single-positive objective, matching the oracle. Controls show why:
+averaging the borrowed targets without the $x$-dependent kernel still collapses, and random instead of semantic
+neighbours spread samples off the conditional manifold.
 \end{abstract}

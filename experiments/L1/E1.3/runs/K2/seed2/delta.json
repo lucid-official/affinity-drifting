@@ -1,0 +1,19 @@
+{
+  "arm": "K2",
+  "reference_arm": "AffD",
+  "knobs_vs_reference": [
+    "h_p.neighbors"
+  ],
+  "vs_B0": {
+    "h_p.neighbors": {
+      "B0": "semantic",
+      "arm": "random"
+    }
+  },
+  "vs_reference": {
+    "h_p.neighbors": {
+      "reference": "semantic",
+      "arm": "random"
+    }
+  }
+}

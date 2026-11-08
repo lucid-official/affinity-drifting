@@ -111,6 +111,11 @@ def numbers() -> dict[str, str]:
                      (BASELINE, "Drifting")):
         n[f"EOneThree{key}W"] = _num("E1.3", arm, "w2_heldout", ci=True)
         n[f"EOneThree{key}MCI"] = _num("E1.3", arm, "mci_heldout", digits=4)
+    for arm, key in (("AffD", "AffD"), ("single", "Single"), ("K2", "KTwo")):
+        n[f"EOneThree{key}Mem"] = _num("E1.3", arm, "memorization_train")
+        n[f"EOneThree{key}Cov"] = _num("E1.3", arm, "mode_coverage_heldout")
+        n[f"EOneThree{key}Off"] = _num("E1.3", arm, "off_manifold_heldout")
+    n["EOneThreeAffDRecall"] = _num("E1.3", "AffD", "recall_heldout")
     a, s = _ci("E1.3", "AffD", "w2_heldout"), _ci("E1.3", "single", "w2_heldout")
     n["EOneThreeRatio"] = PENDING if a is None or s is None else rf"${a['mean'] / s['mean']:.2f}$"
     return n

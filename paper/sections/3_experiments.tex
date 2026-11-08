@@ -58,14 +58,24 @@ off-manifold share \EOneTwoSingleOff), while the oracle with 16 true samples per
   \small
   \resizebox{\linewidth}{!}{\input{generated/tab_l1}}
   \caption{\textbf{2-D toy, held-out conditions} (seed means). Above the line: the single-positive regime and the
-  three mechanism controls; below: the oracle upper bound. [pending] entries fill in when E1.3 is aggregated.}
+  three mechanism controls; below: \affd and the oracle upper bound, which sees 16 true samples per condition and step.}
   \label{tab:l1}
 \end{table}
 
-\paragraph{Borrowing restores the mixture (C2).} \affd against the single-positive objective and controls K1--K3 is
-\VerdictEOneThree\ (held-out $W_2$: \affd \EOneThreeAffDW, single \EOneThreeSingleW, ratio \EOneThreeRatio;
-\cref{tab:l1}). \Cref{fig:mechanism} shows the mechanism: with one positive every attraction arrow points at the same
-target, whereas the borrowed positives split the space into one basin per mode.
+\paragraph{Borrowing restores the mixture (C2).} \affd, trained on the same single positives, covers every mode
+(mode coverage \EOneThreeAffDCov, recall \EOneThreeAffDRecall) and reaches a held-out $W_2$ of \EOneThreeAffDW\ against
+\EOneThreeSingleW\ for the single-positive objective (ratio \EOneThreeRatio; \cref{tab:l1}), on par with the oracle that
+sees true samples. The pre-registered comparison is \VerdictEOneThree: \affd beats the single-positive objective and
+each control with paired CIs excluding zero. The controls fail in the ways the mechanism predicts. K1 borrows the same
+positives but drops the $x$-dependent kernel, so its target is their weighted average --- and it collapses like the
+single positive (MCI \EOneThreeKOneMCI). K2 borrows as many positives at random: samples spread over all modes
+(coverage \EOneThreeKTwoCov) but most fall off the conditional manifold (off-manifold share \EOneThreeKTwoOff).
+Noise-smoothed single targets (K3) still collapse (MCI \EOneThreeKThreeMCI). The gain therefore comes from the
+$x$-dependent mode assignment of semantically close positives, not from more targets or smoother ones.
+\Cref{fig:mechanism} shows that assignment: with one positive every attraction arrow points at the same target,
+whereas the borrowed positives split the space into one basin per mode. One caveat is visible already: with ample
+capacity, a share of \affd's samples lands on borrowed training positives (memorisation share \EOneThreeAffDMem\ on
+training conditions, against \EOneThreeSingleMem\ for the single positive), as the fixed-point analysis predicts.
 
 \begin{figure}[t]
   \centering

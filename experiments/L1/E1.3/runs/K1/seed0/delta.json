@@ -1,0 +1,19 @@
+{
+  "arm": "K1",
+  "reference_arm": "AffD",
+  "knobs_vs_reference": [
+    "x_kernel.kind"
+  ],
+  "vs_B0": {
+    "x_kernel.kind": {
+      "B0": "gaussian",
+      "arm": "none"
+    }
+  },
+  "vs_reference": {
+    "x_kernel.kind": {
+      "reference": "gaussian",
+      "arm": "none"
+    }
+  }
+}

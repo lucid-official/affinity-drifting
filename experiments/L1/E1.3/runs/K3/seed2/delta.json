@@ -1,0 +1,23 @@
+{
+  "arm": "K3",
+  "reference_arm": "single",
+  "knobs_vs_reference": [
+    "positives.noise"
+  ],
+  "vs_B0": {
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "zero"
+    },
+    "positives.noise": {
+      "B0": "none",
+      "arm": "matched"
+    }
+  },
+  "vs_reference": {
+    "positives.noise": {
+      "reference": "none",
+      "arm": "matched"
+    }
+  }
+}
