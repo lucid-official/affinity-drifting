@@ -123,13 +123,29 @@ def aggregate(exp: Experiment, *, allow_partial: bool = False) -> Judgement:
     }
     (exp.dir / "aggregate.json").write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
     write_report(exp, judgement, summary, runs, missing)
+    paper_line = _rebuild_paper()
     ledger.append("aggregate", exp.id, [
         f"verdict **{judgement.verdict}** ({judgement.kind})",
+        paper_line,
         *[f"{c.verdict}: {c.name} — {c.detail}" for c in judgement.checks if c.verdict != "PASS"][:10],
         f"report: `{rel(exp.dir / 'report.md')}`",
     ])
     ledger.rebuild_index()
     return judgement
+
+
+def _rebuild_paper() -> str:
+    """CLAUDE.md §8.10: every aggregation refreshes the live preprint. A failure is logged, never fatal."""
+    try:
+        from affdrift.reporting.paper import build
+
+        result = build()
+    except Exception as exc:  # noqa: BLE001
+        return f"preprint rebuild failed: {type(exc).__name__}: {exc}"
+    if result["pdf"] is None:
+        return "preprint regenerated; LaTeX compile failed (see `paper/main.log`)"
+    failed = f" ({len(result['figures_failed'])} figure(s) failed)" if result["figures_failed"] else ""
+    return f"preprint rebuilt: `paper/main.pdf`{failed}"
 
 
 def _anomalies(runs: dict[str, dict[int, Any]]) -> list[str]:

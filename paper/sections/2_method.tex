@@ -1,0 +1,45 @@
+\section{Method}
+\label{sec:method}
+
+\paragraph{Drifting.} A generator $f_\theta(\epsilon, c)$ maps noise to samples. Given a field $V(x\mid c)$, it is
+trained with $\mathcal L = \lVert f_\theta(\epsilon,c) - \mathrm{sg}(f_\theta(\epsilon,c) + V)\rVert^2$, where
+$\mathrm{sg}$ stops the gradient. The field is attraction minus repulsion, $V = \Vp - \Vm$, each a kernel mean-shift:
+\begin{equation}
+  \Vp(x\mid c) = \frac{\sum_i w_i(c)\,k(x, y_i)\,(y_i - x)}{\sum_i w_i(c)\,k(x, y_i)},
+  \label{eq:vplus}
+\end{equation}
+and $\Vm$ the same over the other generated samples. In the original method the positives are the samples of the
+condition's own class, $w_i(c) = \mathbf{1}[c_i = c]$, and the field is normalised to unit energy per batch.
+
+\begin{lemma}[Single positive is regression]\label{lem:regression}
+If condition $c$ has one positive $y$ and repulsion is off, $\Vp(x\mid c) = y - x$ for every kernel, so
+$\nabla_\theta\mathcal L = \nabla_\theta\lVert f_\theta - y\rVert^2$.
+\end{lemma}
+
+\paragraph{Affinity Drifting.} \affd keeps \eqref{eq:vplus} but borrows positives from similar conditions,
+\begin{equation}
+  w_i(c) = \exp\!\big(-\lVert\psi(c) - \psi(c_i)\rVert^2 / 2h_p(c)^2\big),
+\end{equation}
+with a frozen condition embedding $\psi$ (an oracle in the toy, a text encoder later). The bandwidth $h_p(c)$ is the
+smallest value whose effective number of neighbours $N_\mathrm{eff} = (\sum_i w_i)^2/\sum_i w_i^2$ reaches $N^*=16$,
+so every condition borrows equally strongly. Repulsion uses a caption bandwidth $h_q$; by default $h_q=0$, \ie a sample
+is repelled only by the other samples of its own condition. The single-positive objective is the limit $h_p\to 0$ of
+the same code; unconditional drifting is $h_p, h_q\to\infty$.
+
+\paragraph{Fixed points.} For a Gaussian kernel of width $\sigma$, \eqref{eq:vplus} is a scaled score:
+\begin{lemma}[Score ratio]\label{lem:score}
+$V(x\mid c) = \sigma^2\nabla_x\big[\log\hat p(x\mid c) - \log\hat q(x\mid c)\big]$, where $\hat p = \sum_i w_i(c)\,
+k_\sigma(\cdot, y_i)$ and $\hat q$ is the kernel density of the generated samples.
+\end{lemma}
+Hence $V\equiv 0$ exactly when $\hat q = \hat p$. With $h_q = 0$ the equilibrium of a condition is the
+Nadaraya--Watson mixture of its borrowed positives,
+$q_c = \sum_i \tilde w_i(c)\,\delta_{y_i}$ with $\tilde w = w/\sum w$ (Proposition~C in our plan); with symmetric
+repulsion $h_q = h_p$ the mixing cancels on both sides and every condition memorises its own positive
+(Proposition~A). The bandwidth $h_q$ thus selects the equilibrium.
+
+\paragraph{Implementation choices.} We use a mixture of kernel widths, $\sigma\in\{0.071, 0.384, 2.07\}$ from the
+$N^*$-th-nearest-neighbour distance to the median pairwise distance of the positives, summing one field per width;
+each width satisfies Lemma~\ref{lem:score}, so the fixed point is unchanged. As in the original method, the
+\emph{whole} field is normalised to unit energy per batch and per width. A per-term normalisation, which we first
+used, keeps $\Vp$ and $\Vm$ at unit size even where both should vanish and flung a few percent of single-positive
+samples far outside the data; we report it in \cref{sec:status}.

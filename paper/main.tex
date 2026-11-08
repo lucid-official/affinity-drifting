@@ -1,0 +1,52 @@
+% Live preprint. Hand-written text lives here and in sections/; every number, table and figure under generated/ is
+% regenerated from experiment results by affdrift/reporting/paper.py (run after each scripts/aggregate.py).
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[pagenumbers]{cvpr}   % arXiv-style preprint: named authors, page numbers (template only; venue TBD)
+
+\usepackage{iftex}
+\ifXeTeX                          % tectonic builds with XeTeX: use a Times clone for the CVPR look
+  \usepackage{fontspec}
+  \setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+                              ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\fi
+\usepackage{cuted}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{xcolor}
+\newcommand{\pending}{\textcolor{gray}{[pending]}}
+\newcommand{\affd}{AffD\xspace}
+\newcommand{\Vp}{V^{+}}
+\newcommand{\Vm}{V^{-}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+
+\input{generated/numbers}
+
+\def\confName{CVPR}
+\def\confYear{2027}
+
+\title{Affinity Drifting: Learning Conditional Distributions\\from One Sample per Condition}
+
+\author{Chan Lee\\
+{\small Working draft --- results update automatically as experiments finish (\BuildStamp)}}
+
+\begin{document}
+\maketitle
+
+\input{sections/0_abstract}
+\input{sections/1_intro}
+\input{sections/2_method}
+\input{sections/3_experiments}
+\input{sections/4_status}
+\input{sections/5_related}
+
+{
+    \small
+    \bibliographystyle{ieeenat_fullname}
+    \bibliography{main}
+}
+
+\end{document}

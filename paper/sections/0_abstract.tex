@@ -1,0 +1,15 @@
+\begin{abstract}
+Drifting models train a one-step generator by moving its samples along a field that attracts them to data and repels
+them from each other. In text-to-image data, however, each caption usually comes with a single image. We show that
+with one positive per condition the attraction term reduces exactly to $L_2$ regression onto that positive, so a
+generator that cannot resolve nearby conditions collapses to the conditional mean. We propose \emph{Affinity Drifting}
+(\affd), which replaces the single target by a kernel mean-shift over the positives of semantically similar conditions,
+weighted by a caption-space affinity. For Gaussian kernels the field is the gradient of a log density ratio, which
+lets us predict its fixed points: borrowing positives with self-only repulsion converges to a Nadaraya--Watson mixture,
+while symmetric repulsion memorises. We test this bottom-up with pre-registered, single-factor experiments. In a
+non-parametric particle system the predicted fixed points are reached at the resolution of the kernel. In a 2-D toy
+whose conditional distributions are known, the original Drifting objective and the single-positive objective both
+collapse to the conditional mean (mean-collapse index \EOneTwoDriftingMCI\ and \EOneTwoSingleMCI), while an oracle with
+many positives does not (\EOneTwoOracleMCI). \affd's comparison against single-positive and three mechanism controls is
+\VerdictEOneThree\ at this draft.
+\end{abstract}

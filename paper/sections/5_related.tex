@@ -1,0 +1,10 @@
+\section{Related work}
+\label{sec:related}
+
+\affd builds on drifting~\cite{deng2026drifting}, which turns kernel mean-shift~\cite{comaniciu2002meanshift} into a
+training signal for one-step generators. Its attraction is a Nadaraya--Watson kernel regression~\cite{nadaraya1964,
+watson1964} over borrowed positives, and the field is closely related to gradients of kernel two-sample statistics
+(MMD)~\cite{gretton2012kernel}, which generative models have used with mixtures of kernel widths for the same reason
+we do~\cite{li2017mmdgan}. Our evaluation follows standard practice for mode collapse: precision and
+recall~\cite{kynkaanniemi2019improved} and density and coverage~\cite{naeem2020reliable}. The capacity control by
+spectral normalisation follows~\cite{miyato2018spectral}.

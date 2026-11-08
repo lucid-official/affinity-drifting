@@ -56,6 +56,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 - `core/drift.DriftNorm` and B0 `normalization.drift_target` (`term` default = behaviour of every run so far;
   `total` = normalise the whole field per batch and per kernel scale, as the release does per temperature).
 
+- `paper/` live preprint (CVPR author kit, arXiv mode) and `affdrift/reporting/paper.py`: numbers, tables and figures
+  regenerated from `aggregate.json` after every aggregation and compiled with tectonic; `scripts/build_paper.py`.
+  CLAUDE.md §8.10.
+
 ### Changed
 
 - B0 `levels.L1.train.lr` = 1e-3, fixed by Gate G4c (PASS).

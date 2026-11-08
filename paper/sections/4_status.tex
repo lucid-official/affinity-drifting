@@ -1,0 +1,22 @@
+\section{Status, deviations and limitations}
+\label{sec:status}
+
+This is a working draft; \cref{tab:status} lists every pre-registered experiment and its verdict at the time of the
+build. Changes to the plan made along the way are logged with reasons and approvals; the ones that matter for reading
+the results are: the learning-rate gate failed twice before passing, first because unconditional drifting was
+mis-specified (repulsion within each condition's samples instead of the whole batch) and then narrowly; a
+single-width kernel transported mass too locally and was replaced by a mixture of widths; 64 instead of 8 samples per
+condition are generated, since self-only repulsion estimated from 8 samples is strongly biased; and the drift
+normalisation was corrected from per-term to whole-field, as in the original method, after the per-term version flung
+single-positive samples outside the data. Runs made before a correction are kept and excluded.
+
+The toy uses an oracle condition embedding; text embeddings, learned features and real captions are later stages of
+the plan, not reported here.
+
+\begin{table}[h]
+  \centering
+  \small
+  \input{generated/tab_status}
+  \caption{Pre-registered experiments and their verdicts at build time.}
+  \label{tab:status}
+\end{table}

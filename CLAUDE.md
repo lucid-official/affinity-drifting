@@ -161,4 +161,9 @@ tests/                            # affdrift/ 구조를 그대로 미러링
    해석은 판정과 섞지 않는다. Level이 끝나면 `experiments/<Level>/summary.md`를 쓰고 멈춘다.
 9. **git.** 커밋 단위: 인프라/코드 변경 → 실험별 사전 등록 → 실험별 결과(runs의 json·figure·report). `arrays.npz`와 `wandb/`는
    커밋하지 않는다. 커밋 메시지는 실험 ID로 시작한다(예: `E0.3: pre-register`, `E0.3: results (PASS)`).
+10. **Live preprint.** `paper/`는 지금까지의 결과로 쓴 논문 preprint(CVPR 템플릿, arXiv 모드)다. 실험이 집계될 때마다
+    (`aggregate.py` → `affdrift/reporting/paper.py`) `paper/generated/`의 수치 매크로·표·figure가 다시 만들어지고
+    `paper/main.pdf`가 컴파일된다. 본문의 숫자는 손으로 적지 않고 매크로로만 넣는다. 판정 전 실험은 `[pending]`으로 둔다.
+    새 판정이 서사를 바꾸면(예: 주장이 지지되거나 반증됨) 같은 결과 커밋에서 `paper/sections/`의 본문도 고친다.
+    결과 커밋에는 갱신된 `paper/generated/`와 `paper/main.pdf`를 함께 넣는다. 사후(탐색적) 분석은 본문에서 그렇게 밝힌다.
 
