@@ -1,0 +1,28 @@
+{
+  "arm": "d4_h2",
+  "reference_arm": "d16_h1",
+  "knobs_vs_reference": [
+    "h_p.scale",
+    "level1.delta"
+  ],
+  "vs_B0": {
+    "h_p.scale": {
+      "B0": 1.0,
+      "arm": 2.0
+    },
+    "level1.delta": {
+      "B0": 0.0625,
+      "arm": 0.25
+    }
+  },
+  "vs_reference": {
+    "h_p.scale": {
+      "reference": 1.0,
+      "arm": 2.0
+    },
+    "level1.delta": {
+      "reference": 0.0625,
+      "arm": 0.25
+    }
+  }
+}

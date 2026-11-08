@@ -17,5 +17,6 @@ distributions, the original Drifting objective and the one-positive objective bo
 restores the mixture: it captures every mode and lowers the held-out Wasserstein-2 distance to \EOneThreeRatio\ of the
 one-positive objective, on par with the oracle. Ablations show why: pooling the positives without the sample-space
 kernel still collapses, and random instead of semantically similar neighbors place samples off the conditional
-support.
+support. Contrary to our prediction, the gap does not close when the condition is given to the generator at full
+resolution: the one-positive generator regresses to the conditional mean even on its training conditions.
 \end{abstract}

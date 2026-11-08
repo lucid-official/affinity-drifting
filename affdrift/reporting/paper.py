@@ -149,6 +149,10 @@ def numbers() -> dict[str, str]:
     n["EOneThreeAffDRecall"] = _num("E1.3", "AffD", "recall_heldout")
     for arm, key in (("AffD", "AffD"), ("K2", "KTwo")):
         n[f"EOneThree{key}Prec"] = _num("E1.3", arm, "precision_heldout")
+    for arm, key in (("d0_h0", "ZeroOne"), ("d0_h1", "ZeroAff"), ("d16_h0", "SixteenOne"), ("d16_h1", "SixteenAff"),
+                     ("d4_h0", "FourOne"), ("d4_h1", "FourAff")):
+        n[f"EOneFour{key}W"] = _num("E1.4", arm, "w2_train", digits=3)
+        n[f"EOneFour{key}TVR"] = _num_one_minus("E1.4", arm, "mci_train", digits=3)
     for arm, key in (("hx0.25", "Quarter"), ("hx1", "One"), ("hx8", "Eight"), ("fixed", "Fixed")):
         n[f"EOneSix{key}W"] = _num("E1.6", arm, "w2_heldout", digits=3)
         n[f"EOneSix{key}Energy"] = _num("E1.6", arm, "raw_drift_energy", digits=3)
@@ -341,6 +345,9 @@ def fig_phase() -> Figure:
         cis = [bootstrap_ci([r.metrics["w2_train"] for r in runs[f"{d}_{arm_suffix}"].values()]) for d, _ in deltas]
         ax.plot(x, [c.mean for c in cis], "-o", ms=3, color=color, label=name, lw=1)
         ax.fill_between(x, [c.lo for c in cis], [c.hi for c in cis], color=color, alpha=0.2, lw=0)
+    if BASELINE in runs:  # original Drifting, run once at the base resolution δ = 1/16
+        base = bootstrap_ci([r.metrics["w2_train"] for r in runs[BASELINE].values()])
+        ax.axhline(base.mean, color=arm_color(BASELINE), ls="--", lw=0.8, label=r"Drifting ($\delta=1/16$)")
     ax.set_xticks(x, ["0", "1/64", "1/16", "1/4"])
     ax.set(xlabel=r"quantization step $\delta$ of $c$ (coarser $\rightarrow$)", ylabel=r"$W_2$ (training $c$)")
     ax.legend(frameon=False)

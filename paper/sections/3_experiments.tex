@@ -104,12 +104,27 @@ $\mathbb E\lVert V_{p,q}\rVert^2$ after training decreases monotonically in $h$ 
 \EOneSixEightEnergy\ at $m=8$): a larger bandwidth gives a smoother target that is easier to match, not a better
 model. The drift energy is therefore not a criterion for selecting $h$; we never use it for selection.
 
-\paragraph{The gap grows as conditional resolution decreases.} \VerdictEOneFour\ (\cref{fig:phase}).
+\paragraph{Conditional resolution does not explain the gap.} We predicted that the gap between the one-positive
+objective and Affinity Drifting grows as the generator's resolution in $c$ is coarsened by quantization, and vanishes
+on training conditions without quantization, where a generator could in principle fit each positive. The prediction
+fails (\VerdictEOneFour; \cref{fig:phase}). On training conditions the $W_2$ of the one-positive objective is
+\EOneFourZeroOneW\ without quantization and \EOneFourSixteenOneW\ at $\delta=1/16$, against \EOneFourZeroAffW\ and
+\EOneFourSixteenAffW\ for Affinity Drifting: the gap does not shrink at $\delta=0$, and it narrows at the coarsest
+$\delta=1/4$ (\EOneFourFourOneW\ against \EOneFourFourAffW) because Affinity Drifting degrades there, not because the
+one-positive objective improves. Even without quantization, the one-positive generator does not fit its training
+positives: its variance ratio on training conditions is \EOneFourZeroOneTVR, and in an analysis that was not
+pre-registered, its samples lie close to the conditional mean $\mathbb E[x\mid c]$ rather than at the positive $y_i$.
+The network's own smoothness in $c$, not the quantization step, thus sets its effective resolution in this range: an
+MLP trained for $20{,}000$ steps on $10{,}000$ conditions regresses to the conditional mean whether or not $c$ is
+quantized. Collapse is therefore the default behavior of the one-positive objective here, and explicit quantization
+from $\delta=0$ to $1/16$ does not change it.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{generated/figures/fig_phase}
-  \caption{\textbf{Conditional resolution.} $W_2$ of the one-positive objective and of Affinity Drifting as the
-  quantization of $c$ seen by the generator coarsens (mean over seeds, 95\% confidence interval).}
+  \caption{\textbf{Conditional resolution.} $W_2$ on training conditions of the one-positive objective and of
+  Affinity Drifting as the quantization of $c$ seen by the generator coarsens (mean over seeds, 95\% confidence
+  interval); dashed: the original Drifting objective at $\delta=1/16$. The predicted convergence of the two at
+  $\delta=0$ does not occur.}
   \label{fig:phase}
 \end{figure}

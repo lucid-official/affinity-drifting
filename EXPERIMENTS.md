@@ -26,7 +26,7 @@ How to read this file
 | L1 | [E1.2](experiments/L1/E1.2/) | C1 | single positive collapses to the conditional mean; the oracle does not | aggregated | PASS | [report](experiments/L1/E1.2/report.md) |
 | L1 | [E1.3](experiments/L1/E1.3/) | C2 | AffD restores the mixture and beats single, K1, K2, K3 | aggregated | PASS | [report](experiments/L1/E1.3/report.md) |
 | L1 | [E1.4b](experiments/L1/E1.4b/) | C3 | the same gap under a smooth capacity limit: Lipschitz constant L of the c path | pre-registered | — | — |
-| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | running | — | — |
+| L1 | [E1.4](experiments/L1/E1.4/) | C3 | the single–AffD gap grows as the generator's c-resolution δ coarsens | aggregated | FAIL | [report](experiments/L1/E1.4/report.md) |
 | L1 | [E1.5](experiments/L1/E1.5/) | C4 | h_q selects the equilibrium in a trained generator (δ = 0, long training) | running | — | — |
 | L1 | [E1.6](experiments/L1/E1.6/) | h 선택 | W2 is U-shaped in h_p with its minimum near N_eff ≈ N*; ‖V‖² would pick a too-large h | aggregated | PASS | [report](experiments/L1/E1.6/report.md) |
 | L1 | [G4](experiments/L1/G4/) | Gate G4 | unconditional drifting fits the marginal; the learning rate is fixed once here | aggregated | FAIL | [report](experiments/L1/G4/report.md) |
@@ -862,3 +862,43 @@ How to read this file
 - verdict **PASS** (composite)
 - preprint rebuilt: `paper/main.pdf`
 - report: `experiments/L1/E1.6/report.md`
+
+### 2026-11-08 16:08 UTC · E1.4 · sweep
+
+- commit `23aec32095`
+- arms ['d0_h0', 'd0_h0.5', 'd0_h1', 'd0_h2', 'd0_h4', 'd64_h0', 'd64_h0.5', 'd64_h1', 'd64_h2', 'd64_h4', 'd16_h0', 'd16_h0.5', 'd16_h1', 'd16_h2', 'd16_h4', 'd4_h0', 'd4_h0.5', 'd4_h1', 'd4_h2', 'd4_h4', 'drifting'] × seeds [0, 1, 2, 3, 4]
+- 105 complete, 0 skipped, 0 failed
+- wall time 16250 s
+
+### 2026-11-08 16:11 UTC · E1.4 · aggregate
+
+- commit `23aec32095`
+- verdict **FAIL** (composite)
+- preprint rebuilt: `paper/main.pdf`
+- FAIL: w2_train gap increasing — gaps [0.9606, 0.966, 0.9323, 0.6841]; step 0: 0.005394 [-0.003104, 0.0147]; step 1: -0.03369 [-0.0426, -0.02139]; step 2: -0.2482 [-0.2584, -0.2383]
+- FAIL: w2_train |gap ['d0_h0', 'd0_h1']| / gap ['d16_h0', 'd16_h1'] — ratio 1.03 (pass ≤ 0.2, fail ≥ 0.5)
+- report: `experiments/L1/E1.4/report.md`
+
+### 2026-11-08 16:12 UTC · E1.4 · figures
+
+- commit `23aec32095`
+- `figures/L1/E1.4/FC.1/FC.1.png`
+- `figures/L1/E1.4/F1.4/F1.4.png`
+- `figures/L1/E1.4/F1.5/F1.5.png`
+
+### 2026-11-08 16:30 UTC · E1.4 · observation (manual, exploratory — not pre-registered)
+
+- commit `23aec32095` (before the E1.4 results commit)
+- Verdict stands: **FAIL**. Prediction and decision rule are not changed.
+- Diagnosis of the δ = 0 arm: on the training conditions of seeds 0–1, the mean of the 512 single-positive samples
+  lies 0.10–0.11 from the conditional mean E[x|c] and 1.50–1.51 from that condition's own training positive y_i
+  (‖y_i − E[x|c]‖ = 1.54). Same for δ = 1/64 and 1/16. MCI_train = 0.9996 for all δ.
+  → Even without quantization, the MLP (256×3, 20k steps, 10k conditions) does not fit its individual
+  positives; it regresses to E[x|c]. Its own smoothness in c, not δ, sets its effective resolution for δ ≤ 1/16.
+  δ ∈ [0, 1/16] therefore does not act as a capacity knob, and the plan's "gap → 0 at δ = 0" premise (single memorizes
+  at full capacity) does not hold for this generator.
+- The gap narrows at δ = 1/4 because AffD degrades there (W2_train 0.48 → 0.74), not because single improves.
+- Plan §9: "E1.4 아니오 → 메커니즘 수정 (용량 설명 대신 다른 설명)". go/no-go is the user's call. E1.4b (Lipschitz L)
+  and E1.5 keep running as pre-registered.
+- Preprint: the capacity paragraph now reports the failure; the abstract and contribution (i) say collapse occurs
+  even at full resolution in this toy; the diagnosis is marked as not pre-registered.

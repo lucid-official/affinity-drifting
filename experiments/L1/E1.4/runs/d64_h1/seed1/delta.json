@@ -1,0 +1,19 @@
+{
+  "arm": "d64_h1",
+  "reference_arm": "d16_h1",
+  "knobs_vs_reference": [
+    "level1.delta"
+  ],
+  "vs_B0": {
+    "level1.delta": {
+      "B0": 0.0625,
+      "arm": 0.015625
+    }
+  },
+  "vs_reference": {
+    "level1.delta": {
+      "reference": 0.0625,
+      "arm": 0.015625
+    }
+  }
+}

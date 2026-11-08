@@ -1,0 +1,19 @@
+{
+  "arm": "d16_h0",
+  "reference_arm": "d16_h1",
+  "knobs_vs_reference": [
+    "h_p.rule"
+  ],
+  "vs_B0": {
+    "h_p.rule": {
+      "B0": "n_eff",
+      "arm": "zero"
+    }
+  },
+  "vs_reference": {
+    "h_p.rule": {
+      "reference": "n_eff",
+      "arm": "zero"
+    }
+  }
+}

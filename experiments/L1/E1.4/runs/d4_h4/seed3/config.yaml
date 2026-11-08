@@ -1,0 +1,62 @@
+field: affd
+release:
+  temperatures:
+  - 0.02
+  - 0.05
+  - 0.2
+phi: identity
+psi: oracle
+x_kernel:
+  kind: gaussian
+  sigma_rule: multiscale
+h_p:
+  rule: n_eff
+  n_star: 16
+  scale: 4.0
+  fixed_value: null
+  neighbors: semantic
+h_q:
+  ratio: 0.0
+  exclude_self: true
+gen:
+  M: 64
+positives:
+  source: bank
+  oracle_n: 16
+  noise: none
+normalization:
+  feature: frozen
+  drift: true
+  drift_target: total
+softmax: separate
+negative:
+  type: self
+  lambda: 0.0
+level1:
+  n_train: 10000
+  n_heldout: 256
+  n_eval_train: 256
+  eval_samples: 512
+  data_seed: 0
+  delta: 0.25
+  lipschitz: null
+  mode_std: 0.1
+  mix_beta: 2.0
+eval:
+  workers: 5
+model:
+  eps_dim: 4
+  hidden: 256
+  depth: 3
+  cond_hidden: 64
+train:
+  optimizer: adam
+  lr: 0.001
+  steps: 20000
+  steps_multiplier: 1
+  batch_conditions: 8
+  batch_mode: uniform
+  group: 8
+  ema: 0.999
+  log_every: 100
+  eval_every: 10
