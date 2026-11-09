@@ -5,7 +5,7 @@ import numpy as np
 
 from affdrift.data import toy2d
 from affdrift.data.particles import half_median_pairwise, make_gaussian_pair, make_single_bank
-from affdrift.models.generator import GeneratorSpec, MLPGenerator, quantize
+from affdrift.models.generator import GeneratorSpec, MLPGenerator, fourier_matrix, quantize
 
 
 def test_single_bank_is_separated_and_fixed() -> None:
@@ -52,3 +52,40 @@ def test_lipschitz_generator_runs() -> None:
     gen = MLPGenerator(GeneratorSpec(lipschitz=4.0))
     out = gen(lucid.randn(5, 7, 2), lucid.rand(5, 1, 2))
     assert out.shape == (5, 7, 2)
+
+
+def test_fourier_features_are_fixed_and_not_trained() -> None:
+    """D25: B ~ N(0, s²) is a buffer drawn from the seed — same seed, same B; never a parameter."""
+    spec = GeneratorSpec(fourier_scale=16.0, fourier_features=8, fourier_seed=3)
+    b = fourier_matrix(spec)
+    assert b.shape == (8, 2)
+    np.testing.assert_array_equal(b, fourier_matrix(spec))
+    assert not np.array_equal(b, fourier_matrix(GeneratorSpec(fourier_scale=16.0, fourier_features=8, fourier_seed=4)))
+    np.testing.assert_allclose(b.std(), 16.0, rtol=0.6)
+    gen = MLPGenerator(spec)
+    n_raw = sum(int(p.numel()) for p in MLPGenerator(GeneratorSpec()).parameters())
+    n_ff = sum(int(p.numel()) for p in gen.parameters())
+    assert n_ff - n_raw == (2 * 8 - 2) * 64      # only the wider first layer of g; B itself is not a parameter
+    assert all(p.shape != (2, 8) for p in gen.parameters())
+    c = lucid.rand(5, 1, 2)
+    emb = gen.cond.embed(c).numpy()
+    z = 2 * np.pi * c.numpy() @ b.T
+    np.testing.assert_allclose(emb, np.concatenate([np.cos(z), np.sin(z)], -1), atol=1e-4)
+    assert gen(lucid.randn(5, 7, spec.eps_dim), c).shape == (5, 7, 2)
+
+
+def test_fourier_scale_raises_resolution_in_c() -> None:
+    """At initialisation, a larger Fourier scale makes f vary faster in c (the knob binds, D25)."""
+    eps = lucid.zeros(1, 1, 2)
+    c0 = lucid.tensor([[[0.5, 0.5]]])
+    c1 = lucid.tensor([[[0.501, 0.5]]])
+
+    def change(s: float | None) -> float:
+        diffs = []
+        for seed in range(8):
+            lucid.manual_seed(seed)
+            g = MLPGenerator(GeneratorSpec(fourier_scale=s, fourier_seed=seed))
+            diffs.append(float(np.linalg.norm((g(eps, c1) - g(eps, c0)).numpy())))
+        return float(np.mean(diffs))
+
+    assert change(64.0) > 5 * change(None)

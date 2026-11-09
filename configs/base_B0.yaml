@@ -94,6 +94,8 @@ levels:
       data_seed: 0
       delta: 0.0625           # c quantisation 1/16 (plan §5.2 default)
       lipschitz: null         # spectral-norm Lipschitz L of the c path (E1.4b)
+      fourier_scale: null     # D25: random Fourier features of c with B ~ N(0, s²) (E1.4c); null = raw c
+      fourier_features: 64    # D25: rows of B
       mode_std: 0.1
       mix_beta: 2.0           # D18
     normalization:

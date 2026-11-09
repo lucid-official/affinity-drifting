@@ -7,6 +7,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Added
 
+- `models/generator.py`: random Fourier features of c (`fourier_scale`, `fourier_features`, `fourier_seed`; B is a buffer, never trained) — E1.4c, [D25](docs/deviations.md). `level1.generator_spec(cfg, seed)` now takes the run seed.
+- `levels/level1.py`: metric `own_positive_dist_train` (distance of each training condition's sample mean to its own positive; D25 manipulation check).
+- `eval/judge.py`: `paired` check option `fail_as` (verdict when the CI lies below 0; D25).
+- `eval/figures/level1.py`: F1.4/F1.5 axis `fourier`; F1.4 shows only the h rows that were run.
 - `scripts/analysis_l1_reference.py` (exploratory, never feeds a verdict): reference values for E1.4/E1.5 —
   TV(NW mixture, true p(x|c)), memorization chance level of true samples, one-positive sample mean vs E[x|c] and y_i.
   Output `experiments/L1/analysis/reference.json`, read by the preprint.
@@ -71,6 +75,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- `configs/base_B0.yaml` (L1): `level1.fourier_scale: null`, `level1.fourier_features: 64` ([D25](docs/deviations.md); null keeps the previous generator, no effect on existing runs).
 - Preprint notation follows the Drifting paper's macros (bold vectors $\mathbf x,\mathbf y^\pm,\mathbf V,\boldsymbol\epsilon$, `\texttt{stopgrad}`, bold covariance); symbol clashes removed (quantization width δ → Δ, guidance weight λ → γ). Proofs (Lemmas 1–2, new Proposition on equilibria) and implementation/experimental details moved to `paper/sections/6_appendix.tex`; `amsthm` added.
 - Preprint macros for E1.4b (`EOneFourB*`: W2 of the one-positive objective and of Affinity Drifting at L = 64 and L = 1).
 - Preprint (`paper/`, `affdrift/reporting/paper.py`): literature terminology and the notation of Deng et al. (2602.04770)

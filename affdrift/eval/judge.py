@@ -226,8 +226,10 @@ def _check(spec: Mapping[str, Any], table: Table) -> Check:
             return Check(f"{metric}: {spec['num']} / {spec['den']}", v, f"ratio {r:.4g} (pass ≤ {spec['pass_le']})")
         case "paired":
             # a − b > 0 expected: CI above 0 → PASS, below 0 → FAIL, straddling → INCONCLUSIVE
+            # ``fail_as``: verdict when the CI lies below 0 (a manipulation check reports INCONCLUSIVE, D25)
             ci = _paired(table, spec["a"], spec["b"], metric)
-            v = Verdict.PASS if ci.lo > 0 else Verdict.FAIL if ci.hi < 0 else Verdict.INCONCLUSIVE
+            v = (Verdict.PASS if ci.lo > 0 else Verdict(spec.get("fail_as", "FAIL")) if ci.hi < 0
+                 else Verdict.INCONCLUSIVE)
             return Check(f"{metric}: {spec['a']} − {spec['b']} > 0", v, f"paired diff {ci}", ci)
         case "gap_monotone":
             # gaps g_k = metric(single_k) − metric(affd_k) must increase along the list

@@ -227,10 +227,13 @@ class Positives:
 # ── training ────────────────────────────────────────────────────────────────
 
 
-def generator_spec(cfg: Config) -> GeneratorSpec:
+def generator_spec(cfg: Config, seed: int) -> GeneratorSpec:
     m, l1 = cfg["model"], cfg["level1"]
+    fs = l1.get("fourier_scale")
     return GeneratorSpec(eps_dim=m["eps_dim"], hidden=m["hidden"], depth=m["depth"], cond_hidden=m["cond_hidden"],
-                         delta=float(l1["delta"]), lipschitz=None if l1["lipschitz"] is None else float(l1["lipschitz"]))
+                         delta=float(l1["delta"]), lipschitz=None if l1["lipschitz"] is None else float(l1["lipschitz"]),
+                         fourier_scale=None if fs is None else float(fs),
+                         fourier_features=int(l1.get("fourier_features", 64)), fourier_seed=seed)
 
 
 type LossFn = Callable[[Tensor, np.ndarray, FloatArray], tuple[Tensor, dict[str, Tensor]]]
@@ -329,7 +332,7 @@ def train(run: Run, cfg: Config, bank: Bank, sigma: float | list[float], *, step
     device = default_device()
     seed = run.seed
     lucid.manual_seed(seed)  # parameter init only; every data draw below uses an explicit generator
-    model = MLPGenerator(generator_spec(cfg)).to(device)
+    model = MLPGenerator(generator_spec(cfg, seed)).to(device)
     ema = AveragedModel(model, multi_avg_fn=get_ema_multi_avg_fn(float(cfg["train"]["ema"])))
     opt = Adam(model.parameters(), lr=float(cfg["train"]["lr"]))
     loss_fn, resolved = make_loss(cfg, bank, sigma, device, seed)
@@ -429,6 +432,9 @@ def evaluate(model: MLPGenerator, cfg: Config, bank: Bank, *, device: str, sigma
         pool = numpy_rng(EVAL_SEED, 60 + seed).choice(len(conds) * n, size=2048, replace=False)
         out[f"w2_marginal_{split}"] = _w2(fake.reshape(-1, 2)[pool], real.reshape(-1, 2)[pool])
         out[f"w2_marginal_datadata_{split}"] = _w2(real2.reshape(-1, 2)[pool], real.reshape(-1, 2)[pool])
+        if split == "train":
+            # D25 manipulation check: distance of each condition's sample mean to its own training positive
+            out["own_positive_dist_train"] = float(np.mean(np.linalg.norm(fake.mean(1) - bank.y[bank.eval_train], axis=1)))
         arrays[f"fake_{split}"] = fake[:16]
         arrays[f"real_{split}"] = real[:16]
         arrays[f"c_{split}"] = conds[:16]
@@ -544,7 +550,7 @@ def run_lemma0(run: Run) -> Metrics:
     cfg, device = run.config, default_device()
     bank = bank_of(cfg)
     lucid.manual_seed(run.seed)
-    model = MLPGenerator(generator_spec(cfg)).to(device)
+    model = MLPGenerator(generator_spec(cfg, run.seed)).to(device)
     release = cfg["field"] == "release"
     idx = numpy_rng(run.seed, 50).integers(0, len(bank.c), size=64)
     eps = to_tensor(numpy_rng(run.seed, 51).normal(size=(64, 1, int(cfg["model"]["eps_dim"]))), device)

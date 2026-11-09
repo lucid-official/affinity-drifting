@@ -86,3 +86,14 @@ def test_parallel_condition_metrics_equal_serial() -> None:
     parallel = evaluate_conditions(*args, workers=3)
     for k in serial:
         np.testing.assert_allclose(serial[k], parallel[k])
+
+
+def test_paired_fail_as_reports_manipulation_failure_as_inconclusive() -> None:
+    """D25: a manipulation check whose CI lies below 0 makes the experiment INCONCLUSIVE, not FAIL."""
+    t = _table(raw=[{"d": 1.0}, {"d": 1.1}, {"d": 0.9}], s64=[{"d": 2.0}, {"d": 2.1}, {"d": 1.9}])
+    spec = {"type": "paired", "metric": "d", "a": "raw", "b": "s64"}
+    assert judge({"kind": "composite", "checks": [spec]}, t).verdict == Verdict.FAIL
+    spec |= {"fail_as": "INCONCLUSIVE"}
+    assert judge({"kind": "composite", "checks": [spec]}, t).verdict == Verdict.INCONCLUSIVE
+    t = _table(raw=[{"d": 2.0}, {"d": 2.1}, {"d": 1.9}], s64=[{"d": 1.0}, {"d": 1.1}, {"d": 0.9}])
+    assert judge({"kind": "composite", "checks": [spec]}, t).verdict == Verdict.PASS

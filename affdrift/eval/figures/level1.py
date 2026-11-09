@@ -233,6 +233,8 @@ def f13(exp: Experiment, runs: Runs, opts: Mapping[str, Any]) -> Built:
 def _axis(opts: Mapping[str, Any]) -> tuple[list[str], list[str], str]:
     if opts.get("axis") == "lipschitz":
         return ["L64", "L16", "L4", "L1"], ["1/64", "1/16", "1/4", "1"], "1/L (smaller L = coarser)"
+    if opts.get("axis") == "fourier":
+        return ["s64", "s16", "s4", "s1", "raw"], ["64", "16", "4", "1", "raw c"], "Fourier scale s of c (smaller = coarser)"
     return ["d0", "d64", "d16", "d4"], ["0", "1/64", "1/16", "1/4"], "δ"
 
 
@@ -245,18 +247,20 @@ def _cell(runs: Runs, arm: str, metric: str) -> float:
 
 def f14(exp: Experiment, runs: Runs, opts: Mapping[str, Any]) -> Built:
     cols, labels, xlabel = _axis(opts)
-    w2 = np.array([[_cell(runs, f"{c}_{h}", "w2_train") for c in cols] for h in H_ROWS])
-    mci = np.array([[_cell(runs, f"{c}_{h}", "mci_train") for c in cols] for h in H_ROWS])
+    rows = [h for h in H_ROWS if any(f"{c}_{h}" in runs for c in cols)]   # E1.4c runs h0 and h1 only (D25)
+    w2 = np.array([[_cell(runs, f"{c}_{h}", "w2_train") for c in cols] for h in rows])
+    mci = np.array([[_cell(runs, f"{c}_{h}", "mci_train") for c in cols] for h in rows])
 
     def render(ps: Sequence[Panel]) -> Figure:
         fig, ax = plt.subplots(figsize=(5.2, 3.8))
         im = ax.imshow(w2, cmap="viridis_r", origin="lower", aspect="auto")
-        for i in range(len(H_ROWS)):
+        for i in range(len(rows)):
             for j in range(len(cols)):
                 ax.text(j, i, f"{w2[i, j]:.2f}\nMCI {mci[i, j]:.2f}", ha="center", va="center", fontsize=6,
                         color="white" if w2[i, j] > np.nanmean(w2) else "black")
         ax.set_xticks(range(len(cols)), labels)
-        ax.set_yticks(range(len(H_ROWS)), ["0 (single)", "0.5", "1 (AffD B0)", "2", "4"])
+        names = dict(zip(H_ROWS, ["0 (single)", "0.5", "1 (AffD B0)", "2", "4"]))
+        ax.set_yticks(range(len(rows)), [names[h] for h in rows])
         ax.set(xlabel=xlabel, ylabel="h_p / h*")
         fig.colorbar(im, ax=ax, label="W2 (training c, seed mean)")
         fig.suptitle(f"F1.4 · {exp.id} · phase diagram")
@@ -276,7 +280,7 @@ def f15(exp: Experiment, runs: Runs, opts: Mapping[str, Any]) -> Built:
                for c in cols]
         data[name] = cis
     base = [r.metrics["mci_train"] for r in runs[BASELINE].values()] if BASELINE in runs else None
-    base_col = 1 if opts.get("axis") == "lipschitz" else 2  # the baseline runs at the reference capacity
+    base_col = {"lipschitz": 1, "fourier": 4}.get(opts.get("axis"), 2)  # the baseline runs at the reference capacity
 
     def render(ps: Sequence[Panel]) -> Figure:
         fig, ax = plt.subplots(figsize=(4.6, 3.2))
