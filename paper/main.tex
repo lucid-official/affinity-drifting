@@ -14,8 +14,19 @@
 \usepackage{multirow}
 \usepackage{xcolor}
 \newcommand{\pending}{\textcolor{gray}{[pending]}}
-\newcommand{\Vp}{V^{+}_{p}}   % notation of Deng et al. (2026): V_{p,q} = V^+_p - V^-_q
-\newcommand{\Vm}{V^{-}_{q}}
+% Notation of Deng et al. (2026), arXiv 2602.04770 (their main.tex): bold vectors, V_{p,q} = V^+_p - V^-_q.
+\newcommand{\vv}[1]{\mathbf{#1}}
+\newcommand{\x}{\vv{x}}
+\newcommand{\y}{\vv{y}}
+\newcommand{\V}{\vv{V}}
+\newcommand{\e}{\boldsymbol{\epsilon}}
+\newcommand{\yp}{\vv{y}^{+}}
+\newcommand{\yn}{\vv{y}^{-}}
+\newcommand{\Vp}{\vv{V}^{+}_{p}}
+\newcommand{\Vn}{\vv{V}^{-}_{q}}
+\newcommand{\stopgrad}{\text{\texttt{stopgrad}}}
+\newcommand{\Cov}{\boldsymbol{\Sigma}}
+\usepackage{amsthm}
 \newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
 
@@ -47,5 +58,7 @@
     \bibliographystyle{ieeenat_fullname}
     \bibliography{main}
 }
+
+\input{sections/6_appendix}
 
 \end{document}

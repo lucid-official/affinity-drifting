@@ -1,0 +1,105 @@
+\appendix
+\section{Proofs}
+\label{app:proofs}
+
+Throughout, $p$ and $q$ are Borel probability measures on $\mathbb R^D$ and $k>0$, so that $Z_p,Z_q>0$ and the fields
+are well defined.
+
+\begin{proof}[Proof of \cref{lem:regression}]
+For $p=\delta_{\y}$, $Z_p(\x)=k(\x,\y)>0$ and $\mathbb E_p[k(\x,\yp)(\yp-\x)]=k(\x,\y)(\y-\x)$, so
+$\Vp(\x)=\y-\x$. Without negatives $\V_{p,q_\theta}=\Vp$, hence at $\x=f_\theta(\e,c)$ the argument of $\stopgrad$ in
+\eqref{eq:loss} has value $f_\theta(\e,c)+\y_c-f_\theta(\e,c)=\y_c$, and the integrand equals
+$\lVert f_\theta(\e,c)-\y_c\rVert^2$. Since $\stopgrad$ blocks the gradient through its argument,
+$\nabla_\theta\lVert f_\theta-\stopgrad(\boldsymbol u)\rVert^2=2\,(\partial_\theta f_\theta)^\top(f_\theta-\boldsymbol u)$
+evaluated at $\boldsymbol u=\y_c$, which is $\nabla_\theta\lVert f_\theta(\e,c)-\y_c\rVert^2$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{lem:score}]
+Let $\varphi_\sigma$ be the density of $\mathcal N(\mathbf 0,\sigma^2\mathbf I)$. Then
+$k(\x,\y)=(2\pi\sigma^2)^{D/2}\varphi_\sigma(\x-\y)$, so $Z_p(\x)=(2\pi\sigma^2)^{D/2}(p*\varphi_\sigma)(\x)$.
+Moreover $\nabla_{\x}k(\x,\y)=\sigma^{-2}k(\x,\y)(\y-\x)$ and
+$\lVert k(\x,\y)(\y-\x)\rVert\le\sup_{r\ge0}re^{-r^2/(2\sigma^2)}=\sigma e^{-1/2}$, so differentiation under the
+expectation is justified by dominated convergence:
+$\nabla_{\x}Z_p(\x)=\sigma^{-2}\,\mathbb E_p[k(\x,\yp)(\yp-\x)]$. Dividing by $Z_p(\x)$ gives
+$\Vp=\sigma^2\nabla_{\x}\log Z_p$, likewise $\Vn=\sigma^2\nabla_{\x}\log Z_q$, and the identity follows.
+
+If $q=p$ the field vanishes trivially. Conversely, $\V_{p,q}\equiv\mathbf 0$ means
+$\nabla_{\x}\log(Z_p/Z_q)\equiv\mathbf 0$ on the connected set $\mathbb R^D$, so $Z_p=\kappa Z_q$ for a constant
+$\kappa>0$. Integrating over $\mathbb R^D$, $\int Z_p\,d\x=(2\pi\sigma^2)^{D/2}=\int Z_q\,d\x$, so $\kappa=1$ and
+$p*\varphi_\sigma=q*\varphi_\sigma$. Taking characteristic functions,
+$\hat p(\boldsymbol\omega)e^{-\sigma^2\lVert\boldsymbol\omega\rVert^2/2}=\hat q(\boldsymbol\omega)
+e^{-\sigma^2\lVert\boldsymbol\omega\rVert^2/2}$ for all $\boldsymbol\omega$, hence $\hat p=\hat q$ and $p=q$ by the
+uniqueness theorem for characteristic functions.
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:fixed}]
+(i) With $h'=0$ the positives at $c$ follow $\hat p_h(\cdot\mid c)$ and the negatives $q_\theta(\cdot\mid c)$;
+\cref{lem:score} gives $\V\equiv\mathbf 0$ if and only if $q_\theta(\cdot\mid c)=\hat p_h(\cdot\mid c)$.
+
+(ii) With $h'=h$ and $q_\theta(\cdot\mid c_i)=\delta_{\y_i}$, the negatives at any $c$ follow
+$\hat q_h(\cdot\mid c)=\sum_i\tilde w_i(c;h)\,\delta_{\y_i}=\hat p_h(\cdot\mid c)$, so positives and negatives coincide
+and $\V\equiv\mathbf 0$ by \cref{lem:score}. Now let $q_\theta(\cdot\mid c_i)=\hat p_h(\cdot\mid c_i)$, assume the
+$\y_i$ are distinct, the $\psi(c_i)$ are distinct, $N\ge2$ and $h<\infty$, and write $W_{kj}=\tilde w_j(c_k;h)$. At
+$c=c_k$ the negatives follow $\sum_i W_{ki}\hat p_h(\cdot\mid c_i)=\sum_j(W^2)_{kj}\delta_{\y_j}$ and the positives
+$\sum_jW_{kj}\delta_{\y_j}$; since the $\y_j$ are distinct, $\V\equiv\mathbf 0$ at every $c_k$ requires $W^2=W$. $W$ is
+row-stochastic with positive entries, so by the Perron--Frobenius theorem the eigenvalue $1$ is simple and every other
+eigenvalue has modulus below $1$; an idempotent matrix has eigenvalues in $\{0,1\}$, so $W$ would have rank one, \ie
+identical rows. Rows $k\neq l$ are identical only if $W_{kj}/W_{lj}$ does not depend on $j$, \ie only if
+$\langle\psi(c_k)-\psi(c_l),\psi(c_j)\rangle$ does not depend on $j$. This fails for $j=k$ against $j=l$, where the two
+values differ by $\lVert\psi(c_k)-\psi(c_l)\rVert^2>0$. Hence the Nadaraya--Watson mixtures are not a fixed point.
+\end{proof}
+
+\section{Implementation and experimental details}
+\label{app:impl}
+
+\paragraph{Kernels and normalization.} The sample-space kernel is Gaussian at three scales
+$\sigma\in\{0.071,0.384,2.07\}$, spaced geometrically from the median $n^\star$-th-nearest-neighbor distance among the
+positives to the median pairwise distance (the median heuristic~\cite{gretton2012kernel}), and fixed once per
+experiment. For each scale the field $\V_{p,q}$ is normalized as a whole, $\tilde\V_\sigma=\V_\sigma/\lambda_\sigma$
+with $\lambda_\sigma=\sqrt{\mathbb E[\tfrac1D\lVert\V_\sigma\rVert^2]}$ over the batch, and the normalized fields are
+summed, as in the multi-temperature drift of~\cite{deng2026drifting}. Normalizing $\Vp$ and $\Vn$ separately, which we
+used first, keeps both terms at unit scale even where they should cancel, and sent a few percent of one-positive
+samples far outside the data (\cref{sec:status}). A sample is excluded from its own negatives. The per-condition
+bandwidth $h(c)$ is found by bisection in $\log h$ (relative tolerance $10^{-10}$). The baseline uses the original
+Drifting objective unchanged: kernel $k(\x,\y)=\exp(-\lVert\x-\y\rVert/\tau)$ with $\tau\in\{0.02,0.05,0.2\}$, its
+softmax normalization over positives and negatives, distances scaled by batch statistics, and one normalization per
+temperature. We use the Gaussian kernel for our method so that \cref{lem:score} applies.
+
+\paragraph{Particle system.} $K=32$ conditions with $\psi(c_k)$ evenly spaced on $[0,1]$ each have one positive
+$\y_k\sim\mathcal U([-1,1]^2)$, drawn once with minimum separation $0.15$ and shared by all seeds. Each condition holds
+256 particles initialized from $\mathcal U([-1.5,1.5]^2)$ and updated by $\x\leftarrow\x+\eta\,\V(\x)$ with $\eta=0.5$
+and the unnormalized field; the negatives of a particle are all particles of its condition. The kernel has a single
+scale, half the median pairwise distance of the positives. Integration stops when the root-mean-square field norm stays
+below $10^{-6}$ for 1{,}000 consecutive steps, or after 50{,}000 steps. \Cref{lem:score} is checked against automatic
+differentiation in float64. For the guidance analogue, $p_\mathrm{data}(\cdot\mid c)=\mathcal N(\boldsymbol\mu_1,s^2\mathbf I)$
+and $p_\mathrm{data}(\cdot\mid c')=\mathcal N(\boldsymbol\mu_2,s^2\mathbf I)$ with $\boldsymbol\mu_1=(1,0)$,
+$\boldsymbol\mu_2=(-1,0)$, $s=0.5$ and 2{,}048 positives each; the negatives of $c$ add the data of $c'$ with weight
+$\gamma$.
+
+\paragraph{2-D toy data.} Conditions are $c\sim\mathcal U([0,1]^2)$, with $N=10{,}000$ training conditions (one positive
+each), 256 held-out conditions, and 256 of the training conditions used for evaluation. $p_\mathrm{data}(\cdot\mid c)$ is a
+mixture of three Gaussians $\mathcal N(\boldsymbol\mu_j(c),0.1^2\mathbf I)$, $j\in\{0,1,2\}$, with centers at angle
+$2\pi c_1+2\pi j/3$ and radius $1+c_2$, and weights $\pi_j(c)\propto\exp\big(\beta(c_2-\tfrac12)(j-1)\big)$ with
+$\beta=2$.
+
+\paragraph{Generator and training.} $f_\theta(\e,c)$ is an MLP on the concatenation of $\e\sim\mathcal N(\mathbf 0,\mathbf I_4)$
+and a condition embedding $g(c)\in\mathbb R^{64}$ (two linear layers with a ReLU), with three hidden layers of width
+256, SiLU activations, and a linear output in $\mathbb R^2$. Quantization replaces $c$ by the center
+$(\lfloor c/\Delta\rfloor+\tfrac12)\Delta$ of its cell, componentwise; $\Delta=1/16$ unless stated otherwise. The
+Lipschitz variant applies spectral normalization to both layers of $g$ and multiplies its output by $L$. We train with
+Adam ($\beta_1=0.9$, $\beta_2=0.999$, no weight decay) at a constant learning rate of $10^{-3}$ for 20{,}000 steps, with
+8 conditions $\times$ 64 generated samples per batch, and evaluate an exponential moving average of the weights (decay
+$0.999$). The learning rate was selected once among $\{10^{-4},3\cdot10^{-4},10^{-3}\}$ on the unconditional model,
+whose marginal Wasserstein-2 distance is \GFourCW\ against a finite-sample floor of \GFourCFloor, and shared by every
+method. The negative-bandwidth experiment uses $\Delta=0$, three times as many steps, and batches of one condition with
+seven neighbors drawn with probabilities $\tilde w_i(c;h)$, so that pooled negatives are available.
+
+\paragraph{Metrics.} Each condition is evaluated with 512 generated and 512 true samples. $W_2$ is computed exactly
+by optimal assignment. The variance ratio is $\operatorname{tr}\Cov_q/\operatorname{tr}\Cov_p$ of the sample covariances.
+Precision and recall~\cite{kynkaanniemi2019improved} use $k=3$ nearest neighbors. A sample belongs to the mode with
+the nearest center, and a mode counts as captured if it receives at least 5\% of the samples. A sample is off-support if
+its true log-density is below the 1\% quantile of the log-densities of the true samples of that condition. A sample is
+memorized if it lies within $\varepsilon$ of a training positive, with $\varepsilon$ half the median nearest-neighbor
+distance among the training positives. The total variation to the Nadaraya--Watson mixture compares both
+distributions smoothed at the finest kernel scale. Results are means over five seeds with 95\% bootstrap confidence
+intervals ($10^4$ resamples), paired across methods.

@@ -1,5 +1,5 @@
 \begin{abstract}
-Drifting models train a one-step generator by moving its samples along a field $V_{p,q}=\Vp-\Vm$ that attracts them
+Drifting models train a one-step generator by moving its samples along a field $\V_{p,q}=\Vp-\Vn$ that attracts them
 toward positive samples from the data distribution $p$ and repels them from negative samples of the generated
 distribution $q$. In text-to-image data, however, each caption usually comes with a single image, so the empirical
 conditional $p_\mathrm{data}(\cdot\mid c)$ is a point mass. We show that the attraction toward a point mass reduces
@@ -12,7 +12,7 @@ equilibrium is the Nadaraya--Watson mixture, while pooling the negatives in the 
 positives. We test this with pre-registered, one-factor-at-a-time experiments. In a non-parametric particle system
 the predicted fixed points are reached at the resolution of the kernel. In a 2-D toy with known conditional
 distributions, the original Drifting objective and the one-positive objective both collapse to the conditional mean
-(ratio of total variances $\operatorname{tr}\Sigma_q/\operatorname{tr}\Sigma_p$ of \EOneTwoDriftingTVRMean\ and
+(ratio of total variances $\operatorname{tr}\Cov_q/\operatorname{tr}\Cov_p$ of \EOneTwoDriftingTVRMean\ and
 \EOneTwoSingleTVRMean), while an oracle with many samples per condition does not (\EOneTwoOracleTVRMean). Affinity Drifting
 restores the mixture: it captures every mode and lowers the held-out Wasserstein-2 distance to \EOneThreeRatio\ of the
 one-positive objective, on par with the oracle. Ablations show why: pooling the positives without the sample-space

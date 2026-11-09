@@ -4,7 +4,7 @@
   \caption{\textbf{Mean collapse with one sample per condition.} Samples (512 per panel) from generators trained on a
   2-D toy in which each training condition $c$ has exactly one sample, shown for two held-out conditions. Grey: the
   true $p_\mathrm{data}(\cdot\mid c)$, a three-component Gaussian mixture; hollow $\star$: the conditional mean
-  $\mathbb E[x\mid c]$. The original Drifting objective and the one-positive objective place every sample at the
+  $\mathbb E[\x\mid c]$. The original Drifting objective and the one-positive objective place every sample at the
   conditional mean, between the modes; an oracle given many true samples per condition covers the modes. Affinity
   Drifting uses only the single training samples, pooled across similar conditions, and recovers the modes. Seed 0 of
   five.}
@@ -15,8 +15,8 @@
 \label{sec:intro}
 
 Drifting models~\cite{deng2026drifting} train a one-step generator $f_\theta$ by evolving its pushforward
-distribution $q_\theta=(f_\theta)_\#p_\epsilon$ during training rather than at sampling time: each generated sample is
-attracted toward positive samples $y^+\sim p$ and repelled from negative samples $y^-\sim q_\theta$, and the generator
+distribution $q_\theta=(f_\theta)_{\#}p_{\e}$ during training rather than at sampling time: each generated sample is
+attracted toward positive samples $\yp\sim p$ and repelled from negative samples $\yn\sim q_\theta$, and the generator
 regresses onto its own drifted outputs. With class labels every class has many images, and the attraction is a
 kernel mean-shift toward the class-conditional distribution $p_\mathrm{data}(\cdot\mid c)$.
 
@@ -28,8 +28,8 @@ conditions it cannot distinguish and outputs their mean, a blurred sample betwee
 
 We ask whether pooling the positives of semantically similar conditions restores a distribution, and why. Affinity
 Drifting replaces the point mass by a Nadaraya--Watson estimate of $p_\mathrm{data}(\cdot\mid c)$ and keeps the
-sample-space kernel $k(x,y^+)$ of drifting, so the attraction becomes a mean-shift toward a mixture rather than a pull
-toward an average. The claim is mechanistic: the gain should come from the $x$-dependent assignment of samples to
+sample-space kernel $k(\x,\yp)$ of drifting, so the attraction becomes a mean-shift toward a mixture rather than a pull
+toward an average. The claim is mechanistic: the gain should come from the $\x$-dependent assignment of samples to
 modes, not merely from having more targets. We test it with ablations that remove one alternative explanation at a
 time: pooling positives with a constant sample-space kernel, pooling random rather than similar neighbors, and
 perturbing the single positive with matched noise, against an oracle with true conditional samples and the original

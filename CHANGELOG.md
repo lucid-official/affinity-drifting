@@ -71,6 +71,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Experiment res
 
 ### Changed
 
+- Preprint notation follows the Drifting paper's macros (bold vectors $\mathbf x,\mathbf y^\pm,\mathbf V,\boldsymbol\epsilon$, `\texttt{stopgrad}`, bold covariance); symbol clashes removed (quantization width δ → Δ, guidance weight λ → γ). Proofs (Lemmas 1–2, new Proposition on equilibria) and implementation/experimental details moved to `paper/sections/6_appendix.tex`; `amsthm` added.
 - Preprint macros for E1.4b (`EOneFourB*`: W2 of the one-positive objective and of Affinity Drifting at L = 64 and L = 1).
 - Preprint (`paper/`, `affdrift/reporting/paper.py`): literature terminology and the notation of Deng et al. (2602.04770)
   only (CLAUDE.md §8.10). Method restated as drifting with positives from the Nadaraya–Watson estimate p̂_h(·|c) and

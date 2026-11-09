@@ -206,7 +206,7 @@ def _write_status_table() -> None:
 def _write_l1_table() -> None:
     arms = [(BASELINE, "E1.3"), ("single", "E1.3"), ("K1", "E1.3"), ("K2", "E1.3"), ("K3", "E1.3"), ("AffD", "E1.3"),
             ("K4", "E1.2")]
-    metrics = [("w2_heldout", r"$W_2$ $\downarrow$"), ("tvr", r"$\operatorname{tr}\Sigma_q/\operatorname{tr}\Sigma_p$"),
+    metrics = [("w2_heldout", r"$W_2$ $\downarrow$"), ("tvr", r"$\operatorname{tr}\Cov_q/\operatorname{tr}\Cov_p$"),
                ("precision_heldout", r"Prec. $\uparrow$"), ("recall_heldout", r"Rec. $\uparrow$"),
                ("mode_coverage_heldout", r"Modes $\uparrow$")]
     head = " & ".join(["Method"] + [m[1] for m in metrics]) + r" \\"
@@ -361,9 +361,9 @@ def fig_phase() -> Figure:
         ax.fill_between(x, [c.lo for c in cis], [c.hi for c in cis], color=color, alpha=0.2, lw=0)
     if BASELINE in runs:  # original Drifting, run once at the base resolution δ = 1/16
         base = bootstrap_ci([r.metrics["w2_train"] for r in runs[BASELINE].values()])
-        ax.axhline(base.mean, color=arm_color(BASELINE), ls="--", lw=0.8, label=r"Drifting ($\delta=1/16$)")
+        ax.axhline(base.mean, color=arm_color(BASELINE), ls="--", lw=0.8, label=r"Drifting ($\Delta=1/16$)")
     ax.set_xticks(x, ["0", "1/64", "1/16", "1/4"])
-    ax.set(xlabel=r"quantization step $\delta$ of $c$ (coarser $\rightarrow$)", ylabel=r"$W_2$ (training $c$)")
+    ax.set(xlabel=r"quantization step $\Delta$ of $c$ (coarser $\rightarrow$)", ylabel=r"$W_2$ (training $c$)")
     ax.legend(frameon=False)
     return fig
 
